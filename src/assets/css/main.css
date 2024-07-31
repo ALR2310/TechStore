@@ -1,0 +1,89 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Courgette';
+    src: url('../fonts/Courgette/Courgette-Regular.ttf') format('truetype');
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.brtop {
+    position: absolute;
+    height: 25px;
+    width: 100%;
+    background-color: transparent;
+    top: -25px;
+}
+
+.brbottom {
+    position: absolute;
+    height: 25px;
+    width: 100%;
+    background-color: transparent;
+    bottom: -25px;
+}
+
+.pointer {
+    cursor: pointer !important
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.input-group-search>.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    border-right: unset;
+    border-color: var(--bs-border-color);
+}
+
+.input-group-search>.form-control {
+    border-right: unset;
+}
+
+@media (max-width: 1200px) {
+    .menu-text {
+        display: none;
+    }
+}
+
+.sub-menu {
+    flex: auto;
+    max-width: initial;
+    position: relative;
+    text-align: center;
+}
+
+.sub-menu a {
+    padding: 12px 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000;
+    transition: color 0.3s;
+}
+
+.sub-menu a:hover {
+    color: #007bff;
+}
+
+.sub-menu:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    height: 24px;
+    width: 0.8px;
+    background-color: #000;
+}

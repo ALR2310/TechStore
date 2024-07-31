@@ -1,0 +1,167 @@
+<div class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active" style="background-color: rgb(252, 35, 46);">
+            <div class="container">
+                <a href="#">
+                    <img src="/imgs/ads/adsBar1.png" alt="ads">
+                </a>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-color: rgb(58, 147, 103);">
+            <div class="container">
+                <a href="#">
+                    <img src="/imgs/ads/adsBar2.png" alt="ads">
+                </a>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-color: rgb(255, 211, 32);">
+            <div class="container">
+                <a href="#">
+                    <img src="/imgs/ads/adsBar3.png" alt="ads">
+                </a>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-color: rgb(200, 234, 255);">
+            <div class="container">
+                <a href="#">
+                    <img src="/imgs/ads/adsBar4.png" alt="ads">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<header class="sticky-top">
+    <nav class="navbar navbar-expand-lg" style="background-color: #E30019;">
+        <div class="container">
+            {{!-- Logo --}}
+            <a class="navbar-brand" href="#">
+                <img src="/imgs/icons/logo.png" alt="logo" style="width: 150px;">
+            </a>
+
+            {{!-- Button Toggle --}}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div id="navbarSupportedContent" class="collapse navbar-collapse">
+                {{!-- Menu --}}
+                <div class="d-flex justify-content-center align-items-center p-1 rounded pointer text-white me-3 h-100"
+                    style="background-color: #BE1529;min-width: 100px;">
+                    <i class="fa-regular fa-bars" style="font-size: 22px;"></i>
+                    <div class="d-flex align-items-center" style="height: 35px">
+                        <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">Danh mục</p>
+                    </div>
+                </div>
+
+                {{!-- Search --}}
+                <div class="input-group input-group-search align-items-center me-3" style="width: 100%;">
+                    <input type="text" class="form-control" placeholder="Bạn cần tìm gì?">
+                    <button class="btn bg-white" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {{!-- Hotline --}}
+                    <li class="nav-item">
+                        <div class="d-flex text-white justify-content-center align-items-center pointer p-1 pe-4">
+                            <i class="fa-regular fa-phone-rotary pe-2" style="font-size: 22px;"></i>
+                            <p class="text-nowrap menu-text" style="font-size: 12px;">Hotline<br>1900.1900</p>
+                        </div>
+                    </li>
+
+                    {{!-- Location --}}
+                    <li class="nav-item">
+                        <a href="#"
+                            class="text-decoration-none d-flex text-white justify-content-center align-items-center pointer p-1 pe-4">
+                            <i class="fa-regular fa-location-dot pe-2" style="font-size: 22px;"></i>
+                            <p class="text-nowrap menu-text" style="font-size: 12px;">Cửa hàng<br>gần bạn</p>
+                        </a>
+                    </li>
+
+                    {{!-- Check --}}
+                    <li class="nav-item">
+                        <a href="#"
+                            class="text-decoration-none d-flex text-white justify-content-center align-items-center pointer p-1 pe-4">
+                            <i class="fa-regular fa-clipboard-list pe-2" style="font-size: 22px;"></i>
+                            <p class="text-nowrap menu-text" style="font-size: 12px;">Tra cứu<br>đơn hàng</p>
+                        </a>
+                    </li>
+
+                    {{!-- Cart --}}
+                    <li class="nav-item">
+                        <a href="#" class="text-decoration-none d-flex text-white pointer p-1 pe-4">
+                            <div class="d-flex justify-content-center align-items-center position-relative">
+                                <i class="fa-regular fa-cart-shopping pe-2" style="font-size: 22px;"></i>
+                                <p class="text-nowrap menu-text" style="font-size: 12px;">Giỏ<br>hàng</p>
+                                <span class="position-absolute translate-middle badge rounded-pill bg-warning"
+                                    style="padding: 4px;top: 4px;left: 24px;">
+                                    0
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+
+                    {{!-- User --}}
+                    <li class="nav-item">
+                        <div class="d-flex justify-content-center align-items-center p-1 rounded pointer text-white h-100"
+                            style="background-color: #BE1529;min-width: 100px;">
+                            <i class="fa-regular fa-user" style="font-size: 22px;"></i>
+                            <div class="d-flex align-items-center" style="height: 35px">
+                                <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
+                                    Xin chào<br><span>Thanh An</span>
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="bg-white">
+    <div class="container ">
+        <ul class="d-flex align-items-center mb-0" style="flex-flow: row nowrap;list-style: none;">
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-regular fa-ticket"></i>
+                    <strong class="ps-2">Săn voucher</strong>
+                </a>
+            </li>
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-regular fa-newspaper"></i>
+                    <strong class="ps-2">Tin công nghệ</strong>
+                </a>
+            </li>
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-brands fa-youtube"></i>
+                    <strong class="ps-2">Video</strong>
+                </a>
+            </li>
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-regular fa-credit-card"></i>
+                    <strong class="ps-2">Hướng dẫn thanh toán</strong>
+                </a>
+            </li>
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-regular fa-coins"></i>
+                    <strong class="ps-2">Hướng dẫn trả góp</strong>
+                </a>
+            </li>
+            <li class="sub-menu">
+                <a href="#" class="text-nowrap">
+                    <i class="fa-regular fa-shield-check"></i>
+                    <strong class="ps-2">Tra cứu bảo hành</strong>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
