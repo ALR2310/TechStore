@@ -1,6 +1,7 @@
 const express = require('express');
 const { engine } = require('express-handlebars')
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const app = express();
 require('dotenv').config();
 const path = require("path");
@@ -12,6 +13,11 @@ const port = process.env.PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
 
 // View Engine
 app.engine('hbs', engine({extname: ".hbs"}));

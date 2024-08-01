@@ -1,0 +1,101 @@
+.line {
+    text-align: center;
+    position: relative;
+}
+
+.line span {
+    display: inline-block;
+    padding: 0 8px;
+    background: var(--bs-white);
+    position: relative;
+    z-index: 1;
+}
+
+.line::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--bs-border-color);
+    margin: auto;
+}
+
+/* ------ Cách sử dụng
+<div class="line"><span>Nội dung</span></div> 
+*/
+
+/* --------Custom class input cho bootstrap--------- */
+.form-outline {
+    position: relative;
+}
+
+.form-outline>.form-control {
+    transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-outline>.form-control::placeholder {
+    color: transparent;
+}
+
+.form-outline>.form-control:not(:placeholder-shown)~label,
+/* .form-outline>.form-control:valid~label, */
+.form-outline>.form-control:focus~label {
+    transform: translateY(-250%);
+    background-color: var(--bs-white);
+    padding: 0 2px;
+}
+
+.form-outline>label {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    white-space: nowrap;
+    line-height: 0.5;
+    color: var(--bs-secondary-color);
+    pointer-events: none;
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-outline>.form-control-sm~label {
+    font-size: 0.875rem;
+    top: 12px;
+    left: 9px;
+}
+
+.form-outline>.form-control-lg~label {
+    font-size: 1.25rem;
+    top: 19px;
+    left: 17px;
+}
+
+/* --------Cách sử dụng
+<div class="form-outline">
+    <input type="text" class="form-control" placeholder="Email hoặc tên đăng nhập">
+    <label>Email hoặc tên đăng nhập</label>
+</div>
+*/
+
+/* --------Custom class btn password cho bootstrap--------- */
+.form-password {
+    position: relative;
+}
+
+.form-password .btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: none;
+}
+
+/* --------Cách sử dụng
+<div class="form-outline form-password">
+    <input type="password" class="form-control" placeholder="Mật khẩu">
+    <label>Mật khẩu</label>
+    <button class="btn"><i class="bi bi-eye"></i></button>
+</div>
+*/

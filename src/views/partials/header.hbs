@@ -48,8 +48,7 @@
 
             <div id="navbarSupportedContent" class="collapse navbar-collapse">
                 {{!-- Category --}}
-                <div class="category p-1 rounded me-3"
-                    style="background-color: #BE1529;min-width: 100px;">
+                <div class="category p-1 rounded me-3" style="background-color: #BE1529;min-width: 100px;">
                     <i class="fa-regular fa-bars" style="font-size: 22px;"></i>
                     <div class="d-flex align-items-center" style="height: 35px">
                         <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">Danh mục</p>
@@ -216,12 +215,23 @@
 
                     {{!-- User --}}
                     <li class="nav-item">
-                        <div class="d-flex justify-content-center align-items-center p-1 rounded pointer text-white h-100"
+                        <div class="d-none justify-content-center align-items-center p-1 rounded pointer text-white h-100"
                             style="background-color: #BE1529;min-width: 100px;">
                             <i class="fa-regular fa-user" style="font-size: 22px;"></i>
                             <div class="d-flex align-items-center" style="height: 35px">
                                 <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
                                     Xin chào<br><span>Thanh An</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center align-items-center p-1 rounded pointer text-white h-100"
+                            data-bs-toggle="modal" data-bs-target="#modal-auth"
+                            style="background-color: #BE1529;min-width: 100px;">
+                            <i class="fa-regular fa-user" style="font-size: 22px;"></i>
+                            <div class="d-flex align-items-center" style="height: 35px">
+                                <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
+                                    Đăng nhập<br>hoặc đăng ký
                                 </p>
                             </div>
                         </div>
@@ -272,5 +282,112 @@
                 </a>
             </li>
         </ul>
+    </div>
+</div>
+
+{{!-- Modal Login/Register --}}
+<div class="modal fade" id="modal-auth" tabindex="-1" aria-labelledby="modal-auth" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <ul id="tab-auth" class="nav nav-tabs justify-content-center w-100" role="tablist">
+                    {{!-- Tab Login --}}
+                    <li class="nav-item" role="presentation">
+                        <button id="login-tab" class="nav-link active" data-bs-toggle="tab"
+                            data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane"
+                            aria-selected="true">ĐĂNG NHẬP
+                        </button>
+                    </li>
+
+                    {{!-- Tab Register --}}
+                    <li class="nav-item" role="presentation">
+                        <button id="register-tab" class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#register-tab-pane" type="button" role="tab"
+                            aria-controls="register-tab-pane" aria-selected="true">ĐĂNG KÝ
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-body">
+                <div id="tab-auth-content" class="tab-content">
+                    {{!-- Pane Login --}}
+                    <div id="login-tab-pane" class="tab-pane show active" role="tabpanel"
+                        aria-labelledby="login-tab" tabindex="0">
+                        <div class="form-outline mb-3">
+                            <input id="login-username" type="text" class="form-control"
+                                placeholder="Email hoặc tên đăng nhập">
+                            <label for="login-password">Email hoặc tên đăng nhập</label>
+                        </div>
+
+                        <div class="form-outline form-password mb-3">
+                            <input id="login-password" type="password" class="form-control" placeholder="Mật khẩu">
+                            <label for="login-password">Mật khẩu</label>
+                            <button class="btn"><i class="bi bi-eye"></i></button>
+                        </div>
+
+                        <a href="#" class="link-forgot mb-3 text-end fst-italic">Quên mật khẩu?</a>
+
+                        <button class="btn btn-danger w-100" style="height: 41px;">ĐĂNG NHẬP</button>
+
+                        <div class="line mt-3 mb-3">
+                            <span>Hoặc đăng nhập bằng</span>
+                        </div>
+                    </div>
+
+                    {{!-- Pane Register --}}
+                    <div id="register-tab-pane" class="tab-pane" role="tabpanel" aria-labelledby="register-tab"
+                        tabindex="1">
+                        <div class="form-outline mb-3">
+                            <input id="register-username" type="text" class="form-control" placeholder="Tên đăng nhập">
+                            <label for="login-password">Tên đăng nhập</label>
+                        </div>
+
+                        <div class="form-outline mb-3">
+                            <input id="register-email" type="text" class="form-control" placeholder="Email">
+                            <label for="login-password">Email</label>
+                        </div>
+
+                        <div class="form-outline form-password mb-3">
+                            <input id="register-password" type="password" class="form-control" placeholder="Mật khẩu">
+                            <label for="login-password">Mật khẩu</label>
+                            <button class="btn"><i class="bi bi-eye"></i></button>
+                        </div>
+
+                        <div class="form-outline form-password mb-3">
+                            <input id="register-confirm-password" type="password" class="form-control"
+                                placeholder="Nhập lại mật khẩu">
+                            <label for="login-password">Nhập lại mật khẩu</label>
+                            <button class="btn"><i class="bi bi-eye"></i></button>
+                        </div>
+
+                        <button class="btn btn-danger w-100" style="height: 41px;">ĐĂNG KÝ</button>
+
+                        <div class="line mt-3 mb-3">
+                            <span>Hoặc đăng ký bằng</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-overlay w-100" style="background-color: #F44336;">
+                            <div class="logo-container">
+                                <img src="/imgs/icons/google-plus.png" alt="Google">
+                            </div>
+                            Google
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-overlay w-100" style="background-color: #1877F2;">
+                            <div class="logo-container">
+                                <img src="/imgs/icons/facebook.png" alt="Google">
+                            </div>
+                            Google
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
