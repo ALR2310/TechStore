@@ -74,7 +74,7 @@ p {
 }
 
 .sub-menu a:hover {
-    color: #007bff;
+    color: var(--bs-danger);
 }
 
 .sub-menu:not(:last-child)::after {
@@ -84,6 +84,20 @@ p {
     right: 0;
     transform: translateY(-50%);
     height: 24px;
-    width: 0.8px;
-    background-color: #000;
+    width: 0.5px;
+    background-color: var(--bs-gray-dark);
+}
+
+.footer-link {
+    display: block;
+    color: var(--bs-white);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    line-height: 2rem;
+}
+
+.footer-link:hover {
+    color: var(--bs-danger);
+    text-decoration: underline;
 }
