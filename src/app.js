@@ -1,5 +1,5 @@
 const express = require('express');
-const { engine } = require('express-handlebars')
+const { engine } = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const app = express();
@@ -17,10 +17,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
-}))
+}));
 
 // View Engine
-app.engine('hbs', engine({extname: ".hbs"}));
+app.engine('hbs', engine({ extname: ".hbs" }));
 app.set('view engine', 'hbs');
 
 // Folder Views
@@ -29,8 +29,8 @@ app.set('views', path.join(__dirname, "views"));
 // Folder Public Static
 app.use(express.static(path.join(__dirname, 'assets')));
 
-// Routes
-app.use('/', require('./routers/homeRouter'));
+// Routes Init
+app.use('/', require('./handlers/router'));
 
 // Start Server
 app.listen(port, () => {
