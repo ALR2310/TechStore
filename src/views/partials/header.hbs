@@ -54,7 +54,7 @@
                         <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">Danh mục</p>
                     </div>
 
-                    <div class="category-menu bg-body-secondary rounded">
+                    <div class="category-menu rounded shadow-lg">
                         <div class="brtop"></div>
                         <ul class="category-list">
                             <li class="text-nowrap">
@@ -215,18 +215,48 @@
 
                     {{!-- User --}}
                     <li class="nav-item">
-                        <div class="d-none justify-content-center align-items-center p-1 rounded pointer text-white h-100"
-                            style="background-color: #BE1529;min-width: 100px;">
+                        {{#if user}}
+                        <div class="user p-1 rounded" style="background-color: #BE1529;min-width: 100px;">
                             <i class="fa-regular fa-user" style="font-size: 22px;"></i>
                             <div class="d-flex align-items-center" style="height: 35px">
                                 <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
-                                    Xin chào<br><span>Thanh An</span>
+                                    Xin chào<br><span>{{user.UserName}}</span>
                                 </p>
                             </div>
-                        </div>
 
-                        <div class="d-flex justify-content-center align-items-center p-1 rounded pointer text-white h-100"
-                            data-bs-toggle="modal" data-bs-target="#modal-auth"
+                            <ul class="user-menu rounded shadow-lg">
+                                <div class="brtop"></div>
+                                <li class="user-menu_item">
+                                    <a href="#">
+                                        <i class="bi bi-person-fill"></i>
+                                        <span>Hồ sơ của tôi</span>
+                                    </a>
+                                </li>
+                                <li class="user-menu_item">
+                                    <a href="#">
+                                        <i class="bi bi-basket"></i>
+                                        <span>Đơn hàng của tôi</span>
+                                    </a>
+                                </li>
+                                <li class="user-menu_item">
+                                    <a href="#">
+                                        <i class="bi bi-clock-history"></i>
+                                        <span>Đã xem gần đây</span>
+                                    </a>
+                                </li>
+                                <li class="user-menu_item">
+                                    <dir class="line"></dir>
+                                </li>
+                                <li class="user-menu_item">
+                                    <a href="/auth/logout">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>Đăng xuất</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {{else}}
+                        <div class="user p-1 rounded" data-bs-toggle="modal" data-bs-target="#modal-auth"
                             style="background-color: #BE1529;min-width: 100px;">
                             <i class="fa-regular fa-user" style="font-size: 22px;"></i>
                             <div class="d-flex align-items-center" style="height: 35px">
@@ -235,6 +265,7 @@
                                 </p>
                             </div>
                         </div>
+                        {{/if}}
                     </li>
                 </ul>
             </div>

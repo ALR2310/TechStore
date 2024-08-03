@@ -9,6 +9,7 @@ CREATE TABLE User(
     Email VARCHAR(50),
     UserName VARCHAR(50),
     Password VARCHAR(100),
+    Role ENUM('User', 'Admin') DEFAULT 'User',
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );

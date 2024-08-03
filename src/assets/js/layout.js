@@ -53,10 +53,8 @@ $('#btn-login').on('click', () => {
         dataType: 'json',
         contentType: 'application/json',
         success: (res) => {
-            console.log(res);
-
             if (res.success) {
-                $('#auth-alert').addClass('d-none');
+                window.location.href = '/';
             }
         },
         error: (err) => {

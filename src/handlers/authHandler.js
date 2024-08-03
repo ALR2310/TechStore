@@ -66,10 +66,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/check', (req, res) => {
-    const authToken = req.cookies.authToken;
-    console.log(authToken);
-    res.redirect('/');
+router.get('/logout', (req, res) => {
+    try {
+        return res.clearCookie('authToken', {
+            httpOnly: true,
+            secure: false
+        }).status(200).redirect('/');
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
 });
 
 module.exports = router;
