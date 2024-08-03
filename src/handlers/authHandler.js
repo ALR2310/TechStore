@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
         if (!checkPwd)
             return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác' });
 
-        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
+        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [getUser[0].Id]))[0]?.Token
             || crypto.randomBytes(32).toString('hex');
 
         await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [getUser[0].Id, authToken]);
@@ -108,10 +108,36 @@ router.get('/loginGoogle/callback', passport.authenticate('google', { failureRed
 
 router.get('/loginFacebook', passport.authenticate('facebook'));
 router.get('/loginFacebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), async (req, res) => {
-    // const FBId = req.user.id;
-    // const fullName = req.user.displayName;
+    const FBId = req.user.id;
+    const fullName = req.user.displayName;
+    const Gender = req.user.gender;
 
+    try {
+        const checkFacebookId = await db.query('SELECT * FROM User WHERE FacebookId = ?', [FBId]);
+        let userId = checkFacebookId[0]?.Id;
 
+        userId = (await db.query('INSERT INTO User (FacebookId) VALUES (?)', [FBId])).insertId;
+        await db.query('INSERT INTO UserInfo (UserId, FullName, Gender) VALUES (?, ?, ?)', [userId, fullName, Gender]);
+
+        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
+            || crypto.randomBytes(32).toString('hex');
+
+        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [userId, authToken]);
+
+        return res.cookie('authToken', authToken, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: false
+        }).status(200).send(`
+             <script>
+                window.opener.postMessage({ success: true, message: 'Đăng nhập thành công' }, '*');
+                window.close();
+            </script>
+        `);
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
 });
 
 router.get('/logout', (req, res) => {
