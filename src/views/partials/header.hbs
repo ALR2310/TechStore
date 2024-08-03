@@ -206,7 +206,7 @@
                                 <i class="fa-regular fa-cart-shopping pe-2" style="font-size: 22px;"></i>
                                 <p class="text-nowrap menu-text" style="font-size: 12px;">Giỏ<br>hàng</p>
                                 <span class="position-absolute translate-middle badge rounded-pill bg-warning"
-                                    style="padding: 4px;top: 4px;left: 24px;">
+                                    style="padding: 3px 5px;top: 4px;left: 24px;">
                                     0
                                 </span>
                             </div>
@@ -220,7 +220,7 @@
                             <i class="fa-regular fa-user" style="font-size: 22px;"></i>
                             <div class="d-flex align-items-center" style="height: 35px">
                                 <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
-                                    Xin chào<br><span>{{user.UserName}}</span>
+                                    Xin chào<br><span>{{userInfo.FullName}}</span>
                                 </p>
                             </div>
 
@@ -343,7 +343,7 @@
             <div class="modal-body">
                 <div id="auth-alert" class="d-none alert alert-danger p-2 mb-4 d-flex align-items-center" role="alert">
                     <i class="bi bi-exclamation-circle-fill pe-2"></i>
-                    <div>A simple danger alert—check it out!</div>
+                    <div></div>
                 </div>
 
                 <div id="tab-auth-content" class="tab-content">
@@ -408,14 +408,17 @@
                 </div>
 
                 <div class="row">
+                    {{!-- Google Login --}}
                     <div class="col">
-                        <button class="btn w-100 btn-danger">
+                        <button id="btn-google" class="btn w-100 btn-danger">
                             <img src="/imgs/icons/google-plus.png" alt="Login logo" class="me-2" style="width: 28px;">
                             Google
                         </button>
                     </div>
+
+                    {{!-- Facebook Login --}}
                     <div class="col">
-                        <button class="btn w-100 btn-primary">
+                        <button id="btn-facebook" class="btn w-100 btn-primary">
                             <img src="/imgs/icons/facebook.png" alt="Login logo" class="me-2" style="width: 28px;">
                             Facebook
                         </button>

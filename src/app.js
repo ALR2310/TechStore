@@ -1,15 +1,18 @@
+require('dotenv').config();
 const express = require('express');
 const { engine } = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cors = require('cors')
+const passport = require('./configs/passport');
 const app = express();
-require('dotenv').config();
 const path = require("path");
 const host = process.env.HOST;
 const port = process.env.PORT;
 
 
 //Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -22,6 +25,10 @@ app.use(session({
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
 }));
+
+// Passport Init
+app.use(passport.initialize());
+app.use(passport.session());
 
 // View Engine
 app.engine('hbs', engine({ extname: ".hbs" }));

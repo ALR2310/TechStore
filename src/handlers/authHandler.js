@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../configs/dbConnect');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const passport = require("passport");
 
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
@@ -20,7 +21,8 @@ router.post('/register', async (req, res) => {
         if (errMsg) return res.status(409).json({ success: false, message: errMsg });
 
         const hashPwd = await bcrypt.hash(password, 10);
-        await db.query('INSERT INTO user (username, email, password) VALUES (?, ?, ?)', [username, email, hashPwd]);
+        const result = await db.query('INSERT INTO user (username, email, password) VALUES (?, ?, ?)', [username, email, hashPwd]);
+        await db.query('INSERT INTO UserInfo (UserId, FullName) VALUES (?, ?)', [result.insertId, username]);
         return res.status(201).json({ success: true, message: 'Đăng ký thành công' });
     } catch (e) {
         console.error(e);
@@ -35,7 +37,7 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
 
     try {
-        const getUser = await db.query('SELECT * FROM user WHERE username = ? OR email = ?', [username, username]);
+        const getUser = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ?', [username, username]);
 
         if (getUser.length === 0)
             return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
@@ -45,15 +47,10 @@ router.post('/login', async (req, res) => {
         if (!checkPwd)
             return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác' });
 
-        let authToken;
-        const checkAuthToken = await db.query('SELECT * FROM authtoken WHERE UserId = ?', [getUser[0].Id]);
+        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
+            || crypto.randomBytes(32).toString('hex');
 
-        if (checkAuthToken.length > 0) {
-            authToken = checkAuthToken[0].Token;
-        } else {
-            authToken = crypto.randomBytes(32).toString('hex');
-            await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [getUser[0].Id, authToken]);
-        }
+        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [getUser[0].Id, authToken]);
 
         return res.cookie('authToken', authToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -66,6 +63,57 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/loginGoogle', passport.authenticate('google'));
+router.get('/loginGoogle/callback', passport.authenticate('google', { failureRedirect: '/' }), async (req, res) => {
+    const GGId = req.user.id;
+    const fullName = req.user.displayName;
+    const Email = req.user.emails[0].value;
+
+    try {
+        const checkEmail = await db.query('SELECT * FROM User WHERE email = ?', [Email]);;
+        let userId = checkEmail[0]?.Id;
+
+        if (checkEmail.length > 0) {
+            const checkGoogleId = await db.query('SELECT * FROM User WHERE GoogleId = ? AND Email = ?', [GGId, Email]);
+
+            if (checkGoogleId.length == 0) {
+                await db.query('UPDATE User SET GoogleId = ? WHERE Email = ?', [GGId, Email]);
+                await db.query('UPDATE UserInfo SET FullName = ? WHERE UserId = ?', [fullName, userId]);
+            }
+        } else {
+            userId = (await db.query('INSERT INTO User (GoogleId, Email) VALUES (?, ?)', [GGId, Email])).insertId;
+            await db.query('INSERT INTO UserInfo (UserId, FullName) VALUES (?, ?)', [userId, fullName]);
+        }
+
+        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
+            || crypto.randomBytes(32).toString('hex');
+
+        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [userId, authToken]);
+
+        return res.cookie('authToken', authToken, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: false
+        }).status(200).send(`
+             <script>
+                window.opener.postMessage({ success: true, message: 'Đăng nhập thành công' }, '*');
+                window.close();
+            </script>
+        `);
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
+});
+
+router.get('/loginFacebook', passport.authenticate('facebook'));
+router.get('/loginFacebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), async (req, res) => {
+    // const FBId = req.user.id;
+    // const fullName = req.user.displayName;
+
+
+});
+
 router.get('/logout', (req, res) => {
     try {
         return res.clearCookie('authToken', {
@@ -74,7 +122,7 @@ router.get('/logout', (req, res) => {
         }).status(200).redirect('/');
     } catch (e) {
         console.error(e);
-        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
 

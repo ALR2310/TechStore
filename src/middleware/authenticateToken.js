@@ -10,10 +10,11 @@ const authenticateToken = async (req, res, next) => {
         if (getAuthToken.length === 0) return next();
 
         const user = await db.query('SELECT * FROM user WHERE Id = ?', [getAuthToken[0].UserId]);
-        if (user.length === 0) return next();
+        if (user.length == 0) return next();
 
         req.user = user[0];
         res.locals.user = req.user;
+        res.locals.userInfo = (await db.query("SELECT * FROM UserInfo WHERE UserId = ?", [req.user.Id]))[0];
 
         if (req.user.Role === 'Admin') return res.redirect('/admin');
         next();

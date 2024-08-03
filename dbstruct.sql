@@ -4,8 +4,8 @@ USE TechStore;
 -- Bảng người dùng
 CREATE TABLE User(
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    GGId VARCHAR(100),
-    FBId VARCHAR(100),
+    GoogleId VARCHAR(100),
+    FacebookId VARCHAR(100),
     Email VARCHAR(50),
     UserName VARCHAR(50),
     Password VARCHAR(100),
@@ -15,7 +15,7 @@ CREATE TABLE User(
 );
 
 -- Bảng chi tiết người dùng
-CREATE TABLE UserDetails(
+CREATE TABLE UserInfo(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     UserId INT REFERENCES User(Id),
     FullName VARCHAR(100),
@@ -31,7 +31,7 @@ CREATE TABLE UserDetails(
 CREATE TABLE AuthToken(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     UserId INT REFERENCES User(Id),
-    Token CHAR(32),
+    Token CHAR(64),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -61,7 +61,8 @@ CREATE TABLE ProductDetails(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     ProdId INT REFERENCES Product(Id),
     DeviceCfg TEXT,
-    Content TEXT
+    Content TEXT,
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng đánh giá sản phẩm
@@ -96,13 +97,15 @@ CREATE TABLE CartItem(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     CardId INT REFERENCES Cart(Id),
     ProdId INT REFERENCES Product(Id),
-    Quantity INT DEFAULT 1
+    Quantity INT DEFAULT 1,
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng phương thức thanh toán
 CREATE TABLE Payments(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     PayName VARCHAR(50),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
 
@@ -110,6 +113,7 @@ CREATE TABLE Payments(
 CREATE TABLE Shipment(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     ShipName VARCHAR(200),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
 
@@ -129,7 +133,8 @@ CREATE TABLE OrderItems(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     OrdId INT REFERENCES Orders(Id),
     ProdId INT REFERENCES Product(Id),
-    Quantity INT DEFAULT 1
+    Quantity INT DEFAULT 1,
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng lịch sử mua hàng
@@ -138,7 +143,7 @@ CREATE TABLE PurchaseHistory(
     UserId INT REFERENCES User(Id),
     ProdId INT REFERENCES Product(Id),
     Quantity INT DEFAULT 1,
-    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     TotalPrice DECIMAL(12,2),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
