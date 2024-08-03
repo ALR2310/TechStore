@@ -310,10 +310,15 @@
             </div>
 
             <div class="modal-body">
+                <div id="auth-alert" class="d-none alert alert-danger p-2 mb-4 d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-circle-fill pe-2"></i>
+                    <div>A simple danger alert—check it out!</div>
+                </div>
+
                 <div id="tab-auth-content" class="tab-content">
                     {{!-- Pane Login --}}
-                    <div id="login-tab-pane" class="tab-pane show active" role="tabpanel"
-                        aria-labelledby="login-tab" tabindex="0">
+                    <div id="login-tab-pane" class="tab-pane show active" role="tabpanel" aria-labelledby="login-tab"
+                        tabindex="0">
                         <div class="form-outline mb-3">
                             <input id="login-username" type="text" class="form-control"
                                 placeholder="Email hoặc tên đăng nhập">
@@ -323,12 +328,14 @@
                         <div class="form-outline form-password mb-3">
                             <input id="login-password" type="password" class="form-control" placeholder="Mật khẩu">
                             <label for="login-password">Mật khẩu</label>
-                            <button class="btn"><i class="bi bi-eye"></i></button>
+                            <button class="btn" tabindex="-1"><i class="bi bi-eye"></i></button>
                         </div>
 
-                        <a href="#" class="link-forgot mb-3 text-end fst-italic">Quên mật khẩu?</a>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a href="#" class="link-app fst-italic">Quên mật khẩu?</a>
+                        </div>
 
-                        <button class="btn btn-danger w-100" style="height: 41px;">ĐĂNG NHẬP</button>
+                        <button id="btn-login" class="btn btn-danger w-100" style="height: 41px;">ĐĂNG NHẬP</button>
 
                         <div class="line mt-3 mb-3">
                             <span>Hoặc đăng nhập bằng</span>
@@ -340,28 +347,28 @@
                         tabindex="1">
                         <div class="form-outline mb-3">
                             <input id="register-username" type="text" class="form-control" placeholder="Tên đăng nhập">
-                            <label for="login-password">Tên đăng nhập</label>
+                            <label for="register-username">Tên đăng nhập</label>
                         </div>
 
                         <div class="form-outline mb-3">
-                            <input id="register-email" type="text" class="form-control" placeholder="Email">
-                            <label for="login-password">Email</label>
+                            <input id="register-email" type="email" class="form-control" placeholder="Email">
+                            <label for="register-email">Email</label>
                         </div>
 
                         <div class="form-outline form-password mb-3">
                             <input id="register-password" type="password" class="form-control" placeholder="Mật khẩu">
-                            <label for="login-password">Mật khẩu</label>
-                            <button class="btn"><i class="bi bi-eye"></i></button>
+                            <label for="register-password">Mật khẩu</label>
+                            <button class="btn" tabindex="-1"><i class="bi bi-eye"></i></button>
                         </div>
 
                         <div class="form-outline form-password mb-3">
                             <input id="register-confirm-password" type="password" class="form-control"
-                                placeholder="Nhập lại mật khẩu">
-                            <label for="login-password">Nhập lại mật khẩu</label>
-                            <button class="btn"><i class="bi bi-eye"></i></button>
+                                placeholder="Nhập lại mật khẩu" data-ps-confirm="register-password">
+                            <label for="register-confirm-password">Nhập lại mật khẩu</label>
+                            <button class="btn" tabindex="-1"><i class="bi bi-eye"></i></button>
                         </div>
 
-                        <button class="btn btn-danger w-100" style="height: 41px;">ĐĂNG KÝ</button>
+                        <button id="btn-register" class="btn btn-danger w-100" style="height: 41px;">ĐĂNG KÝ</button>
 
                         <div class="line mt-3 mb-3">
                             <span>Hoặc đăng ký bằng</span>
@@ -370,20 +377,16 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-6">
-                        <button class="btn btn-overlay w-100" style="background-color: #F44336;">
-                            <div class="logo-container">
-                                <img src="/imgs/icons/google-plus.png" alt="Google">
-                            </div>
+                    <div class="col">
+                        <button class="btn w-100 btn-danger">
+                            <img src="/imgs/icons/google-plus.png" alt="Login logo" class="me-2" style="width: 28px;">
                             Google
                         </button>
                     </div>
-                    <div class="col-6">
-                        <button class="btn btn-overlay w-100" style="background-color: #1877F2;">
-                            <div class="logo-container">
-                                <img src="/imgs/icons/facebook.png" alt="Google">
-                            </div>
-                            Google
+                    <div class="col">
+                        <button class="btn w-100 btn-primary">
+                            <img src="/imgs/icons/facebook.png" alt="Login logo" class="me-2" style="width: 28px;">
+                            Facebook
                         </button>
                     </div>
                 </div>

@@ -156,14 +156,13 @@ p {
     color: var(--bs-white);
 }
 
-.link-forgot {
+.link-app {
     text-decoration: none;
     color: var(--bs-dark);
-    display: block;
     transition: all 0.3s ease;
 }
 
-.link-forgot:hover {
+.link-app:hover {
     color: var(--bs-danger);
     text-decoration: underline;
 }

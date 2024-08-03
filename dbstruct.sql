@@ -6,9 +6,9 @@ CREATE TABLE User(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     GGId VARCHAR(100),
     FBId VARCHAR(100),
+    Email VARCHAR(50),
     UserName VARCHAR(50),
     Password VARCHAR(100),
-    Email VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );
@@ -30,8 +30,8 @@ CREATE TABLE UserDetails(
 CREATE TABLE AuthToken(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     UserId INT REFERENCES User(Id),
-    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Token CHAR(64)
+    Token CHAR(32),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng danh mục sản phẩm

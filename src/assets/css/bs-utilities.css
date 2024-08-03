@@ -85,11 +85,19 @@
     position: relative;
 }
 
-.form-password .btn {
+.form-password>.btn {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 2px;
     border: none;
+}
+
+.form-password>.form-control.is-valid {
+    background-position: right calc(2rem + .1875rem) center;
+}
+
+.form-password>.form-control.is-invalid {
+    background-position: right calc(2rem + .1875rem) center;
 }
 
 /* --------Cách sử dụng
