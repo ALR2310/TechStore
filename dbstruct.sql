@@ -43,16 +43,27 @@ CREATE TABLE Categories(
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );
 
+-- Bảng thương hiệu sản phẩm
+CREATE TABLE Brands(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    CateName VARCHAR(50),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+);
+
 -- Bảng sản phẩm
 CREATE TABLE Product(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     CateId INT REFERENCES Categories(Id),
+    BrandId INT REFERENCES Brands(Id),
     Image VARCHAR(200),
     ProdName VARCHAR(100),
     Quantity INT DEFAULT 1,
-    Price DECIMAL(12,2),
+    Price DECIMAL(12,2) DEFAULT 0.00,
+    Discount DECIMAL(5,2) DEFAULT 0.00,
     Slugs VARCHAR(200),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );
 
@@ -63,6 +74,7 @@ CREATE TABLE ProductDetails(
     DeviceCfg TEXT,
     Content TEXT,
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
+    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 
 -- Bảng đánh giá sản phẩm
@@ -147,3 +159,9 @@ CREATE TABLE PurchaseHistory(
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
+
+-- Dữ liệu 
+INSERT INTO Categories(CateName) VALUE('Laptop');
+INSERT INTO Categories(CateName) VALUE('Laptop Gaming');
+INSERT INTO Categories(CateName) VALUE('PC');
+INSERT INTO Categories(CateName) VALUE('PC Gaming');

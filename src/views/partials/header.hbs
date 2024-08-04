@@ -226,6 +226,19 @@
 
                             <ul class="user-menu rounded shadow-lg">
                                 <div class="brtop"></div>
+                                {{#if (eq user.Role 'Admin')}}
+                                <li class="user-menu_item">
+                                    <a href="/admin">
+                                        <i class="bi bi-speedometer2"></i>
+                                        <span>Bảng điều khiển</span>
+                                    </a>
+                                </li>
+
+                                 <li class="user-menu_item">
+                                    <dir class="line"></dir>
+                                </li>
+                                {{/if}}
+
                                 <li class="user-menu_item">
                                     <a href="#">
                                         <i class="bi bi-person-fill"></i>

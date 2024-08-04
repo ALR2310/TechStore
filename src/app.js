@@ -3,7 +3,7 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const cors = require('cors')
+const cors = require('cors');
 const passport = require('./configs/passport');
 const app = express();
 const path = require("path");
@@ -31,7 +31,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // View Engine
-app.engine('hbs', engine({ extname: ".hbs" }));
+app.engine('hbs', engine({ extname: ".hbs", helpers: require('./configs/helpersHBS') }));
 app.set('view engine', 'hbs');
 
 // Folder Views

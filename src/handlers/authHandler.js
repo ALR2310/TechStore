@@ -141,6 +141,8 @@ router.get('/loginFacebook/callback', passport.authenticate('facebook', { failur
 });
 
 router.get('/logout', (req, res) => {
+    console.log('đã đăng xuất');
+    
     try {
         return res.clearCookie('authToken', {
             httpOnly: true,

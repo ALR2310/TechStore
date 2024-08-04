@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/imgs/favicon.ico">
+    <link rel="stylesheet" href="/libs/bootstrap-5.3.3/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/fontawesome-6.4.2/css/all.css">
+    <link rel="stylesheet" href="/libs/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/bs-utilities.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="/libs/turbo-8.0.5/turbo.es2017-umd.js"></script>
+    <script src="/libs/bootstrap-5.3.3/bootstrap.bundle.min.js"></script>
+    <script src="/libs/handlebars/handlebars4.7.8.min.js"></script>
+    <script src="/libs/jquery-3.7.1/all.js"></script>
+    <script src="/libs/ckeditor5-41.2.0/ckeditor.js"></script>
+    <title>Quản lý TechStore</title>
+</head>
+
+<body class=" bg-body-tertiary">
+    <div class="d-flex">
+        <div class="d-flex text-white align-items-center fw-bold fs-5 p-3 bg-primary border-bottom border-white"
+            style="width: 200px;">
+            <i class="fa-regular fa-layer-group"></i>
+            <strong class="ps-3" style="font-family: Lilita One;">TECHSTORE</strong>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3 bg-white" style="flex: 1;">
+            <input type="search" class="form-control w-50" placeholder="Bạn muốn tìm gì?">
+
+            <img src="/imgs/avatar.jpg" alt="Avatar" class="rounded-5" style="width: 30px; height: 30px">
+        </div>
+    </div>
+
+    <div class="d-flex" style="height: calc(100vh - 71px);">
+        <div class="p-3 bg-primary" style="width: 200px;">
+            <nav class="nav nav-underline flex-column" role="tablist">
+                <a href="/admin" class="nav-link active text-white text-nowrap">
+                    <i class="fa-regular fa-gauge text-center" style="width: 18px; height: 16px"></i>
+                    <span class="ps-3">Trang chủ</span>
+                </a>
+                <div class="d-flex">
+                    <a href="/admin/product" class="nav-link text-white text-nowrap" style="flex: 4;">
+                        <i class="fa-regular fa-boxes-stacked text-center" style="width: 18px; height: 16px"></i>
+                        <span class="ps-3">Sản phẩm</span>
+                    </a>
+                    <button class="btn border-hover-none text-white" data-bs-target="#productSubmenu" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="productSubmenu" style="flex: 0.5">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </button>
+                </div>
+
+                <div class="collapse" id="productSubmenu">
+                    <nav class="nav flex-column ms-3">
+                        <a href="/admin/product/category" class="nav-link text-white">Thêm danh mục</a>
+                        <a href="/admin/product/view" class="nav-link text-white">Thêm sản phẩm</a>
+                    </nav>
+                </div>
+                <a href="/admin/user" class="nav-link text-white text-nowrap">
+                    <i class="fa-regular fa-users text-center" style="width: 18px; height: 16px"></i>
+                    <span class="ps-3">Người dùng</span>
+                </a>
+                <a href="/admin/message" class="nav-link text-white text-nowrap">
+                    <i class="fa-regular fa-messages text-center" style="width: 18px; height: 16px"></i>
+                    <span class="ps-3">Tin nhắn</span>
+                </a>
+                <a href="/admin/notice" class="nav-link text-white text-nowrap">
+                    <i class="fa-regular fa-bell text-center" style="width: 18px; height: 16px"></i>
+                    <span class="ps-3">Thông báo</span>
+                </a>
+            </nav>
+        </div>
+
+
+        <main id="admin-content" class="overflow-auto m-3 p-3 bg-white" style="flex: 1;">
+            {{{body}}}
+        </main>
+    </div>
+
+    <script src="/js/bs-utilities.js"></script>
+    <script src="/libs/lodash-1.8.3/lodash.min.js"></script>
+    <script src="/libs/echarts-5.4.3/echarts/echarts.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+
+</html>

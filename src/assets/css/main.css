@@ -1,11 +1,21 @@
 @font-face {
     font-family: 'Roboto';
-    src: url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Courgette';
-    src: url('../fonts/Courgette/Courgette-Regular.ttf') format('truetype');
+    src: url('../fonts/Courgette-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lilita One';
+    src: url('../fonts/LilitaOne-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('../fonts/Raleway-Regular.ttf') format('truetype');
 }
 
 * {
@@ -13,6 +23,13 @@
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+}
+
+/* Xoá 2 nút tăng giảm trong trường input type number */
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .brtop {
@@ -251,4 +268,20 @@ p {
 
 .btn-overlay .logo-container img {
     width: 30px;
+}
+
+#admin-content::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background: none;
+}
+
+#admin-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 25px;
+    transition: all 0.5s ease;
+}
+
+#admin-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
