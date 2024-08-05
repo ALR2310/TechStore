@@ -1,0 +1,224 @@
+<div class="row mb-3">
+    <div class="col-4">
+        <img id="product-image-preview" src="/imgs/default-laptop.jpg" alt="Product image" class="w-100 rounded">
+    </div>
+
+    <div class="col-8">
+        <div class="mb-3">
+            <label class="form-label">Tên sản phẩm:</label>
+            <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">URL sản phẩm:</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon3">http://localhost:4850/product/</span>
+                <input id="product-slug" type="text" class="form-control" placeholder="Url sản phẩm">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Hình ảnh:</label>
+                <input id="product-image-file" type="file" class="form-control">
+            </div>
+            <div class="col">
+                <label class="form-label">Nhãn tìm kiếm:</label>
+                <select id="product-tags" class="form-select" name="tags[]" multiple multiple data-allow-new="true">
+                    <option value="1" selected="selected">Laptop</option>
+                    <option value="2">Laptop Gaming</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Danh mục:</label>
+                <div class="input-group">
+                    <select id="product-category" class="form-select">
+                        <option value="0">Không có</option>
+                        {{#if categories}}
+                        {{#each categories}}
+                        <option value="{{this.Id}}">{{this.CateName}}</option>
+                        {{/each}}
+                        {{/if}}
+                    </select>
+                    <button class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#add-category-form"
+                        style="background-color: var(--bs-btn-hover-bg);">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </div>
+                <div id="add-category-form" class="collapse mt-3 input-group">
+                    <input type="text" class="form-control" placeholder="Nhập tên loại">
+                    <button class="btn btn-success"><i class="fa-regular fa-floppy-disk"></i></button>
+                </div>
+            </div>
+            <div class="col">
+                <label class="form-label">Thương hiệu:</label>
+                <div class="input-group">
+                    <select id="product-brand" class="form-select">
+                        <option value="0">Không có</option>
+                        {{#if brands}}
+                        {{#each brands}}
+                        <option value="{{this.Id}}">{{this.BrandName}}</option>
+                        {{/each}}
+                        {{/if}}
+                    </select>
+                    <button class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#add-brand-form"
+                        style="background-color: var(--bs-btn-hover-bg);">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </div>
+                <div id="add-brand-form" class="collapse mt-3 input-group">
+                    <input type="text" class="form-control" placeholder="Tên thương hiệu">
+                    <button class="btn btn-success"><i class="fa-regular fa-floppy-disk"></i></button>
+                </div>
+            </div>
+            <div class="col">
+                <label class="form-label text-nowrap">Dòng sản phẩm:</label>
+                <div class="input-group">
+                    <select id="product-brand-series" class="form-select">
+                        <option value="0">Không có</option>
+                        {{#if brandSeries}}
+                        {{#each brandSeries}}
+                        <option value="{{this.Id}}" data-brand="{{this.BrandId}}">{{this.SeriesName}}</option>
+                        {{/each}}
+                        {{/if}}
+                    </select>
+                    <button class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#add-brandSeries-form"
+                        style="background-color: var(--bs-btn-hover-bg);">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </div>
+                <div id="add-brandSeries-form" class="collapse mt-3 input-group">
+                    <span class="input-group-text">0</span>
+                    <input type="text" class="form-control" placeholder="Dòng thương hiệu">
+                    <button class="btn btn-success"><i class="fa-regular fa-floppy-disk"></i></button>
+                </div>
+            </div>
+            <div class="col col-3">
+                <label class="form-label">Thời gian</label>
+                <input id="product-datetime" type="datetime-local" class="form-control">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <label class="form-label">Số lượng:</label>
+                <input id="product-quantity" type="number" min="0" class="form-control" placeholder="Nhập số lượng">
+            </div>
+            <div class="col">
+                <label class="form-label">Giá bán (<span id="product-price-text"></span>):</label>
+                <div class="input-group">
+                    <input id="product-price" type="text" min="0" class="form-control" placeholder="Nhập giá giá phẩm">
+                    <span class="input-group-text">VNĐ</span>
+                </div>
+            </div>
+            <div class="col-2">
+                <label class="form-label">Giảm giá:</label>
+                <div class="input-group">
+                    <input id="product-discount" type="number" min="0" class="form-control"
+                        placeholder="Nhập số giảm giá" value="0">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+            <div class="col-2">
+                <label class="form-label">Trạng thái:</label>
+                <select id="product-status" class="form-select">
+                    <option value="0">Hiện hoạt</option>
+                    <option value="1">Vô hiệu</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row border-top">
+    <div class="col-7 mt-3">
+        <label for="ckeditor_balloon" class="form-label">Mô tả sản phẩm:</label>
+        <div id="ckeditor_balloon" class="border rounded form-focus" tabindex="0" style="height: 500px;"></div>
+    </div>
+    <div class="col-5 mt-3">
+        <label class="form-label">Cấu hình sản phẩm (Nếu có):</label>
+        <div class="position-relative overflow-auto smooth-scrollbar mb-3" style="max-height: 450px;">
+            <table id="tbl-product-cfg" class="table table-hover table-bordered mb-2">
+                <thead>
+                    <tr class="text-nowrap table-primary">
+                        <th scope="col" class="position-sticky top-0" style="z-index: 1;">Tên cấu hình</th>
+                        <th scope="col" class="position-sticky top-0" style="z-index: 1;">Mô tả</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="editable">CPU</td>
+                        <td class="editable">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="editable">RAM</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">Ỗ Cứng</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">VGA</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">Màn hình</td>
+                        <td class="editable"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button id="btn-product-save" class="btn btn-sm btn-success">
+                <i class="bi bi-save"></i> <span class="ps-2">Lưu sản phẩm</span>
+            </button>
+
+            <div class="btn-group">
+                <button id="btn-add-product-cfg" class="btn btn-sm btn-primary ">
+                    <i class="bi bi-plus-square"></i>
+                    <span class="ps-2">Thêm cấu hình</span>
+                </button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">
+                            <label for="btn-import-product-cfg" class="">Nhập tệp cấu hình</label>
+                            <input id="btn-import-product-cfg" type="file" class="d-none">
+                        </div>
+                    </li>
+                    <li><button id="btn-delete-product-cfg" class="dropdown-item">Xoá tất cả cấu hình</button></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a href="#offcanvas_import-product-cfg" data-bs-toggle="offcanvas" role="button"
+                            aria-controls="offcanvas_import-product-cfg" class="dropdown-item">Nhập cấu hình</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+    id="offcanvas_import-product-cfg" aria-labelledby="offcanvas_import-product-cfgLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvas_import-product-cfgLabel">Nhập nội dung cấu hình</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <textarea id="text_import-product-cfg" class="form-control h-100"></textarea>
+    </div>
+</div>
+
+
+<script src="/js/admin/product/create.js"></script>

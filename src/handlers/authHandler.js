@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
         return res.status(201).json({ success: true, message: 'Đăng ký thành công' });
     } catch (e) {
         console.error(e);
-        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
 
@@ -59,7 +59,7 @@ router.post('/login', async (req, res) => {
         }).status(200).json({ success: true, message: 'Đăng nhập thành công' });
     } catch (e) {
         console.error(e);
-        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
 
@@ -102,7 +102,7 @@ router.get('/loginGoogle/callback', passport.authenticate('google', { failureRed
         `);
     } catch (e) {
         console.error(e);
-        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
 
@@ -136,7 +136,7 @@ router.get('/loginFacebook/callback', passport.authenticate('facebook', { failur
         `);
     } catch (e) {
         console.error(e);
-        return res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
 

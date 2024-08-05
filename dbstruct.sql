@@ -46,7 +46,16 @@ CREATE TABLE Categories(
 -- Bảng thương hiệu sản phẩm
 CREATE TABLE Brands(
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    CateName VARCHAR(50),
+    BrandName VARCHAR(50),
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+);
+
+-- Bảng loạt thương hiệu
+CREATE TABLE BrandSeries(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    BrandId INT REFERENCES Brands(Id),
+    SeriesName VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );
@@ -56,6 +65,7 @@ CREATE TABLE Product(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     CateId INT REFERENCES Categories(Id),
     BrandId INT REFERENCES Brands(Id),
+    BrandSeriesId INT REFERENCES BrandSeries(Id),
     Image VARCHAR(200),
     ProdName VARCHAR(100),
     Quantity INT DEFAULT 1,
@@ -73,8 +83,8 @@ CREATE TABLE ProductDetails(
     ProdId INT REFERENCES Product(Id),
     DeviceCfg TEXT,
     Content TEXT,
-    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP
-    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng đánh giá sản phẩm
@@ -161,7 +171,23 @@ CREATE TABLE PurchaseHistory(
 );
 
 -- Dữ liệu 
+INSERT INTO User(Email, UserName, Password, Role) VALUE ('anle@gmail.com', 'anle', '$2a$10$weMkH.qB0S.Nv1Jih.3tTuSmtilJwNGs4GtyMN6rom5rj7.UcezXa', 'Admin');
+INSERT INTO UserInfo(UserId, FullName) VALUE(1, 'Thanh An');
+
 INSERT INTO Categories(CateName) VALUE('Laptop');
 INSERT INTO Categories(CateName) VALUE('Laptop Gaming');
 INSERT INTO Categories(CateName) VALUE('PC');
 INSERT INTO Categories(CateName) VALUE('PC Gaming');
+
+INSERT INTO Brands(BrandName) VALUE('Asus');
+INSERT INTO Brands(BrandName) VALUE('Acer');
+INSERT INTO Brands(BrandName) VALUE('MSI');
+INSERT INTO Brands(BrandName) VALUE('Lenovo');
+INSERT INTO Brands(BrandName) VALUE('Dell');
+INSERT INTO Brands(BrandName) VALUE('HP');
+INSERT INTO Brands(BrandName) VALUE('LG');
+
+INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'VivoBook');
+INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'ZenBook');
+INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'Tuf Gaming');
+INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'ROG');
