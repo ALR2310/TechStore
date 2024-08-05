@@ -79,10 +79,85 @@
 
 <div class="row border-top">
     <div class="col-7 mt-3">
+        <label for="ckeditor_balloon" class="form-label">Mô tả sản phẩm:</label>
         <div id="ckeditor_balloon" class="border rounded form-focus" tabindex="0" style="height: 500px;"></div>
     </div>
-    <div class="col-5">
+    <div class="col-5 mt-3">
+        <label class="form-label">Cấu hình sản phẩm (Nếu có):</label>
+        <div class="position-relative overflow-auto smooth-scrollbar mb-3" style="max-height: 450px;">
+            <table id="tbl-product-cfg" class="table table-hover table-bordered mb-2">
+                <thead>
+                    <tr class="text-nowrap table-primary">
+                        <th scope="col" class="position-sticky top-0" style="z-index: 1;">Tên cấu hình</th>
+                        <th scope="col" class="position-sticky top-0" style="z-index: 1;">Mô tả</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="editable">CPU</td>
+                        <td class="editable">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="editable">RAM</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">Ỗ Cứng</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">VGA</td>
+                        <td class="editable"></td>
+                    </tr>
+                    <tr>
+                        <td class="editable">Màn hình</td>
+                        <td class="editable"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
+        <div class="d-flex justify-content-end">
+            <div class="btn-group btn-group-sm">
+                <button id="btn-add-product-cfg" class="btn btn-sm btn-primary ">
+                    <i class="bi bi-plus-square"></i>
+                    <span class="ps-2">Thêm cấu hình</span>
+                </button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">
+                            <label for="btn-import-product-cfg" class="">Nhập tệp cấu hình</label>
+                            <input id="btn-import-product-cfg" type="file" class="d-none">
+                        </div>
+                    </li>
+                    <li><button id="btn-delete-product-cfg" class="dropdown-item">Xoá tất cả cấu hình</button></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a href="#offcanvas_import-product-cfg" data-bs-toggle="offcanvas" role="button"
+                            aria-controls="offcanvas_import-product-cfg" class="dropdown-item">Nhập cấu hình</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+    id="offcanvas_import-product-cfg" aria-labelledby="offcanvas_import-product-cfgLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvas_import-product-cfgLabel">Nhập nội dung cấu hình</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <textarea id="text_import-product-cfg" class="form-control h-100"></textarea>
     </div>
 </div>
 

@@ -285,3 +285,18 @@ p {
 #admin-content::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.editable {
+    cursor: pointer;
+}
+
+.editable-textarea {
+    width: 100%;
+    border: none;
+}
+
+.editable-textarea::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: none;
+}
