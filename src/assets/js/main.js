@@ -44,10 +44,10 @@ function formatNumToCurrency(value) {
 function formatNumToCurrencyText(value) {
     value = value.replace(/\D/g, '');
     let number = parseInt(value, 10);
-    if (isNaN(number) || number === 0) return '0 đồng';
+    if (isNaN(number) || number === 0) return '0';
 
     let result = '';
-    let units = [' đồng', ' nghìn', ' triệu', ' tỷ'];
+    let units = [' đồng ', ' nghìn ', ' triệu ', ' tỷ '];
     let thresholds = [1, 1000, 1000000, 1000000000];
 
     for (let i = thresholds.length - 1; i >= 0; i--) {
@@ -60,7 +60,7 @@ function formatNumToCurrencyText(value) {
         }
     }
 
-    return result || '0 đồng';
+    return result || '0';
 }
 
 // Hàm toast với bootstrap

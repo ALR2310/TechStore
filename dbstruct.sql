@@ -98,7 +98,7 @@ CREATE TABLE ProductReviews(
 );
 
 -- Bảng các nhãn sản phẩm
-CREATE TABLE Tag(
+CREATE TABLE Tags(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     ProdId INT REFERENCES Product(Id),
     TagName VARCHAR(50),

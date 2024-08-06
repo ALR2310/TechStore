@@ -10,13 +10,18 @@ router.get('/', (req, res) => {
 
 router.get('/product/create', async (req, res) => {
     try {
-        const [categories, brands, brandSeries] = await db.queryAll([
+        const [categories, brands, brandSeries, tags] = await db.queryAll([
             { sql: "SELECT * FROM Categories" },
             { sql: "SELECT * FROM Brands" },
             { sql: "SELECT * FROM BrandSeries" },
+            { sql: "SELECT * FROM Tags" },
         ]);
 
-        return res.status(200).render('admin/product/create', { layout: 'admin', categories, brands, brandSeries });
+        const uniqueTags = Array.from(new Set(tags.map(tag => tag.TagName.toLowerCase())))
+            .map(tagName => {
+                return tags.find(tag => tag.TagName.toLowerCase() === tagName);
+            });
+        return res.status(200).render('admin/product/create', { layout: 'admin', categories, brands, brandSeries, tags: uniqueTags });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
@@ -37,7 +42,13 @@ router.post('/product/create', upload.single('Image'), async (req, res) => {
         params = [result.insertId, DeviceCfg, Content, AtCreate];
         await db.query('INSERT INTO ProductDetails(ProdId, DeviceCfg, Content, AtCreate) VALUES(?, ?, ?, ?)', params);
 
-        console.log(Tags)
+        if (Tags) {
+            const tagsArray = Tags.split(',').map(tag => tag.trim());
+            const tagQueries = tagsArray.map(tagName => {
+                return { sql: 'INSERT INTO Tags(ProdId, TagName) VALUES(?, ?)', params: [result.insertId, tagName] };
+            });
+            await db.queryAll(tagQueries);
+        }
 
         return res.status(200).json({ success: true, message: "Thêm sản phẩm thành công" });
     } catch (e) {

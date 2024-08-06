@@ -1,6 +1,6 @@
 <div class="row mb-3">
     <div class="col-4">
-        <img id="product-image-preview" src="/imgs/default-laptop.jpg" alt="Product image" class="w-100 rounded">
+        <img id="product-image-preview" src="/imgs/default-product.png" alt="Product image" class="w-100 rounded">
     </div>
 
     <div class="col-8">
@@ -25,8 +25,11 @@
             <div class="col">
                 <label class="form-label">Nhãn tìm kiếm:</label>
                 <select id="product-tags" class="form-select" name="tags[]" multiple multiple data-allow-new="true">
-                    <option value="1" selected="selected">Laptop</option>
-                    <option value="2">Laptop Gaming</option>
+                    {{#if tags}}
+                    {{#each tags}}
+                    <option value="{{this.TagName}}">{{this.TagName}}</option>
+                    {{/each}}
+                    {{/if}}
                 </select>
             </div>
         </div>
@@ -108,7 +111,7 @@
                 <input id="product-quantity" type="number" min="0" class="form-control" placeholder="Nhập số lượng">
             </div>
             <div class="col">
-                <label class="form-label">Giá bán (<span id="product-price-text"></span>):</label>
+                <label class="form-label">Giá bán (<span id="product-price-text"></span> đồng):</label>
                 <div class="input-group">
                     <input id="product-price" type="text" min="0" class="form-control" placeholder="Nhập giá giá phẩm">
                     <span class="input-group-text">VNĐ</span>
@@ -141,7 +144,7 @@
     <div class="col-5 mt-3">
         <label class="form-label">Cấu hình sản phẩm (Nếu có):</label>
         <div class="position-relative overflow-auto smooth-scrollbar mb-3" style="max-height: 450px;">
-            <table id="tbl-product-cfg" class="table table-hover table-bordered mb-2">
+            <table id="tbl-product-cfg" class="table table-hover table-bordered">
                 <thead>
                     <tr class="text-nowrap table-primary">
                         <th scope="col" class="position-sticky top-0" style="z-index: 1;">Tên cấu hình</th>
@@ -221,4 +224,5 @@
 </div>
 
 
+<script type="module">import Tags from "/libs/bootstrap-tags-1.7.4/tags.min.js"; Tags.init();</script>
 <script src="/js/admin/product/create.js"></script>
