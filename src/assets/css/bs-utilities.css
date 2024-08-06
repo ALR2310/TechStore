@@ -120,6 +120,207 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
 
+/* Bootstrap Border Hover Color*/
+.border-hover:hover {
+    border-color: var(--bs-border-color) !important;
+}
+
+.border-hover-primary:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-primary-subtle:hover {
+    border-color: var(--bs-primary-border-subtle) !important;
+}
+
+.border-hover-secondary:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-secondary-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-secondary-subtle:hover {
+    border-color: var(--bs-secondary-border-subtle) !important;
+}
+
+.border-hover-success:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-success-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-success-subtle:hover {
+    border-color: var(--bs-success-border-subtle) !important;
+}
+
+.border-hover-danger:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-danger-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-danger-subtle:hover {
+    border-color: var(--bs-danger-border-subtle) !important;
+}
+
+.border-hover-warning:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-warning-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-warning-subtle:hover {
+    border-color: var(--bs-warning-border-subtle) !important;
+}
+
+.border-hover-info:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-info-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-info-subtle:hover {
+    border-color: var(--bs-info-border-subtle) !important;
+}
+
+.border-hover-light:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-light-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-light-subtle:hover {
+    border-color: var(--bs-light-border-subtle) !important;
+}
+
+.border-hover-dark:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-dark-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-dark-subtle:hover {
+    border-color: var(--bs-dark-border-subtle) !important;
+}
+
+.border-hover-black:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-black-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-hover-white:hover {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-white-rgb), var(--bs-border-opacity)) !important;
+}
+
+/* Bootstrap Form Check Input Checked */
+.form-check-input-primary:checked {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+.form-check-input-secondary:checked {
+    background-color: var(--bs-secondary) !important;
+    border-color: var(--bs-secondary) !important;
+}
+
+.form-check-input-success:checked {
+    background-color: var(--bs-success) !important;
+    border-color: var(--bs-success) !important;
+}
+
+.form-check-input-danger:checked {
+    background-color: var(--bs-danger) !important;
+    border-color: var(--bs-danger) !important;
+}
+
+.form-check-input-warning:checked {
+    background-color: var(--bs-warning) !important;
+    border-color: var(--bs-warning) !important;
+}
+
+.form-check-input-info:checked {
+    background-color: var(--bs-info) !important;
+    border-color: var(--bs-info) !important;
+}
+
+.form-check-input-light:checked {
+    background-color: var(--bs-light) !important;
+    border-color: var(--bs-light) !important;
+}
+
+.form-check-input-dark:checked {
+    background-color: var(--bs-dark) !important;
+    border-color: var(--bs-dark) !important;
+}
+
+/* Bootstrap Form Check Input Focus */
+.border-focus-primary:focus,
+.form-check-input-primary:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .2)
+}
+
+.border-focus-secondary:focus,
+.form-check-input-secondary:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-secondary) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-secondary-rgb), .2)
+}
+
+.border-focus-success:focus,
+.form-check-input-success:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-success) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-success-rgb), .2)
+}
+
+.border-focus-danger:focus,
+.form-check-input-danger:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-danger) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-danger-rgb), .2)
+}
+
+.border-focus-warning:focus,
+.form-check-input-warning:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-warning) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-warning-rgb), .2)
+}
+
+.border-focus-info:focus,
+.form-check-input-info:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-info) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-info-rgb), .2)
+}
+
+.border-focus-light:focus,
+.form-check-input-light:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-light) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-light-rgb), .2)
+}
+
+.border-focus-dark:focus,
+.form-check-input-dark:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    outline: 0 !important;
+    border-color: var(--bs-dark) !important;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-dark-rgb), .2)
+}
+
 .smooth-scrollbar::-webkit-scrollbar {
     width: 7px;
     height: 7px;
