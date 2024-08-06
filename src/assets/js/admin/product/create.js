@@ -47,6 +47,29 @@ function deleteAllRows() {
     $('#tbl-product-cfg tbody').empty();
 }
 
+// Hàm định dạng tệp cấu hình
+function formatProductTextCfg(input) {
+    // Tách chuỗi văn bản thành các dòng
+    const lines = input.split('\n');
+    // Biến để lưu kết quả sau khi định dạng
+    let formattedText = '';
+
+    // Duyệt qua từng dòng và thực hiện thay thế
+    lines.forEach(line => {
+        if (line.trim()) {
+            // Tách tiêu đề và giá trị
+            const [key, ...valueParts] = line.split('\t');
+            // Nối các phần của giá trị lại với nhau
+            const value = valueParts.join('\t').trim();
+            // Định dạng lại theo yêu cầu và thêm vào kết quả
+            formattedText += `${key.trim()};\t${value}\n`;
+        }
+    });
+
+    // Xóa các dòng trống và trả về kết quả
+    return formattedText.trim();
+}
+
 // Hàm nhập tệp cấu hình cho bảng
 function importProductCfg(content) {
     const lines = content.split('\n').filter(line => line.trim() !== '');
@@ -168,7 +191,8 @@ $('#btn-import-product-cfg').on('change', function (e) {
 // Nhập văn bản cấu hình cho bảng
 $('#text_import-product-cfg').on("input", _.debounce(function () {
     deleteAllRows();
-    importProductCfg($(this).val());
+    let contentCfg = formatProductTextCfg($(this).val())
+    importProductCfg(contentCfg);
 }, 200));
 
 // Tạo slug cho tên sản phẩm
@@ -325,7 +349,6 @@ $('#btn-product-save').on('click', function () {
         contentType: false,
         dataType: "json",
         success: (res) => {
-            console.log(res)
             if (res.success) {
                 showToast(res.message, "success");
             }
