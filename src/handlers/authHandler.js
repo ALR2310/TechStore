@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password)
-        return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+        return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
         const [checkUsername, checkEmail] = await db.queryAll([
@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password)
-        return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+        return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
         const getUser = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ?', [username, username]);
@@ -142,7 +142,7 @@ router.get('/loginFacebook/callback', passport.authenticate('facebook', { failur
 
 router.get('/logout', (req, res) => {
     console.log('đã đăng xuất');
-    
+
     try {
         return res.clearCookie('authToken', {
             httpOnly: true,

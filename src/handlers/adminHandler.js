@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../configs/dbConnect');
 const upload = require('../middleware/upload');
 const path = require("path");
+const fs = require("fs");
 
 router.get('/', (req, res) => {
     res.render('admin/index', { layout: 'admin' });
@@ -31,7 +32,16 @@ router.get('/product/create', async (req, res) => {
 router.post('/product/create', upload.single('Image'), async (req, res) => {
     const { CateId, BrandId, BrandSeriesId, ProdName, Quantity, Price, Discount, Slugs, AtCreate, DeviceCfg, Content, Tags } = req.body;
     const absoImagePath = req.file ? req.file.path : null;
-    const relaImagePath = absoImagePath ? path.relative(path.join(__dirname, '..', 'assets'), absoImagePath) : null;
+    let relaImagePath = path.relative(path.join(__dirname, '..', 'assets'), absoImagePath)
+
+    if (absoImagePath && Slugs) {
+        const extname = path.extname(req.file.originalname);
+        const newFileName = `${Slugs}${extname}`;
+        const newFilePath = path.join(path.dirname(absoImagePath), newFileName);
+
+        fs.renameSync(absoImagePath, newFilePath);
+        relaImagePath = path.relative(path.join(__dirname, '..', 'assets'), newFilePath);
+    }
 
     try {
         let sql = `INSERT INTO Product(CateId, BrandId, BrandSeriesId, Image, ProdName, Quantity, Price, Discount, Slugs, AtCreate)
@@ -60,7 +70,7 @@ router.post('/product/create', upload.single('Image'), async (req, res) => {
 router.post("/categories/create", async (req, res) => {
     const { CateName } = req.body;
 
-    if (!CateName) return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+    if (!CateName) return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
         const result = await db.query("INSERT INTO Categories (CateName) VALUES (?)", [CateName]);
@@ -74,7 +84,7 @@ router.post("/categories/create", async (req, res) => {
 router.post("/brands/create", async (req, res) => {
     const { BrandName } = req.body;
 
-    if (!BrandName) return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+    if (!BrandName) return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
         const result = await db.query("INSERT INTO Brands (BrandName) VALUES (?)", [BrandName]);
@@ -88,7 +98,7 @@ router.post("/brands/create", async (req, res) => {
 router.post("/brand-series/create", async (req, res) => {
     const { BrandId, SeriesName } = req.body;
 
-    if (!BrandId || !SeriesName) return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+    if (!BrandId || !SeriesName) return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
         const result = await db.query("INSERT INTO BrandSeries (BrandId, SeriesName) VALUES (?, ?)", [BrandId, SeriesName]);

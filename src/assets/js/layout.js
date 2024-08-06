@@ -10,7 +10,7 @@ $('#btn-register').on('click', () => {
     };
 
     if (!data.username || !data.email || !data.password || !data.confirmPassword) {
-        $('#auth-alert').removeClass('d-none').find('div').text('Vui lòng điền đầy đủ thông tin');
+        $('#auth-alert').removeClass('d-none').find('div').text('Vui lòng nhập đầy đủ thông tin');
         return;
     } else if (data.password !== data.confirmPassword)
         return;
@@ -48,7 +48,7 @@ $('#btn-login').on('click', () => {
     };
 
     if (!data.username || !data.password) {
-        $('#auth-alert').removeClass('d-none').find('div').text('Vui lòng điền đầy đủ thông tin');
+        $('#auth-alert').removeClass('d-none').find('div').text('Vui lòng nhập đầy đủ thông tin');
         return;
     }
 
