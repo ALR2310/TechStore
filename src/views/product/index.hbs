@@ -250,198 +250,70 @@
     {{!-- Content --}}
     <div class="col-9">
         <div class="row">
-            <div class="col-3 ps-1 pe-1">
-                <a href="#" class="card text-decoration-none border-focus-danger border-hover-danger">
-                    <img src="/imgs/default-product.png" alt="Laptop Logo" class="card-img-top p-2">
+            {{#if product}}
+            {{#each product}}
+            <div class="col-3 mb-2 ps-1 pe-1">
+                <a href="/san-pham/{{this.Slugs}}" class="card text-decoration-none border-focus-danger border-hover-danger">
+                    <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2">
                     <div class="card-body">
-                        <strong class="card-title">Laptop Gaming Asus Tuf 15 Fx506HCB</strong>
+                        <strong class="card-title multi-line-ellipsis" style="font-size: 15px;">{{this.ProdName}}</strong>
                         <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
                             style="font-size: 12px;">
-                            <div class="flex-grow-1">
+                            {{#if this.DeviceCfg.CPU}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-microchip"></i>
-                                <span class="ms-2">i5-12500H</span>
+                                <span class="ms-1">{{this.DeviceCfg.CPU}}</span>
                             </div>
-                            <div class="flex-grow-1">
+                            {{/if}}
+                            {{#if this.DeviceCfg.VGA}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-vr-cardboard"></i>
-                                <span class="ms-2">RTX 2050</span>
+                                <span class="ms-1">{{this.DeviceCfg.VGA}}</span>
                             </div>
-                            <div class="flex-grow-1">
+                            {{/if}}
+                            {{#if this.DeviceCfg.RAM}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-memory"></i>
-                                <span class="ms-2">8Gb</span>
+                                <span class="ms-1">{{this.DeviceCfg.RAM}}</span>
                             </div>
-                            <div class="flex-grow-1">
+                            {{/if}}
+                            {{#if this.DeviceCfg.Disk}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-hard-drive"></i>
-                                <span class="ms-2">512Gb</span>
+                                <span class="ms-1">{{this.DeviceCfg.Disk}}</span>
                             </div>
-                            <div class="flex-grow-1">
+                            {{/if}}
+                            {{#if this.DeviceCfg.Display}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-display-code"></i>
-                                <span class="ms-2">15.6 inch</span>
+                                <span class="ms-1">{{this.DeviceCfg.Display}}</span>
                             </div>
-                            <div class="flex-grow-1">
+                            {{/if}}
+                            {{#if this.DeviceCfg.Refresh}}
+                            <div class="flex-grow-1" style="min-width: 60px;">
                                 <i class="fa-regular fa-radar"></i>
-                                <span class="ms-2">144 Hz</span>
+                                <span class="ms-1">{{this.DeviceCfg.Refresh}}</span>
                             </div>
+                            {{/if}}
                         </div>
-                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">20.999.000 ₫</p>
+                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">{{formatNumToCurrency this.Price}} ₫</p>
                         <div class="d-flex align-items-center">
-                            <strong class="text-danger me-3">19.990.000 ₫</strong>
+                            <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}} ₫</strong>
                             <button
                                 class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
                                 style="font-size: 13px;">
-                                -14%
+                                -{{this.Discount}}%
                             </button>
                         </div>
-                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 12px;">
+                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 13px;">
                             <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
                             <span class="ms-2">(0 đánh giá)</span>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-3 ps-1 pe-1">
-                <a href="#" class="card text-decoration-none border-focus-danger border-hover-danger">
-                    <img src="/imgs/default-product.png" alt="Laptop Logo" class="card-img-top p-2">
-                    <div class="card-body">
-                        <strong class="card-title">Laptop Gaming Asus Tuf 15 Fx506HCB</strong>
-                        <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
-                            style="font-size: 12px;">
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-microchip"></i>
-                                <span class="ms-2">i5-12500H</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-vr-cardboard"></i>
-                                <span class="ms-2">RTX 2050</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-memory"></i>
-                                <span class="ms-2">8Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-hard-drive"></i>
-                                <span class="ms-2">512Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-display-code"></i>
-                                <span class="ms-2">15.6 inch</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-radar"></i>
-                                <span class="ms-2">144 Hz</span>
-                            </div>
-                        </div>
-                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">20.999.000 ₫</p>
-                        <div class="d-flex align-items-center">
-                            <strong class="text-danger me-3">19.990.000 ₫</strong>
-                            <button
-                                class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
-                                style="font-size: 13px;">
-                                -14%
-                            </button>
-                        </div>
-                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 12px;">
-                            <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
-                            <span class="ms-2">(0 đánh giá)</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-3 ps-1 pe-1">
-                <a href="#" class="card text-decoration-none border-focus-danger border-hover-danger">
-                    <img src="/imgs/default-product.png" alt="Laptop Logo" class="card-img-top p-2">
-                    <div class="card-body">
-                        <strong class="card-title">Laptop Gaming Asus Tuf 15 Fx506HCB</strong>
-                        <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
-                            style="font-size: 12px;">
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-microchip"></i>
-                                <span class="ms-2">i5-12500H</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-vr-cardboard"></i>
-                                <span class="ms-2">RTX 2050</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-memory"></i>
-                                <span class="ms-2">8Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-hard-drive"></i>
-                                <span class="ms-2">512Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-display-code"></i>
-                                <span class="ms-2">15.6 inch</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-radar"></i>
-                                <span class="ms-2">144 Hz</span>
-                            </div>
-                        </div>
-                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">20.999.000 ₫</p>
-                        <div class="d-flex align-items-center">
-                            <strong class="text-danger me-3">19.990.000 ₫</strong>
-                            <button
-                                class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
-                                style="font-size: 13px;">
-                                -14%
-                            </button>
-                        </div>
-                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 12px;">
-                            <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
-                            <span class="ms-2">(0 đánh giá)</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-3 ps-1 pe-1">
-                <a href="#" class="card text-decoration-none border-focus-danger border-hover-danger">
-                    <img src="/imgs/default-product.png" alt="Laptop Logo" class="card-img-top p-2">
-                    <div class="card-body">
-                        <strong class="card-title">Laptop Gaming Asus Tuf 15 Fx506HCB</strong>
-                        <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
-                            style="font-size: 12px;">
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-microchip"></i>
-                                <span class="ms-2">i5-12500H</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-vr-cardboard"></i>
-                                <span class="ms-2">RTX 2050</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-memory"></i>
-                                <span class="ms-2">8Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-hard-drive"></i>
-                                <span class="ms-2">512Gb</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-display-code"></i>
-                                <span class="ms-2">15.6 inch</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <i class="fa-regular fa-radar"></i>
-                                <span class="ms-2">144 Hz</span>
-                            </div>
-                        </div>
-                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">20.999.000 ₫</p>
-                        <div class="d-flex align-items-center">
-                            <strong class="text-danger me-3">19.990.000 ₫</strong>
-                            <button
-                                class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
-                                style="font-size: 13px;">
-                                -14%
-                            </button>
-                        </div>
-                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 12px;">
-                            <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
-                            <span class="ms-2">(0 đánh giá)</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            {{/each}}
+            {{/if}}
         </div>
     </div>
 </div>

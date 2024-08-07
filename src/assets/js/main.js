@@ -29,12 +29,12 @@ function getDatetimeLocal() {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-// Hàm định dạng số
+// Hàm định dạng số xoá dấu .
 function formatNumber(number) {
     return number.replace(/\./g, '');
 }
 
-// Hàm định dạng giá trị số thành tiền
+// Hàm định dạng giá trị số thành tiền với các dấu .
 function formatNumToCurrency(value) {
     value = value.replace(/\D/g, '');
     return new Intl.NumberFormat('vi-VN').format(value);

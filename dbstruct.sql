@@ -39,6 +39,7 @@ CREATE TABLE AuthToken(
 CREATE TABLE Categories(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     CateName VARCHAR(50),
+    Slugs VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
 );
@@ -69,8 +70,8 @@ CREATE TABLE Product(
     Image VARCHAR(200),
     ProdName VARCHAR(100),
     Quantity INT DEFAULT 1,
-    Price DECIMAL(12,2) DEFAULT 0.00,
-    Discount DECIMAL(5,2) DEFAULT 0.00,
+    Price DECIMAL(12,0) DEFAULT 0,
+    Discount DECIMAL(5,0) DEFAULT 0,
     Slugs VARCHAR(200),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -84,7 +85,7 @@ CREATE TABLE ProductDetails(
     DeviceCfg TEXT,
     Content TEXT,
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP
+    AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Bảng đánh giá sản phẩm
@@ -145,7 +146,7 @@ CREATE TABLE Orders(
     UserId INT REFERENCES User(Id),
     PayId INT REFERENCES Payments(Id),
     ShipId INT REFERENCES Shipment(Id),
-    TotalPrice DECIMAL(12,2),
+    TotalPrice DECIMAL(12,0) DEFAULT 0,
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Pending', 'Processing', 'Completed', 'Cancelled') DEFAULT 'Pending'
 );
@@ -165,7 +166,7 @@ CREATE TABLE PurchaseHistory(
     UserId INT REFERENCES User(Id),
     ProdId INT REFERENCES Product(Id),
     Quantity INT DEFAULT 1,
-    TotalPrice DECIMAL(12,2),
+    TotalPrice DECIMAL(12,0) DEFAULT 0,
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     Status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
@@ -174,10 +175,10 @@ CREATE TABLE PurchaseHistory(
 INSERT INTO User(Email, UserName, Password, Role) VALUE ('anle@gmail.com', 'anle', '$2a$10$weMkH.qB0S.Nv1Jih.3tTuSmtilJwNGs4GtyMN6rom5rj7.UcezXa', 'Admin');
 INSERT INTO UserInfo(UserId, FullName) VALUE(1, 'Thanh An');
 
-INSERT INTO Categories(CateName) VALUE('Laptop');
-INSERT INTO Categories(CateName) VALUE('Laptop Gaming');
-INSERT INTO Categories(CateName) VALUE('PC');
-INSERT INTO Categories(CateName) VALUE('PC Gaming');
+INSERT INTO Categories(CateName, Slugs) VALUE('Laptop', 'laptop');
+INSERT INTO Categories(CateName, Slugs) VALUE('Laptop Gaming', 'laptop-gaming');
+INSERT INTO Categories(CateName, Slugs) VALUE('PC', 'pc');
+INSERT INTO Categories(CateName, Slugs) VALUE('PC Gaming', 'pc-gaming');
 
 INSERT INTO Brands(BrandName) VALUE('Asus');
 INSERT INTO Brands(BrandName) VALUE('Acer');
@@ -187,6 +188,7 @@ INSERT INTO Brands(BrandName) VALUE('Dell');
 INSERT INTO Brands(BrandName) VALUE('HP');
 INSERT INTO Brands(BrandName) VALUE('Gigabyte');
 INSERT INTO Brands(BrandName) VALUE('LG');
+INSERT INTO Brands(BrandName) VALUE('Apple');
 
 INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'VivoBook');
 INSERT INTO BrandSeries(BrandId, SeriesName) VALUE (1, 'ZenBook');

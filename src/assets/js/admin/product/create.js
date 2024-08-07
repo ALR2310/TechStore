@@ -205,11 +205,17 @@ $('#product-name').on('input', _.debounce(function () {
 $('#product-image-file').on('change', function (event) {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            $('#product-image-preview').attr('src', e.target.result);
-        };
-        reader.readAsDataURL(file);
+        const validTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+        if (validTypes.includes(file.type)) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $('#product-image-preview').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            this.value = '';
+            showToast("Tệp bạn chọn không phải là tệp hợp lệ", "danger");
+        }
     }
 });
 
