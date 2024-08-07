@@ -144,10 +144,12 @@ router.get('/logout', (req, res) => {
     console.log('đã đăng xuất');
 
     try {
+        const returnUrl = req.headers.referer || '/';
+
         return res.clearCookie('authToken', {
             httpOnly: true,
             secure: false
-        }).status(200).redirect('/');
+        }).status(200).redirect(returnUrl);
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });

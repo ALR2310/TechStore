@@ -7,34 +7,41 @@ router.get("/", (req, res) => {
     res.render("product/index");
 });
 
-router.get("/:categoryName", async (req, res) => {
-    const categoryName = req.params.categoryName;
+router.get("/:slugs", async (req, res) => {
+    const slugs = req.params.slugs;
     try {
-        const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [categoryName]);
+        const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
 
-        if (getCategory?.length == 0)
-            return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
-
-        const sql = `SELECT p.*, pd.DeviceCfg, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+        if (getCategory?.length > 0) {
+            const sql = `SELECT p.*, pd.DeviceCfg, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
             FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.CateId = ?`;
-        const product = await db.query(sql, [getCategory[0].Id]);
+            const product = await db.query(sql, [getCategory[0].Id]);
 
-        product.forEach(product => {
-            const simpleDeviceCfg = extractSimpleDeviceCfg(product.DeviceCfg);
-            product.DeviceCfg = simpleDeviceCfg;
-            product.FinalPrice = parseFloat(product.FinalPrice).toFixed(0);
-        });
+            product.forEach(product => {
+                const simpleDeviceCfg = extractSimpleDeviceCfg(product.DeviceCfg);
+                product.DeviceCfg = simpleDeviceCfg;
+                product.FinalPrice = parseFloat(product.FinalPrice).toFixed(0);
+            });
 
-        console.log(product);
+            return res.render("product/index", { product });
+        } else {
+            const sql = `SELECT p.*, pd.DeviceCfg, pd.Content, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+                FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.Slugs = ?`;
+            const getProduct = await db.query(sql, [slugs]);
 
-        return res.render("product/index", { product });
+            if (getProduct?.length > 0) {
+                getProduct[0].FinalPrice = parseFloat(getProduct[0].FinalPrice).toFixed(0);
+
+                return res.render("product/details", { product: getProduct[0] });
+            }
+        }
+
+        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
-
-
 
 function extractSimpleDeviceCfg(deviceCfg) {
     const cfgLines = deviceCfg.split('\n').map(line => line.trim());

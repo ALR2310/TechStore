@@ -60,8 +60,8 @@ $('#btn-login').on('click', () => {
         contentType: 'application/json',
         success: (res) => {
             $(this).removeClass('disabled');
-            if (res.success)
-                window.location.href = '/';
+            $('#modal-auth').modal('hide');
+            if (res.success) window.location.reload();
         },
         error: (err) => {
             $(this).removeClass('disabled');

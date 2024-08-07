@@ -308,3 +308,27 @@ p {
     text-overflow: ellipsis;
     -webkit-line-clamp: 2;
 }
+
+.product-content img {
+    width: 100%;
+    height: auto;
+}
+
+.show-more-content {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 98%;
+    bottom: 0;
+    padding: 80px 20px 30px 20px;
+    background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 70%);
+}
+
+.btn-show-more {
+    cursor: pointer;
+    color: var(--bs-primary);
+    border: none;
+    background-color: transparent;
+    font-weight: bold;
+    font-size: 18px;
+}
