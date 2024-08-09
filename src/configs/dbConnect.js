@@ -40,7 +40,7 @@ const db = {
      *
      * @example
      * // Truy vấn không tham số
-     * const [getUser, getProduct] = await db.queryAll([]
+     * const [getUser, getProduct] = await db.queryAll([
      *     { sql: 'SELECT * FROM user' },
      *     { sql: 'SELECT * FROM product' }
      * ]);

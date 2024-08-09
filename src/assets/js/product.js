@@ -76,6 +76,7 @@ $('#sort-product').on('change', function () {
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 });
 
+// Sự kiện cập nhật url với các tham số
 $(`input[name="filter-price"], input[name="filter-cpu"], input[name="filter-ram"], 
     input[name="filter-vga"], input[name="filter-demand"]`).on('change', function () {
     const name = $(this).attr('name').split('-')[1];
@@ -83,7 +84,14 @@ $(`input[name="filter-price"], input[name="filter-cpu"], input[name="filter-ram"
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 });
 
+// Sự kiện cập nhật url với các tham số
 $('button[name="btn-filter-brands"]').on('click', function () {
     const newUrl = getUrlParams('brand', $(this).data('params'));
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 });
+
+// Hàm cho nút xem thêm sản phẩm
+function viewMoreProduct() {
+    const newUrl = getUrlParams("count", $('#product-count').text());
+    Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
+};

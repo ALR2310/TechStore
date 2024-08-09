@@ -6,9 +6,9 @@ const path = require('path');
 
 router.get("/:slugs", async (req, res) => {
     const slugs = req.params.slugs;
-    const { sort, price, cpu, ram, vga, demand, brand } = req.query;
+    const { sort, price, cpu, ram, vga, demand, brand, count } = req.query;
 
-    let sortParams, priceParams, cpuParams, ramParams, vgaParams, demandParams, brandParams;
+    let sortParams, priceParams, cpuParams, ramParams, vgaParams, demandParams, brandParams, countParams;
 
     switch (sort) {
         case 'newest': sortParams = "p.AtUpdate DESC"; break;
@@ -46,38 +46,37 @@ router.get("/:slugs", async (req, res) => {
         case "nvidia": vgaParams = "pd.DeviceCfg LIKE '%GeForce%' AND pd.DeviceCfg LIKE '%NVIDIA%'"; break;
         case "amd": vgaParams = "pd.DeviceCfg LIKE '%Radeon%' AND pd.DeviceCfg LIKE '%AMD%'"; break;
     }
-    switch(demand) {
+    switch (demand) {
         case "office": demandParams = "p.ProdName LIKE '%Laptop%' AND p.ProdName NOT LIKE '%gaming%'"; break;
         case "gaming": demandParams = "p.ProdName LIKE '%Laptop%' AND p.ProdName LIKE '%gaming%'"; break;
     }
-    if(brand) {
-        const brandId = await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`])
-        brandParams = `p.BrandId = ${brandId[0].Id}`
+    if (brand) {
+        const brandId = await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`]);
+        brandParams = `p.BrandId = ${brandId[0].Id}`;
     }
+    if (count) {countParams = parseInt(count) + 12;}
 
     try {
         const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
-        
-        if (getCategory?.length > 0) {
-            const sql = `SELECT 
-                            p.*, 
-                            pd.DeviceCfg, 
-                            (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice
-                        FROM 
-                            Product p JOIN ProductDetails pd ON p.Id = pd.ProdId 
-                        WHERE 
-                            p.CateId = ? 
-                            ${priceParams ? `AND ${priceParams}` : ''}
-                            ${cpuParams ? `AND ${cpuParams}` : ''}
-                            ${ramParams ? `AND ${ramParams}` : ''}
-                            ${vgaParams ? `AND ${vgaParams}` : ''}
-                            ${demandParams ? `AND ${demandParams}` : ''}
-                            ${brandParams ? `AND ${brandParams}` : ''}
-                        ORDER BY 
-                            ${sortParams} 
-                        LIMIT 12`;
 
-            const product = await db.query(sql, [getCategory[0].Id, getCategory[0].Id]);
+        if (getCategory?.length > 0) {
+            const sqlCount = ` SELECT COUNT(*) AS Total FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId 
+                WHERE p.CateId = ? ${priceParams ? `AND ${priceParams}` : ''} ${cpuParams ? `AND ${cpuParams}` : ''}
+                ${ramParams ? `AND ${ramParams}` : ''} ${vgaParams ? `AND ${vgaParams}` : ''}
+                ${demandParams ? `AND ${demandParams}` : ''} ${brandParams ? `AND ${brandParams}` : ''}
+            `;
+
+            const sqlProduct = `SELECT p.*, pd.DeviceCfg, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice,
+                (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS total FROM Product p JOIN ProductDetails pd 
+                ON p.Id = pd.ProdId WHERE p.CateId = ? ${priceParams ? `AND ${priceParams}` : ''} 
+                ${cpuParams ? `AND ${cpuParams}` : ''} ${ramParams ? `AND ${ramParams}` : ''} 
+                ${vgaParams ? `AND ${vgaParams}` : ''} ${demandParams ? `AND ${demandParams}` : ''} 
+                ${brandParams ? `AND ${brandParams}` : ''} ORDER BY ${sortParams} LIMIT ${countParams ? `${countParams}` : 12}`;
+
+            const [product, totalProduct] = await db.queryAll([
+                { sql: sqlProduct, params: [getCategory[0].Id, getCategory[0].Id] },
+                { sql: sqlCount, params: [getCategory[0].Id] }
+            ]);
 
             product.forEach(prdItem => {
                 const simpleDeviceCfg = extractSimpleDeviceCfg(prdItem.DeviceCfg);
@@ -86,7 +85,7 @@ router.get("/:slugs", async (req, res) => {
                 prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
             });
 
-            return res.render("product/index", { product });
+            return res.render("product/index", { product, totalProduct });
         } else {
             const sql = `SELECT p.*, pd.DeviceCfg, pd.Content, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
                 FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.Slugs = ?`;

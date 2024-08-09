@@ -18,6 +18,18 @@ const helpers = {
             case '!=': return value != comparison ? options.fn(this) : options.inverse(this);
             default: return options.inverse(this);
         }
+    },
+
+    calculate: (value1, operator, value2) => {
+        value1 = parseFloat(value1);
+        value2 = parseFloat(value2);
+        switch (operator) {
+            case '+': return value1 + value2;
+            case '-': return value1 - value2;
+            case '*': return value1 * value2;
+            case '/': return value1 / value2;
+            default: return null;
+        }
     }
 };
 
