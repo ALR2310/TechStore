@@ -11,7 +11,7 @@
             <div class="border-top p-3">
                 <a href="#filter-brands-collapse"
                     class="d-flex w-100 justify-content-between align-items-center text-black text-decoration-none text-nowrap fw-bold"
-                    role="button" data-bs-toggle="collapse" aria-expanded="true" aria-expanded-icon="true"
+                    role="button" data-bs-toggle="collapse" aria-expanded="false" aria-expanded-icon="true"
                     aria-controls="filter-brands-collapse">
                     <div>
                         <i class="fa-regular fa-conveyor-belt-boxes"></i>
@@ -21,15 +21,22 @@
 
                 <div id="filter-brands-collapse" class="collapse show p-0">
                     <div class="d-flex w-100" style="flex-wrap: wrap;">
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Apple</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Asus</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Acer</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">MSI</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Lenovo</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border"
-                            style="width: 90px">Gigabyte</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Dell</button>
-                        <button class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">HP</button>
+                        <button name="btn-filter-brands" data-params="apple"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Apple</button>
+                        <button name="btn-filter-brands" data-params="asus"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Asus</button>
+                        <button name="btn-filter-brands" data-params="acer"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Acer</button>
+                        <button name="btn-filter-brands" data-params="msi"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">MSI</button>
+                        <button name="btn-filter-brands" data-params="lenovo"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Lenovo</button>
+                        <button name="btn-filter-brands" data-params="gigabyte"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Gigabyte</button>
+                        <button name="btn-filter-brands" data-params="dell"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">Dell</button>
+                        <button name="btn-filter-brands" data-params="hp"
+                            class="btn btn-sm btn-light m-2 flex-grow-1 border" style="width: 90px">HP</button>
                     </div>
                 </div>
             </div>
@@ -47,36 +54,48 @@
                 </a>
 
                 <div id="filter-price-collapse" class="collapse show p-0">
-                    <a data-query-url="all" class="form-check text-black">
+                    <div class="form-check text-black">
                         <input id="filter-price-option0" checked type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="all"
+                            name="filter-price">
                         <label for="filter-price-option0" class="pointer w-100">Tất cả</label>
-                    </a>
-                    <a data-query-url="10-15" class="form-check text-black">
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-price-option6" type="radio"
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="10"
+                            name="filter-price">
+                        <label for="filter-price-option6" class="pointer w-100">Dưới 10 triệu</label>
+                    </div>
+                    <div class="form-check text-black">
                         <input id="filter-price-option1" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="10-15"
+                            name="filter-price">
                         <label for="filter-price-option1" class="pointer w-100">Từ 10 - 15 triệu</label>
-                    </a>
-                    <a data-query-url="15-20" class="form-check text-black">
+                    </div>
+                    <div class="form-check text-black">
                         <input id="filter-price-option2" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="15-20"
+                            name="filter-price">
                         <label for="filter-price-option2" class="pointer w-100">Từ 15 - 20 triệu</label>
-                    </a>
-                    <a data-query-url="20-25" class="form-check text-black">
+                    </div>
+                    <div class="form-check text-black">
                         <input id="filter-price-option3" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="20-25"
+                            name="filter-price">
                         <label for="filter-price-option3" class="pointer w-100">Từ 20 - 25 triệu</label>
-                    </a>
-                    <a data-query-url="25-30" class="form-check text-black">
+                    </div>
+                    <div class="form-check text-black">
                         <input id="filter-price-option4" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="25-30"
+                            name="filter-price">
                         <label for="filter-price-option4" class="pointer w-100">Từ 25 - 30 triệu</label>
-                    </a>
-                    <a data-query-url="30" class="form-check text-black">
+                    </div>
+                    <div class="form-check text-black">
                         <input id="filter-price-option5" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" name="filter-price">
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="30"
+                            name="filter-price">
                         <label for="filter-price-option5" class="pointer w-100">Trên 30 triệu</label>
-                    </a>
+                    </div>
                 </div>
             </div>
 
@@ -93,41 +112,46 @@
                 </a>
 
                 <div id="filter-cpu-collapse" class="collapse show p-0">
-                    <a data-query-url="all" class="form-check text-black">
-                        <input id="filter-cpu-option0" checked type="radio" name="filter-cpu"
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option0" checked type="radio" data-params="all" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-cpu-option0" class="pointer w-100">Tất cả</label>
-                    </a>
-                    <a data-query-url="intel-i9" class="form-check text-black">
-                        <input id="filter-cpu-option1" type="radio" name="filter-cpu"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option1" type="radio" data-params="intel-i9" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-cpu-option1" class="pointer w-100">Intel Core i9</label>
-                    </a>
-                    <a data-query-url="intel-i7" class="form-check text-black">
-                        <input id="filter-cpu-option2" type="radio" name="filter-cpu"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option2" type="radio" data-params="intel-i7" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-cpu-option2" class="pointer w-100">Intel Core i7</label>
-                    </a>
-                    <a data-query-url="intel-i5" class="form-check text-black">
-                        <input id="filter-cpu-option3" type="radio" name="filter-cpu"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option3" type="radio" data-params="intel-i5" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-cpu-option3" class="pointer w-100">Intel Core i5</label>
-                    </a>
-                    <a data-query-url="intel-i3" class="form-check text-black">
-                        <input id="filter-cpu-option4" type="radio" name="filter-cpu"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option4" type="radio" data-params="intel-i3" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-cpu-option4" class="pointer w-100">Intel Core i3</label>
-                    </a>
-                    <a data-query-url="amd-7" class="form-check text-black">
-                        <input id="filter-cpu-option5" type="radio" name="filter-cpu"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option5" type="radio" data-params="amd-9" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
-                        <label for="filter-cpu-option5" class="pointer w-100">AMD Ryzen 7</label>
-                    </a>
-                    <a data-query-url="amd-5" class="form-check text-black">
-                        <input id="filter-cpu-option6" type="radio" name="filter-cpu"
+                        <label for="filter-cpu-option5" class="pointer w-100">AMD Ryzen 9</label>
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option6" type="radio" data-params="amd-7" name="filter-cpu"
                             class="form-check-input form-check-input-danger rounded pointer">
-                        <label for="filter-cpu-option6" class="pointer w-100">AMD Ryzen 5</label>
-                    </a>
+                        <label for="filter-cpu-option6" class="pointer w-100">AMD Ryzen 7</label>
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-cpu-option7" type="radio" data-params="amd-5" name="filter-cpu"
+                            class="form-check-input form-check-input-danger rounded pointer">
+                        <label for="filter-cpu-option7" class="pointer w-100">AMD Ryzen 5</label>
+                    </div>
                 </div>
             </div>
 
@@ -145,40 +169,40 @@
 
                 <div id="filter-ram-collapse" class="collapse show p-0">
                     <div class="d-flex align-items-center">
-                        <a data-query-url="all" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option0" checked type="radio" name="filter-ram"
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option0" checked type="radio" data-params="all" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option0" class="pointer w-100">Tất cả</label>
-                        </a>
-                        <a data-query-url="64" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option1" type="radio" name="filter-ram"
+                        </div>
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option1" type="radio" data-params="64" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option1" class="pointer w-100">64GB</label>
-                        </a>
+                        </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <a data-query-url="32" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option2" type="radio" name="filter-ram"
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option2" type="radio" data-params="32" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option2" class="pointer w-100">32GB</label>
-                        </a>
-                        <a data-query-url="16" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option3" type="radio" name="filter-ram"
+                        </div>
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option3" type="radio" data-params="16" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option3" class="pointer w-100">16GB</label>
-                        </a>
+                        </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <a data-query-url="8" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option4" type="radio" name="filter-ram"
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option4" type="radio" data-params="8" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option4" class="pointer w-100">8GB</label>
-                        </a>
-                        <a data-query-url="4" class="form-check text-black flex-grow-1">
-                            <input id="filter-ram-option5" type="radio" name="filter-ram"
+                        </div>
+                        <div class="form-check text-black flex-grow-1">
+                            <input id="filter-ram-option5" type="radio" data-params="4" name="filter-ram"
                                 class="form-check-input form-check-input-danger rounded pointer">
                             <label for="filter-ram-option5" class="pointer w-100">4GB</label>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,21 +220,21 @@
                 </a>
 
                 <div id="filter-vga-collapse" class="collapse show p-0">
-                    <a data-query-url="all" class="form-check text-black">
-                        <input id="filter-vga-option0" checked type="radio" name="filter-vga"
+                    <div class="form-check text-black">
+                        <input id="filter-vga-option0" checked type="radio" data-params="all" name="filter-vga"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-vga-option0" class="pointer w-100">Tất cả</label>
-                    </a>
-                    <a data-query-url="nvidia" class="form-check text-black">
-                        <input id="filter-vga-option1" type="radio" name="filter-vga"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-vga-option1" type="radio" data-params="nvidia" name="filter-vga"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-vga-option1" class="pointer w-100">Nvidia GeForce Series</label>
-                    </a>
-                    <a data-query-url="amd" class="form-check text-black">
-                        <input id="filter-vga-option2" type="radio" name="filter-vga"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-vga-option2" type="radio" data-params="amd" name="filter-vga"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-vga-option2" class="pointer w-100">AMD Ryzen Series</label>
-                    </a>
+                    </div>
                 </div>
             </div>
 
@@ -222,26 +246,26 @@
                     aria-controls="filter-demand-collapse">
                     <div>
                         <i class="fa-regular fa-conveyor-belt-boxes"></i>
-                        <span class="ps-2">Card đồ hoạ</span>
+                        <span class="ps-2">Nhu cầu</span>
                     </div>
                 </a>
 
                 <div id="filter-demand-collapse" class="collapse show p-0">
-                    <a data-query-url="all" class="form-check text-black">
-                        <input id="filter-demand-option0" checked type="radio" name="filter-demand"
+                    <div class="form-check text-black">
+                        <input id="filter-demand-option0" checked type="radio" data-params="all" name="filter-demand"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-demand-option0" class="pointer w-100">Tất cả</label>
-                    </a>
-                    <a data-query-url="gaming" class="form-check text-black">
-                        <input id="filter-demand-option1" type="radio" name="filter-demand"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-demand-option1" type="radio" data-params="gaming" name="filter-demand"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-demand-option1" class="pointer w-100">Gaming - Đồ hoạ</label>
-                    </a>
-                    <a data-query-url="office" class="form-check text-black">
-                        <input id="filter-demand-option2" type="radio" name="filter-demand"
+                    </div>
+                    <div class="form-check text-black">
+                        <input id="filter-demand-option2" type="radio" data-params="office" name="filter-demand"
                             class="form-check-input form-check-input-danger rounded pointer">
                         <label for="filter-demand-option2" class="pointer w-100">Sinh viên - Văn phòng</label>
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -249,71 +273,110 @@
 
     {{!-- Content --}}
     <div class="col-9">
-        <div class="row">
-            {{#if product}}
-            {{#each product}}
-            <div class="col-3 mb-2 ps-1 pe-1">
-                <a href="/san-pham/{{this.Slugs}}" class="card text-decoration-none border-focus-danger border-hover-danger">
-                    <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2">
-                    <div class="card-body">
-                        <strong class="card-title multi-line-ellipsis" style="font-size: 15px;">{{this.ProdName}}</strong>
-                        <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
-                            style="font-size: 12px;">
-                            {{#if this.DeviceCfg.CPU}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-microchip"></i>
-                                <span class="ms-1">{{this.DeviceCfg.CPU}}</span>
-                            </div>
-                            {{/if}}
-                            {{#if this.DeviceCfg.VGA}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-vr-cardboard"></i>
-                                <span class="ms-1">{{this.DeviceCfg.VGA}}</span>
-                            </div>
-                            {{/if}}
-                            {{#if this.DeviceCfg.RAM}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-memory"></i>
-                                <span class="ms-1">{{this.DeviceCfg.RAM}}</span>
-                            </div>
-                            {{/if}}
-                            {{#if this.DeviceCfg.Disk}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-hard-drive"></i>
-                                <span class="ms-1">{{this.DeviceCfg.Disk}}</span>
-                            </div>
-                            {{/if}}
-                            {{#if this.DeviceCfg.Display}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-display-code"></i>
-                                <span class="ms-1">{{this.DeviceCfg.Display}}</span>
-                            </div>
-                            {{/if}}
-                            {{#if this.DeviceCfg.Refresh}}
-                            <div class="flex-grow-1" style="min-width: 60px;">
-                                <i class="fa-regular fa-radar"></i>
-                                <span class="ms-1">{{this.DeviceCfg.Refresh}}</span>
-                            </div>
-                            {{/if}}
-                        </div>
-                        <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">{{formatNumToCurrency this.Price}} ₫</p>
-                        <div class="d-flex align-items-center">
-                            <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}} ₫</strong>
-                            <button
-                                class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
-                                style="font-size: 13px;width: 50px;">
-                                -{{this.Discount}}%
-                            </button>
-                        </div>
-                        <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 13px;">
-                            <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
-                            <span class="ms-2">(0 đánh giá)</span>
-                        </div>
+        {{!-- Sort --}}
+        <turbo-frame id="product-container">
+            <div class="row mb-2">
+                <div class="d-flex justify-content-between align-items-center p-1">
+                    <p>Tìm thấy <strong>{{#if product}}{{product.0.Total}}{{else}}0{{/if}}</strong> kết quả</p>
+
+                    <div class="d-flex align-items-center">
+                        <label for="sort-product" class="form-label text-nowrap m-0 me-2">Sắp xếp theo:</label>
+                        <select id="sort-product" class="form-select form-select-sm" data-turbo-permanent>
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="asc">Giá tăng dần</option>
+                            <option value="desc">Giá giảm dần</option>
+                        </select>
                     </div>
-                </a>
+                </div>
             </div>
-            {{/each}}
+
+            {{!-- Products --}}
+            {{#if product}}
+            <div class="row">
+                {{#each product}}
+                <div class="col-3 mb-2 ps-1 pe-1">
+                    <a name="product-details" href="/san-pham/{{this.Slugs}}" target="_top"
+                        class="card text-decoration-none border-focus-danger border-hover-danger">
+                        <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2">
+                        <div class="card-body">
+                            <strong class="card-title multi-line-ellipsis"
+                                style="font-size: 15px;">{{this.ProdName}}</strong>
+                            <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
+                                style="font-size: 12px;">
+                                {{#if this.DeviceCfg.CPU}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-microchip"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.CPU}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.DeviceCfg.VGA}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-vr-cardboard"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.VGA}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.DeviceCfg.RAM}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-memory"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.RAM}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.DeviceCfg.Disk}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-hard-drive"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.Disk}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.DeviceCfg.Display}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-display-code"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.Display}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.DeviceCfg.Refresh}}
+                                <div class="flex-grow-1" style="min-width: 60px;">
+                                    <i class="fa-regular fa-radar"></i>
+                                    <span class="ms-1">{{this.DeviceCfg.Refresh}}</span>
+                                </div>
+                                {{/if}}
+                            </div>
+                            <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">{{formatNumToCurrency
+                                this.Price}} ₫</p>
+                            <div class="d-flex align-items-center">
+                                <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}} ₫</strong>
+                                <button
+                                    class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
+                                    style="font-size: 13px;width: 50px;">
+                                    -{{this.Discount}}%
+                                </button>
+                            </div>
+                            <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 13px;">
+                                <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
+                                <span class="ms-2">(0 đánh giá)</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {{/each}}
+            </div>
+
+            {{!-- More Product --}}
+            {{#compare product.0.Total '>' 12}}
+            <div class="row justify-content-center mt-3">
+                <button class="btn btn-light w-25 rounded-5">
+                    Xem thêm <i class="fa-regular fa-chevron-down"></i>
+                </button>
+            </div>
+            {{/compare}}
+            {{else}}
+            <div class="row justify-content-center">
+                <img src="/imgs/empty.png" alt="not found" style="width: 300px;">
+                <h5 class="text-center">Rất tiếc, chúng tôi không tìm thấy sản phẩm phù hợp cho bạn</h5>
+            </div>
             {{/if}}
-        </div>
+        </turbo-frame>
     </div>
 </div>
+
+<script src="/js/product.js"></script>

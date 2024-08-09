@@ -3,24 +3,87 @@ const router = express.Router();
 const db = require("../configs/dbConnect");
 const path = require('path');
 
-router.get("/", (req, res) => {
-    res.render("product/index");
-});
 
 router.get("/:slugs", async (req, res) => {
     const slugs = req.params.slugs;
+    const { sort, price, cpu, ram, vga, demand, brand } = req.query;
+
+    let sortParams, priceParams, cpuParams, ramParams, vgaParams, demandParams, brandParams;
+
+    switch (sort) {
+        case 'newest': sortParams = "p.AtUpdate DESC"; break;
+        case 'oldest': sortParams = "p.AtUpdate ASC"; break;
+        case 'asc': sortParams = "p.Price ASC"; break;
+        case 'desc': sortParams = "p.Price DESC"; break;
+        default: sortParams = "p.AtUpdate DESC"; break;
+    }
+    switch (price) {
+        case "10": priceParams = "p.Price <= 10000000"; break;
+        case '10-15': priceParams = "p.Price BETWEEN 10000000 AND 15000000"; break;
+        case '15-20': priceParams = "p.Price BETWEEN 15000000 AND 20000000"; break;
+        case '20-25': priceParams = "p.Price BETWEEN 20000000 AND 25000000"; break;
+        case '25-30': priceParams = "p.Price BETWEEN 25000000 AND 30000000"; break;
+        case '30': priceParams = "p.Price >= 30000000"; break;
+        default: priceParams = ''; break;
+    }
+    switch (cpu) {
+        case "intel-i9": cpuParams = "pd.DeviceCfg LIKE '%i9%' AND pd.DeviceCfg LIKE '%Intel%Core%'"; break;
+        case "intel-i7": cpuParams = "pd.DeviceCfg LIKE '%i7%' AND pd.DeviceCfg LIKE '%Intel%Core%'"; break;
+        case "intel-i5": cpuParams = "pd.DeviceCfg LIKE '%i5%' AND pd.DeviceCfg LIKE '%Intel%Core%'"; break;
+        case "intel-i3": cpuParams = "pd.DeviceCfg LIKE '%i3%' AND pd.DeviceCfg LIKE '%Intel%Core%'"; break;
+        case "amd-9": cpuParams = "pd.DeviceCfg LIKE '%Ryzen%' AND pd.DeviceCfg LIKE '%7%'"; break;
+        case "amd-7": cpuParams = "pd.DeviceCfg LIKE '%Ryzen%' AND pd.DeviceCfg LIKE '%7%'"; break;
+        case "amd-5": cpuParams = "pd.DeviceCfg LIKE '%Ryzen%' AND pd.DeviceCfg LIKE '%5%'"; break;
+    }
+    switch (ram) {
+        case '64': ramParams = "pd.DeviceCfg LIKE '%RAM; 64GB%'"; break;
+        case '32': ramParams = "pd.DeviceCfg LIKE '%RAM; 32GB%'"; break;
+        case '16': ramParams = "pd.DeviceCfg LIKE '%RAM; 16GB%'"; break;
+        case '8': ramParams = "pd.DeviceCfg LIKE '%RAM; 8GB%'"; break;
+        case '4': ramParams = "pd.DeviceCfg LIKE '%RAM; 4GB%'"; break;
+    }
+    switch (vga) {
+        case "nvidia": vgaParams = "pd.DeviceCfg LIKE '%GeForce%' AND pd.DeviceCfg LIKE '%NVIDIA%'"; break;
+        case "amd": vgaParams = "pd.DeviceCfg LIKE '%Radeon%' AND pd.DeviceCfg LIKE '%AMD%'"; break;
+    }
+    switch(demand) {
+        case "office": demandParams = "p.ProdName LIKE '%Laptop%' AND p.ProdName NOT LIKE '%gaming%'"; break;
+        case "gaming": demandParams = "p.ProdName LIKE '%Laptop%' AND p.ProdName LIKE '%gaming%'"; break;
+    }
+    if(brand) {
+        const brandId = await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`])
+        brandParams = `p.BrandId = ${brandId[0].Id}`
+    }
+
     try {
         const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
-
+        
         if (getCategory?.length > 0) {
-            const sql = `SELECT p.*, pd.DeviceCfg, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
-            FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.CateId = ?`;
-            const product = await db.query(sql, [getCategory[0].Id]);
+            const sql = `SELECT 
+                            p.*, 
+                            pd.DeviceCfg, 
+                            (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice
+                        FROM 
+                            Product p JOIN ProductDetails pd ON p.Id = pd.ProdId 
+                        WHERE 
+                            p.CateId = ? 
+                            ${priceParams ? `AND ${priceParams}` : ''}
+                            ${cpuParams ? `AND ${cpuParams}` : ''}
+                            ${ramParams ? `AND ${ramParams}` : ''}
+                            ${vgaParams ? `AND ${vgaParams}` : ''}
+                            ${demandParams ? `AND ${demandParams}` : ''}
+                            ${brandParams ? `AND ${brandParams}` : ''}
+                        ORDER BY 
+                            ${sortParams} 
+                        LIMIT 12`;
 
-            product.forEach(product => {
-                const simpleDeviceCfg = extractSimpleDeviceCfg(product.DeviceCfg);
-                product.DeviceCfg = simpleDeviceCfg;
-                product.FinalPrice = parseFloat(product.FinalPrice).toFixed(0);
+            const product = await db.query(sql, [getCategory[0].Id, getCategory[0].Id]);
+
+            product.forEach(prdItem => {
+                const simpleDeviceCfg = extractSimpleDeviceCfg(prdItem.DeviceCfg);
+                prdItem.DeviceCfg = simpleDeviceCfg;
+                prdItem.Total = product.length;
+                prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
             });
 
             return res.render("product/index", { product });
@@ -43,6 +106,7 @@ router.get("/:slugs", async (req, res) => {
     }
 });
 
+// Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm
 function extractSimpleDeviceCfg(deviceCfg) {
     const cfgLines = deviceCfg.split('\n').map(line => line.trim());
     const simpleDeviceCfg = {};
