@@ -123,12 +123,14 @@
                             </div>
                             <div class="col-8">
                                 <div class="p-2">
-                                    <a href="{{this.Slugs}}" class="multi-line-ellipsis text-decoration-none fw-bold pointer text-black"
+                                    <a href="{{this.Slugs}}"
+                                        class="multi-line-ellipsis text-decoration-none fw-bold pointer text-black"
                                         style="font-size: 15px;">{{this.ProdName}}</a>
                                     <p class="text-secondary text-decoration-line-through" style="font-size: 15px;">
                                         {{formatNumToCurrency this.Price}}₫</p>
                                     <div class="d-flex align-items-center">
-                                        <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}}₫</strong>
+                                        <strong class="text-danger me-3">{{formatNumToCurrency
+                                            this.FinalPrice}}₫</strong>
                                         <button
                                             class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
                                             style="font-size: 11px;width: 50px;">-{{this.Discount}}%</button>
@@ -151,7 +153,79 @@
     </div>
 </div>
 
+<div class="row mt-3">
+    <div class="bg-white rounded p-4">
+        <strong class="fs-4">Đánh &amp; giá nhận xét {{product.ProdName}}</strong>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                    <p class="text-center text-danger fw-bold fs-4">0/5</span>
+                    <div class="text-secondary text-center">
+                        <i class="fas fa-star" data-star="1"></i>
+                        <i class="fas fa-star" data-star="1"></i>
+                        <i class="fas fa-star" data-star="1"></i>
+                        <i class="fas fa-star" data-star="1"></i>
+                        <i class="fas fa-star" data-star="1"></i>
+                    </div>
+                    <p class="text-center">0 đánh giá &amp; nhận xét</p>
+                </div>
 
+            </div>
+            <div class="col">
+                <div class="d-flex align-items-center" style="font-size: 15px;">
+                    <span class="text-nowrap">5 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <div class="progress w-100" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2">0</span>
+                </div>
+                <div class="d-flex align-items-center" style="font-size: 15px;">
+                    <span class="text-nowrap">4 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <div class="progress w-100" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2">0</span>
+                </div>
+                <div class="d-flex align-items-center" style="font-size: 15px;">
+                    <span class="text-nowrap">3 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <div class="progress w-100" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2">0</span>
+                </div>
+                <div class="d-flex align-items-center" style="font-size: 15px;">
+                    <span class="text-nowrap">2 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <div class="progress w-100" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2">0</span>
+                </div>
+                <div class="d-flex align-items-center" style="font-size: 15px;">
+                    <span class="text-nowrap">1 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <div class="progress w-100" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2">0</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                    <button class="btn btn-primary">
+                        <i class="fa-regular fa-stars"></i> Gửi đánh giá của bạn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{!-- Modal xem chi tiết cấu hình sản phẩm --}}
 <div class="modal fade" id="modal-product-cfg" tabindex="-1" aria-labelledby="modal-product-cfg" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
