@@ -24,7 +24,6 @@ router.get("/:slugs", async (req, res) => {
         case '20-25': priceParams = "p.Price BETWEEN 20000000 AND 25000000"; break;
         case '25-30': priceParams = "p.Price BETWEEN 25000000 AND 30000000"; break;
         case '30': priceParams = "p.Price >= 30000000"; break;
-        default: priceParams = ''; break;
     }
     switch (cpu) {
         case "intel-i9": cpuParams = "pd.DeviceCfg LIKE '%i9%' AND pd.DeviceCfg LIKE '%Intel%Core%'"; break;
@@ -51,31 +50,59 @@ router.get("/:slugs", async (req, res) => {
         case "gaming": demandParams = "p.ProdName LIKE '%Laptop%' AND p.ProdName LIKE '%gaming%'"; break;
     }
     if (brand) {
-        const brandId = await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`]);
+        const brandId = (await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`]))[0].Id;
         brandParams = `p.BrandId = ${brandId[0].Id}`;
     }
-    if (count) {countParams = parseInt(count) + 12;}
+    if (count) countParams = parseInt(count) + 12;
 
     try {
         const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
 
         if (getCategory?.length > 0) {
-            const sqlCount = ` SELECT COUNT(*) AS Total FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId 
-                WHERE p.CateId = ? ${priceParams ? `AND ${priceParams}` : ''} ${cpuParams ? `AND ${cpuParams}` : ''}
-                ${ramParams ? `AND ${ramParams}` : ''} ${vgaParams ? `AND ${vgaParams}` : ''}
-                ${demandParams ? `AND ${demandParams}` : ''} ${brandParams ? `AND ${brandParams}` : ''}
-            `;
+            const sqlCount = `
+                SELECT 
+                    COUNT(*) AS Total 
+                FROM 
+                    Product p 
+                JOIN 
+                    ProductDetails pd ON p.Id = pd.ProdId 
+                WHERE 
+                    p.CateId = ? 
+                    ${priceParams ? `AND ${priceParams}` : ''} 
+                    ${cpuParams ? `AND ${cpuParams}` : ''}
+                    ${ramParams ? `AND ${ramParams}` : ''} 
+                    ${vgaParams ? `AND ${vgaParams}` : ''}
+                    ${demandParams ? `AND ${demandParams}` : ''} 
+                    ${brandParams ? `AND ${brandParams}` : ''} 
+                    AND p.Status = ?`;
 
-            const sqlProduct = `SELECT p.*, pd.DeviceCfg, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice,
-                (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS total FROM Product p JOIN ProductDetails pd 
-                ON p.Id = pd.ProdId WHERE p.CateId = ? ${priceParams ? `AND ${priceParams}` : ''} 
-                ${cpuParams ? `AND ${cpuParams}` : ''} ${ramParams ? `AND ${ramParams}` : ''} 
-                ${vgaParams ? `AND ${vgaParams}` : ''} ${demandParams ? `AND ${demandParams}` : ''} 
-                ${brandParams ? `AND ${brandParams}` : ''} ORDER BY ${sortParams} LIMIT ${countParams ? `${countParams}` : 12}`;
+            const sqlProduct = `
+                SELECT 
+                    p.*, 
+                    pd.DeviceCfg, 
+                    (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice,
+                    (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS total 
+                FROM 
+                    Product p 
+                JOIN 
+                    ProductDetails pd ON p.Id = pd.ProdId 
+                WHERE 
+                    p.CateId = ? 
+                    ${priceParams ? `AND ${priceParams}` : ''} 
+                    ${cpuParams ? `AND ${cpuParams}` : ''} 
+                    ${ramParams ? `AND ${ramParams}` : ''} 
+                    ${vgaParams ? `AND ${vgaParams}` : ''} 
+                    ${demandParams ? `AND ${demandParams}` : ''} 
+                    ${brandParams ? `AND ${brandParams}` : ''} 
+                    AND p.Status = ? 
+                ORDER BY 
+                    ${sortParams} 
+                LIMIT 
+                    ${countParams ? `${countParams}` : 12}`;
 
             const [product, totalProduct] = await db.queryAll([
-                { sql: sqlProduct, params: [getCategory[0].Id, getCategory[0].Id] },
-                { sql: sqlCount, params: [getCategory[0].Id] }
+                { sql: sqlProduct, params: [getCategory[0].Id, getCategory[0].Id, "Active"] },
+                { sql: sqlCount, params: [getCategory[0].Id, "Active"] }
             ]);
 
             product.forEach(prdItem => {
@@ -88,13 +115,23 @@ router.get("/:slugs", async (req, res) => {
             return res.render("product/index", { product, totalProduct });
         } else {
             const sql = `SELECT p.*, pd.DeviceCfg, pd.Content, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
-                FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.Slugs = ?`;
-            const getProduct = await db.query(sql, [slugs]);
+                FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.Slugs = ? AND p.Status = ?`;
 
-            if (getProduct?.length > 0) {
-                getProduct[0].FinalPrice = parseFloat(getProduct[0].FinalPrice).toFixed(0);
+            const product = await db.query(sql, [slugs, "Active"]);
 
-                return res.render("product/details", { product: getProduct[0] });
+            if (product?.length > 0) {
+                const similarProduct = await db.query(`SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+                    FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`,
+                    [product[0].CateId, product[0].Id, "Active"]);
+
+                similarProduct.forEach(prdItem => {
+                    prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
+                });
+
+                product[0].SimpleDeviceCfg = extractSimpleDeviceCfg(product[0].DeviceCfg);
+                product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
+
+                return res.render("product/details", { product: product[0], similarProduct });
             }
         }
 

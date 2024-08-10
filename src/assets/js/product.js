@@ -38,15 +38,22 @@ function importProductCfg(content) {
     });
 }
 
-// Lấy nội dung cấu hình sản phẩm khi load trang
-var contentCfg = $('#txt-product-cfg').val();
-if (contentCfg) importProductCfg(contentCfg);
+// // Lấy nội dung cấu hình sản phẩm khi load trang
+$('#btn-show-product-cfg').on("click", () => {
+    importProductCfg($('#txt-product-cfg').val());
+});
 
 // Sự kiện nút xem thêm thông tin
 $('#btn-show-more').on('click', function () {
     $(this).closest('.show-more-content').addClass('d-none');
     $('.product-content').removeClass('overflow-hidden').css('height', '100%');
 });
+
+// Hàm cho nút xem thêm sản phẩm
+function viewMoreProduct() {
+    const newUrl = getUrlParams("count", $('#product-count').text());
+    Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
+};
 
 
 // --------------- Các sự kiện lọc sản phẩm --------------------------------------------- 
@@ -89,9 +96,3 @@ $('button[name="btn-filter-brands"]').on('click', function () {
     const newUrl = getUrlParams('brand', $(this).data('params'));
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 });
-
-// Hàm cho nút xem thêm sản phẩm
-function viewMoreProduct() {
-    const newUrl = getUrlParams("count", $('#product-count').text());
-    Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
-};
