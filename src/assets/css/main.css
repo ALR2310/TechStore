@@ -332,3 +332,46 @@ p {
     font-weight: bold;
     font-size: 18px;
 }
+
+
+
+.star-rating {
+    display: block;
+    clear: both;
+}
+
+.star-rating i {
+    float: left;
+}
+
+.star-rating .fa-star-half-o,
+.star-rating .fa-star {
+    color: var(--bs-warning);
+}
+
+.star-rating .rated {
+    color: var(--bs-warning);
+    cursor: pointer;
+}
+
+.star-rating .unrated {
+    color: var(--bs-secondary);
+    cursor: pointer;
+}
+
+.star-rating .fa-star-half-o {
+    position: relative;
+}
+
+.star-rating .fa-star-half-o:after {
+    content: '\f089';
+    position: absolute;
+    z-index: 1;
+}
+
+.star-rating .fa-star-half-o:before {
+    content: '\f089';
+    position: absolute;
+    color: var(--bs-secondary);
+    z-index: 1;
+}

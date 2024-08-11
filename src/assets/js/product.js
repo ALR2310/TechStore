@@ -56,6 +56,81 @@ function viewMoreProduct() {
 };
 
 
+// Chức năng chọn ratting
+let selectedIndex = -1;
+function updateStars(index, selected = false) {
+    $('#ratting-star .fa-star').removeClass('text-warning selected');
+    if (index >= 0) {
+        $('#ratting-star .fa-star').slice(0, index + 1).addClass('text-warning');
+        $('#ratting-text').text(['Rất tệ', 'Tệ', 'Bình thường', 'Hài lòng', 'Rất hài lòng'][index] || '');
+    } else $('#ratting-text').text('');
+
+    if (selected) {
+        $('#ratting-star .fa-star').slice(0, index + 1).addClass('selected');
+        selectedIndex = index;
+    }
+}
+
+$('#ratting-star .fa-star').on('mouseover', function () { updateStars($(this).index()); });
+$('#ratting-star .fa-star').on('mouseout', function () { updateStars(selectedIndex); });
+$('#ratting-star .fa-star').on('click', function () { updateStars($(this).index(), true); });
+
+// Hàm lấy số sao đã chọn
+function getSelectedRatting() { return selectedIndex + 1; }
+
+
+// Nút gửi đánh giá sản phẩm
+$('#btn-product-review').on('click', function () {
+    const data = {
+        ratting: getSelectedRatting(),
+        comment: $('#product-review-comment').val(),
+        userName: $('#product-review-username').val(),
+        productSlugs: $('#product-slugs').text()
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: 'danh-gia',
+        data: JSON.stringify(data),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (res) {
+            if (res.success) {
+                showToast(res.message, 'success');
+                $('#modal-product-review').modal('hide');
+            }
+        },
+        error: function (err) {
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
+});
+
+// Hàm hiển thị số sao đánh giá sản phẩm
+$(document).ready(function () {
+    const ratting = parseFloat($('#product-ratting-average').text().split('/')[0]);
+    const rattingContainer = $('.star-rating');
+    const fullStars = Math.floor(ratting); 
+    const hasHalfStar = ratting % 1 !== 0; 
+    const maxStars = 5;
+
+    let starsHtml = '';
+
+    for (let i = 1; i <= maxStars; i++) {
+        if (i <= fullStars) {
+            starsHtml += '<i class="fas fa-star"></i>';
+        } else if (i === fullStars + 1 && hasHalfStar) {
+            starsHtml += '<i class="fas fa-star-half-o"></i><i class="fas fa-star unrated"></i>';
+        } else {
+            starsHtml += '<i class="fas fa-star unrated"></i>';
+        }
+    }
+
+    rattingContainer.html(starsHtml);
+});
+
+
+
 // --------------- Các sự kiện lọc sản phẩm --------------------------------------------- 
 
 // Hàm đặt các tham số mặt định khi load trang

@@ -3,6 +3,10 @@ const helpers = {
         return a === b;
     },
 
+    lookup: function (obj, field) {
+        return obj ? obj[field] : undefined;
+    },
+
     formatNumToCurrency: function (value) {
         value = value.replace(/\D/g, '');
         return new Intl.NumberFormat('vi-VN').format(value);

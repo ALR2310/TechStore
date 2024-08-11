@@ -64,7 +64,7 @@ function formatNumToCurrencyText(value) {
 }
 
 // Hàm toast với bootstrap
-function showToast(content, type, title = "Thành công") {
+function showToast(content, type, title) {
     const toastContainer = document.getElementById("toast-container");
 
     const typeClasses = {

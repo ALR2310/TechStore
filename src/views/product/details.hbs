@@ -5,9 +5,10 @@
 
     <div class="col-8 p-4 border-start">
         <strong class="d-flex mt-3 mb-2 fs-4">{{product.ProdName}}</strong>
+        <span id="product-slugs" class="d-none">{{product.Slugs}}</span>
         <div class="d-flex align-items-center mb-3">
             <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
-            <a href="#"
+            <a href="#product-review"
                 class="ms-2 link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
                 Xem đánh giá</a>
         </div>
@@ -153,69 +154,40 @@
     </div>
 </div>
 
-<div class="row mt-3">
+<div id="product-review" class="row mt-3">
     <div class="bg-white rounded p-4">
         <strong class="fs-4">Đánh &amp; giá nhận xét {{product.ProdName}}</strong>
         <div class="row mt-3">
             <div class="col">
                 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-                    <p class="text-center text-danger fw-bold fs-4">0/5</span>
-                    <div class="text-secondary text-center">
-                        <i class="fas fa-star" data-star="1"></i>
-                        <i class="fas fa-star" data-star="1"></i>
-                        <i class="fas fa-star" data-star="1"></i>
-                        <i class="fas fa-star" data-star="1"></i>
-                        <i class="fas fa-star" data-star="1"></i>
+                    <p id="product-ratting-average" class="text-danger fw-bold fs-4">3.6/5</span>
+                    <div class="star-rating">
+                        <i class="fas fa-star unrated"></i>
+                        <i class="fas fa-star unrated"></i>
+                        <i class="fas fa-star unrated"></i>
+                        <i class="fas fa-star unrated"></i>
+                        <i class="fas fa-star unrated"></i>
                     </div>
-                    <p class="text-center">0 đánh giá &amp; nhận xét</p>
+                    <p>{{productRatting.Total}} đánh giá &amp; nhận xét</p>
                 </div>
+            </div>
 
-            </div>
             <div class="col">
+                {{#each productRatting.Ratting}}
                 <div class="d-flex align-items-center" style="font-size: 15px;">
-                    <span class="text-nowrap">5 <i class="fas fa-star pe-1 text-warning"></i></span>
+                    <span class="text-nowrap">{{this.index}} <i class="fas fa-star pe-1 text-warning"></i></span>
                     <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{this.percent}}%" aria-valuemin="0"
                             aria-valuemax="100"></div>
                     </div>
-                    <span class="ms-2">0</span>
+                    <span class="ms-2">{{this.total}}</span>
                 </div>
-                <div class="d-flex align-items-center" style="font-size: 15px;">
-                    <span class="text-nowrap">4 <i class="fas fa-star pe-1 text-warning"></i></span>
-                    <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
-                            aria-valuemax="100"></div>
-                    </div>
-                    <span class="ms-2">0</span>
-                </div>
-                <div class="d-flex align-items-center" style="font-size: 15px;">
-                    <span class="text-nowrap">3 <i class="fas fa-star pe-1 text-warning"></i></span>
-                    <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
-                            aria-valuemax="100"></div>
-                    </div>
-                    <span class="ms-2">0</span>
-                </div>
-                <div class="d-flex align-items-center" style="font-size: 15px;">
-                    <span class="text-nowrap">2 <i class="fas fa-star pe-1 text-warning"></i></span>
-                    <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
-                            aria-valuemax="100"></div>
-                    </div>
-                    <span class="ms-2">0</span>
-                </div>
-                <div class="d-flex align-items-center" style="font-size: 15px;">
-                    <span class="text-nowrap">1 <i class="fas fa-star pe-1 text-warning"></i></span>
-                    <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0"
-                            aria-valuemax="100"></div>
-                    </div>
-                    <span class="ms-2">0</span>
-                </div>
+                {{/each}}
             </div>
+
             <div class="col">
                 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-product-review">
                         <i class="fa-regular fa-stars"></i> Gửi đánh giá của bạn
                     </button>
                 </div>
@@ -241,6 +213,64 @@
             </div>
             <div class="modal-footer bg-secondary-subtle">
                 <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Modal đánh giá sản phẩm --}}
+<div id="modal-product-review" class="modal modal-xl fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-4 p-0 bg-danger rounded-start">
+                    <div class="p-3">
+                        <img src="/{{product.Image}}" alt="Logo" class="w-100 rounded">
+                        <strong class="d-block text-center text-white mt-3">{{product.ProdName}}</strong>
+                    </div>
+                </div>
+
+                <div class="col-8 ps-0">
+                    <div class="d-flex justify-content-between align-items-center p-3">
+                        <p>Đánh giá của bạn về: <strong>{{product.ProdName}}</strong></p>
+
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <hr class="m-0">
+                    <div class="d-flex justify-content-between align-items-center p-3">
+                        <div class="d-flex align-items-center">
+                            <strong class="me-3">Mức độ đánh giá*</strong>
+                            <div id="ratting-star" class="text-secondary pointer">
+                                <i class="fas fa-star border p-1"></i>
+                                <i class="fas fa-star border p-1"></i>
+                                <i class="fas fa-star border p-1"></i>
+                                <i class="fas fa-star border p-1"></i>
+                                <i class="fas fa-star border p-1"></i>
+                            </div>
+                            <span id="ratting-text" class="ms-2"></span>
+                        </div>
+                        <div class="d-flex align-items-center w-25">
+                            {{#if userInfo}}
+                            <label class="text-nowrap me-3 fw-bold">Họ tên</label>
+                            <input id="product-review-username" type="text" class="form-control"
+                                placeholder="Nhập họ tên" value="{{userInfo.FullName}}">
+                            {{/if}}
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <div class="p-3">
+                        <label class="form-label fw-bold">Đánh giá</label>
+                        <textarea id="product-review-comment" class="form-control" style="resize: none;" rows="3"
+                            placeholder="Ví dụ: Tôi đã mua sản phẩm và cảm thấy rất hài lòng về nó..."></textarea>
+                    </div>
+                    <div class="p-3 w-50">
+                        <label class="form-label fw-bold">Gửi ảnh</label>
+                        <input type="file" class="form-control">
+                    </div>
+                    <div class="p-3 d-flex justify-content-end">
+                        <button id="btn-product-review" class="btn btn-danger">Gửi đánh giá</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

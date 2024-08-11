@@ -37,15 +37,14 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
-        const getUser = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ?', [username, username]);
+        const getUser = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ? AND Status = ?',
+            [username, username, "Active"]);
 
-        if (getUser.length === 0)
-            return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
+        if (getUser.length === 0) return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
 
         const checkPwd = await bcrypt.compare(password, getUser[0].Password);
 
-        if (!checkPwd)
-            return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác' });
+        if (!checkPwd) return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác' });
 
         const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [getUser[0].Id]))[0]?.Token
             || crypto.randomBytes(32).toString('hex');
@@ -70,14 +69,15 @@ router.get('/loginGoogle/callback', passport.authenticate('google', { failureRed
     const Email = req.user.emails[0].value;
 
     try {
-        const checkEmail = await db.query('SELECT * FROM User WHERE email = ?', [Email]);;
+        const checkEmail = await db.query('SELECT * FROM User WHERE email = ? AND Status = ?', [Email, "Active"]);;
         let userId = checkEmail[0]?.Id;
 
         if (checkEmail.length > 0) {
-            const checkGoogleId = await db.query('SELECT * FROM User WHERE GoogleId = ? AND Email = ?', [GGId, Email]);
+            const checkGoogleId = await db.query('SELECT * FROM User WHERE GoogleId = ? AND Email = ? AND Status = ?', 
+                [GGId, Email, "Active"]);
 
             if (checkGoogleId.length == 0) {
-                await db.query('UPDATE User SET GoogleId = ? WHERE Email = ?', [GGId, Email]);
+                await db.query('UPDATE User SET GoogleId = ? WHERE Email = ? AND Status = ?', [GGId, Email, "Active"]);
                 await db.query('UPDATE UserInfo SET FullName = ? WHERE UserId = ?', [fullName, userId]);
             }
         } else {
@@ -113,7 +113,7 @@ router.get('/loginFacebook/callback', passport.authenticate('facebook', { failur
     const Gender = req.user.gender;
 
     try {
-        const checkFacebookId = await db.query('SELECT * FROM User WHERE FacebookId = ?', [FBId]);
+        const checkFacebookId = await db.query('SELECT * FROM User WHERE FacebookId = ? AND Status = ?', [FBId, "Active"]);
         let userId = checkFacebookId[0]?.Id;
 
         userId = (await db.query('INSERT INTO User (FacebookId) VALUES (?)', [FBId])).insertId;

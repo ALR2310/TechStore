@@ -56,9 +56,9 @@ router.get("/:slugs", async (req, res) => {
     if (count) countParams = parseInt(count) + 12;
 
     try {
-        const getCategory = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
+        const category = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
 
-        if (getCategory?.length > 0) {
+        if (category?.length > 0) {
             const sqlCount = `
                 SELECT 
                     COUNT(*) AS Total 
@@ -100,9 +100,10 @@ router.get("/:slugs", async (req, res) => {
                 LIMIT 
                     ${countParams ? `${countParams}` : 12}`;
 
+            // Lấy ra danh sách sản phẩm và tổng số lượng sản phẩm
             const [product, totalProduct] = await db.queryAll([
-                { sql: sqlProduct, params: [getCategory[0].Id, getCategory[0].Id, "Active"] },
-                { sql: sqlCount, params: [getCategory[0].Id, "Active"] }
+                { sql: sqlProduct, params: [category[0].Id, category[0].Id, "Active"] },
+                { sql: sqlCount, params: [category[0].Id, "Active"] }
             ]);
 
             product.forEach(prdItem => {
@@ -114,24 +115,54 @@ router.get("/:slugs", async (req, res) => {
 
             return res.render("product/index", { product, totalProduct });
         } else {
+            // Lấy ra sản phẩm và mô tả chi tiết sản phẩm
             const sql = `SELECT p.*, pd.DeviceCfg, pd.Content, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
                 FROM Product p JOIN ProductDetails pd ON p.Id = pd.ProdId WHERE p.Slugs = ? AND p.Status = ?`;
 
             const product = await db.query(sql, [slugs, "Active"]);
 
             if (product?.length > 0) {
-                const similarProduct = await db.query(`SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
-                    FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`,
-                    [product[0].CateId, product[0].Id, "Active"]);
+                product[0].SimpleDeviceCfg = extractSimpleDeviceCfg(product[0].DeviceCfg);
+                product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
+
+                sqlSimilar = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+                    FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`;
+
+                sqlRatting = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
+                    SUM(CASE WHEN Rating = 2 THEN 1 ELSE 0 END) AS Rating2, SUM(CASE WHEN Rating = 3 THEN 1 ELSE 0 END) AS Rating3, 
+                    SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4, SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5,
+                    ROUND(AVG(Rating), 1) AS AverageRating, COUNT(*) as Total FROM ProductReviews WHERE ProdId = ? AND Status = ?`;
+
+                // Lấy ra sản phẩm tương tự và các đánh giá của sản phẩm
+                const [similarProduct, productRatting] = await db.queryAll([
+                    { sql: sqlSimilar, params: [product[0].CateId, product[0].Id, "Active"] },
+                    { sql: sqlRatting, params: [product[0].Id, "Active"] }
+                ]);
 
                 similarProduct.forEach(prdItem => {
                     prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
                 });
 
-                product[0].SimpleDeviceCfg = extractSimpleDeviceCfg(product[0].DeviceCfg);
-                product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
+                // Tính phần trăm tiến trình đánh giá sản phẩm
+                if (productRatting[0].Total > 0) {
+                    productRatting[0].Percentage5 = (productRatting[0].Rating5 / productRatting[0].Total) * 100;
+                    productRatting[0].Percentage4 = (productRatting[0].Rating4 / productRatting[0].Total) * 100;
+                    productRatting[0].Percentage3 = (productRatting[0].Rating3 / productRatting[0].Total) * 100;
+                    productRatting[0].Percentage2 = (productRatting[0].Rating2 / productRatting[0].Total) * 100;
+                    productRatting[0].Percentage1 = (productRatting[0].Rating1 / productRatting[0].Total) * 100;
+                } else {
+                    productRatting[0].Percentage5 = productRatting[0].Percentage4 = productRatting[0].Percentage3 =
+                        productRatting[0].Percentage2 = productRatting[0].Percentage1 = 0;
+                }
 
-                return res.render("product/details", { product: product[0], similarProduct });
+                // Định dạng lại dữ liệu đánh giá
+                const formattedRatting = {
+                    Average: productRatting[0].AverageRating,
+                    Total: productRatting[0].Total,
+                    Ratting: formatProductRatting(productRatting[0])
+                };
+
+                return res.render("product/details", { product: product[0], similarProduct, productRatting: formattedRatting });
             }
         }
 
@@ -140,6 +171,36 @@ router.get("/:slugs", async (req, res) => {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
+});
+
+router.post("/danh-gia", async (req, res) => {
+    const { ratting, comment, userName, productSlugs } = req.body;
+
+    if (!ratting || !comment || !productSlugs)
+        return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
+
+    try {
+        let sql = "SELECT Id FROM Product WHERE Slugs = ? AND Status = ?";
+        let params = [productSlugs, "Active"];
+        const productId = (await db.query(sql, params))[0].Id;
+
+        if (req.user) {
+            sql = "INSERT INTO ProductReviews(ProdId, UserId, Rating, Comment) VALUES (?, ?, ?, ?)";
+            params = [productId, req.user.Id, ratting, comment];
+        } else {
+            sql = "INSERT INTO ProductReviews(ProdId, GuestName, Rating, Comment) VALUES (?, ?, ?, ?)";
+            params = [productId, userName, ratting, comment];
+        };
+
+        await db.query(sql, params);
+
+        return res.status(201).json({ success: true, message: 'Đánh giá sản phẩm thành công' });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
+    }
+
+
 });
 
 // Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm
@@ -171,6 +232,15 @@ function extractSimpleDeviceCfg(deviceCfg) {
     return simpleDeviceCfg;
 }
 
-
+// Hàm định dạng lại dữ liệu trả về của productRatting
+const formatProductRatting = (rattingData) => {
+    return [
+        { index: 5, total: rattingData.Rating5, percent: rattingData.Percentage5 },
+        { index: 4, total: rattingData.Rating4, percent: rattingData.Percentage4 },
+        { index: 3, total: rattingData.Rating3, percent: rattingData.Percentage3 },
+        { index: 2, total: rattingData.Rating2, percent: rattingData.Percentage2 },
+        { index: 1, total: rattingData.Rating1, percent: rattingData.Percentage1 }
+    ];
+};
 
 module.exports = router;
