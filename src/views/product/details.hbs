@@ -160,7 +160,7 @@
         <div class="row mt-3">
             <div class="col">
                 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-                    <p id="product-ratting-average" class="text-danger fw-bold fs-4">3.6/5</span>
+                    <p id="product-rating-average" class="text-danger fw-bold fs-4">3.6/5</span>
                     <div class="star-rating">
                         <i class="fas fa-star unrated"></i>
                         <i class="fas fa-star unrated"></i>
@@ -168,17 +168,17 @@
                         <i class="fas fa-star unrated"></i>
                         <i class="fas fa-star unrated"></i>
                     </div>
-                    <p>{{productRatting.Total}} đánh giá &amp; nhận xét</p>
+                    <p><strong>{{productRating.Total}}</strong> đánh giá &amp; nhận xét</p>
                 </div>
             </div>
 
             <div class="col">
-                {{#each productRatting.Ratting}}
+                {{#each productRating.Rating}}
                 <div class="d-flex align-items-center" style="font-size: 15px;">
                     <span class="text-nowrap">{{this.index}} <i class="fas fa-star pe-1 text-warning"></i></span>
                     <div class="progress w-100" style="height: 10px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{this.percent}}%" aria-valuemin="0"
-                            aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{this.percent}}%"
+                            aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <span class="ms-2">{{this.total}}</span>
                 </div>
@@ -193,6 +193,28 @@
                 </div>
             </div>
         </div>
+
+        {{#each productReview}}
+        <hr class="mt-4 mb-4" style="opacity: 0.15">
+        <div>
+            <div class="d-flex">
+                <strong>{{this.UserName}}</strong>
+                <span class="ms-2 text-muted">{{formatDate this.AtCreate}}</span>
+            </div>
+            <div class="d-flex w-100">
+                <div data-rating="{{this.Rating}}" class="userRating w-25 text-secondary">
+                    <i class="fas fa-star "></i>
+                    <i class="fas fa-star "></i>
+                    <i class="fas fa-star "></i>
+                    <i class="fas fa-star "></i>
+                    <i class="fas fa-star "></i>
+                </div>
+                <div class="w-75">
+                    <p>{{this.Comment}}</p>
+                </div>
+            </div>
+        </div>
+        {{/each}}
     </div>
 </div>
 
@@ -240,21 +262,19 @@
                     <div class="d-flex justify-content-between align-items-center p-3">
                         <div class="d-flex align-items-center">
                             <strong class="me-3">Mức độ đánh giá*</strong>
-                            <div id="ratting-star" class="text-secondary pointer">
+                            <div id="rating-star" class="text-secondary pointer">
                                 <i class="fas fa-star border p-1"></i>
                                 <i class="fas fa-star border p-1"></i>
                                 <i class="fas fa-star border p-1"></i>
                                 <i class="fas fa-star border p-1"></i>
                                 <i class="fas fa-star border p-1"></i>
                             </div>
-                            <span id="ratting-text" class="ms-2"></span>
+                            <span id="rating-text" class="ms-2"></span>
                         </div>
-                        <div class="d-flex align-items-center w-25">
-                            {{#if userInfo}}
-                            <label class="text-nowrap me-3 fw-bold">Họ tên</label>
+                        <div class="d-flex align-items-center w-25 {{#if userInfo}}visually-hidden{{/if}}">
+                            <label class="text-nowrap me-3 fw-bold ">Họ tên</label>
                             <input id="product-review-username" type="text" class="form-control"
-                                placeholder="Nhập họ tên" value="{{userInfo.FullName}}">
-                            {{/if}}
+                                placeholder="Nhập họ tên" value="{{userInfo.FullName}}">
                         </div>
                     </div>
                     <hr class="m-0">

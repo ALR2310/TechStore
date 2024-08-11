@@ -75,7 +75,8 @@ CREATE TABLE Product(
     Slugs VARCHAR(200),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
     AtUpdate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    UNIQUE KEY Slugs_UNIQUE (Slugs)
 );
 
 -- Bảng chi tiết sản phẩm
@@ -93,7 +94,7 @@ CREATE TABLE ProductReviews(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     ProdId INT REFERENCES Product(Id),
     UserId INT REFERENCES User(Id),
-    GuestName VARCHAR(50),
+    UserName VARCHAR(50),
     Rating INT CHECK (Rating >= 1 AND Rating <= 5),
     Comment VARCHAR(500),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,

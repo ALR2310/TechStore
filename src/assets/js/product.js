@@ -56,33 +56,33 @@ function viewMoreProduct() {
 };
 
 
-// Chức năng chọn ratting
-let selectedIndex = -1;
+// Chức năng chọn rating
+var selectedIndex = -1;
 function updateStars(index, selected = false) {
-    $('#ratting-star .fa-star').removeClass('text-warning selected');
+    $('#rating-star .fa-star').removeClass('text-warning selected');
     if (index >= 0) {
-        $('#ratting-star .fa-star').slice(0, index + 1).addClass('text-warning');
-        $('#ratting-text').text(['Rất tệ', 'Tệ', 'Bình thường', 'Hài lòng', 'Rất hài lòng'][index] || '');
-    } else $('#ratting-text').text('');
+        $('#rating-star .fa-star').slice(0, index + 1).addClass('text-warning');
+        $('#rating-text').text(['Rất tệ', 'Tệ', 'Bình thường', 'Hài lòng', 'Rất hài lòng'][index] || '');
+    } else $('#rating-text').text('');
 
     if (selected) {
-        $('#ratting-star .fa-star').slice(0, index + 1).addClass('selected');
+        $('#rating-star .fa-star').slice(0, index + 1).addClass('selected');
         selectedIndex = index;
     }
 }
 
-$('#ratting-star .fa-star').on('mouseover', function () { updateStars($(this).index()); });
-$('#ratting-star .fa-star').on('mouseout', function () { updateStars(selectedIndex); });
-$('#ratting-star .fa-star').on('click', function () { updateStars($(this).index(), true); });
+$('#rating-star .fa-star').on('mouseover', function () { updateStars($(this).index()); });
+$('#rating-star .fa-star').on('mouseout', function () { updateStars(selectedIndex); });
+$('#rating-star .fa-star').on('click', function () { updateStars($(this).index(), true); });
 
 // Hàm lấy số sao đã chọn
-function getSelectedRatting() { return selectedIndex + 1; }
+function getSelectedRating() { return selectedIndex + 1; }
 
 
 // Nút gửi đánh giá sản phẩm
 $('#btn-product-review').on('click', function () {
     const data = {
-        ratting: getSelectedRatting(),
+        rating: getSelectedRating(),
         comment: $('#product-review-comment').val(),
         userName: $('#product-review-username').val(),
         productSlugs: $('#product-slugs').text()
@@ -106,12 +106,12 @@ $('#btn-product-review').on('click', function () {
     });
 });
 
-// Hàm hiển thị số sao đánh giá sản phẩm
+// Chức hiển thị tổng số sao đánh giá của sản phẩm
 $(document).ready(function () {
-    const ratting = parseFloat($('#product-ratting-average').text().split('/')[0]);
-    const rattingContainer = $('.star-rating');
-    const fullStars = Math.floor(ratting); 
-    const hasHalfStar = ratting % 1 !== 0; 
+    const rating = parseFloat($('#product-rating-average').text().split('/')[0]);
+    const ratingContainer = $('.star-rating');
+    const fullStars = Math.floor(rating); 
+    const hasHalfStar = rating % 1 !== 0; 
     const maxStars = 5;
 
     let starsHtml = '';
@@ -126,7 +126,19 @@ $(document).ready(function () {
         }
     }
 
-    rattingContainer.html(starsHtml);
+    ratingContainer.html(starsHtml);
+});
+
+// Chức năng hiển thị số sao đánh giá từ người dùng
+$(document).ready(function() {
+    $('.userRating').each(function() {
+        const rating = $(this).data('rating');
+        $(this).find('i').each(function(index) {
+            if (index < rating) {
+                $(this).addClass('text-warning');
+            }
+        });
+    });
 });
 
 

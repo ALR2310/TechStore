@@ -128,15 +128,18 @@ router.get("/:slugs", async (req, res) => {
                 sqlSimilar = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
                     FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`;
 
-                sqlRatting = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
+                sqlRating = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
                     SUM(CASE WHEN Rating = 2 THEN 1 ELSE 0 END) AS Rating2, SUM(CASE WHEN Rating = 3 THEN 1 ELSE 0 END) AS Rating3, 
                     SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4, SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5,
                     ROUND(AVG(Rating), 1) AS AverageRating, COUNT(*) as Total FROM ProductReviews WHERE ProdId = ? AND Status = ?`;
 
+                sqlReview = `SELECT * FROM ProductReviews WHERE ProdId = ? AND Status = ? ORDER BY AtCreate DESC`;
+
                 // Lấy ra sản phẩm tương tự và các đánh giá của sản phẩm
-                const [similarProduct, productRatting] = await db.queryAll([
+                const [similarProduct, productRating, productReview] = await db.queryAll([
                     { sql: sqlSimilar, params: [product[0].CateId, product[0].Id, "Active"] },
-                    { sql: sqlRatting, params: [product[0].Id, "Active"] }
+                    { sql: sqlRating, params: [product[0].Id, "Active"] },
+                    { sql: sqlReview, params: [product[0].Id, "Active"] }
                 ]);
 
                 similarProduct.forEach(prdItem => {
@@ -144,25 +147,27 @@ router.get("/:slugs", async (req, res) => {
                 });
 
                 // Tính phần trăm tiến trình đánh giá sản phẩm
-                if (productRatting[0].Total > 0) {
-                    productRatting[0].Percentage5 = (productRatting[0].Rating5 / productRatting[0].Total) * 100;
-                    productRatting[0].Percentage4 = (productRatting[0].Rating4 / productRatting[0].Total) * 100;
-                    productRatting[0].Percentage3 = (productRatting[0].Rating3 / productRatting[0].Total) * 100;
-                    productRatting[0].Percentage2 = (productRatting[0].Rating2 / productRatting[0].Total) * 100;
-                    productRatting[0].Percentage1 = (productRatting[0].Rating1 / productRatting[0].Total) * 100;
+                if (productRating[0].Total > 0) {
+                    productRating[0].Percentage5 = (productRating[0].Rating5 / productRating[0].Total) * 100;
+                    productRating[0].Percentage4 = (productRating[0].Rating4 / productRating[0].Total) * 100;
+                    productRating[0].Percentage3 = (productRating[0].Rating3 / productRating[0].Total) * 100;
+                    productRating[0].Percentage2 = (productRating[0].Rating2 / productRating[0].Total) * 100;
+                    productRating[0].Percentage1 = (productRating[0].Rating1 / productRating[0].Total) * 100;
                 } else {
-                    productRatting[0].Percentage5 = productRatting[0].Percentage4 = productRatting[0].Percentage3 =
-                        productRatting[0].Percentage2 = productRatting[0].Percentage1 = 0;
+                    productRating[0].Percentage5 = productRating[0].Percentage4 = productRating[0].Percentage3 =
+                        productRating[0].Percentage2 = productRating[0].Percentage1 = 0;
                 }
 
                 // Định dạng lại dữ liệu đánh giá
-                const formattedRatting = {
-                    Average: productRatting[0].AverageRating,
-                    Total: productRatting[0].Total,
-                    Ratting: formatProductRatting(productRatting[0])
+                const formattedRating = {
+                    Average: productRating[0].AverageRating,
+                    Total: productRating[0].Total,
+                    Rating: formatProductRating(productRating[0])
                 };
 
-                return res.render("product/details", { product: product[0], similarProduct, productRatting: formattedRatting });
+                return res.render("product/details", {
+                    product: product[0], similarProduct, productRating: formattedRating, productReview
+                });
             }
         }
 
@@ -174,9 +179,9 @@ router.get("/:slugs", async (req, res) => {
 });
 
 router.post("/danh-gia", async (req, res) => {
-    const { ratting, comment, userName, productSlugs } = req.body;
+    const { rating, comment, userName, productSlugs } = req.body;
 
-    if (!ratting || !comment || !productSlugs)
+    if (!rating || !comment || !productSlugs)
         return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
@@ -184,13 +189,8 @@ router.post("/danh-gia", async (req, res) => {
         let params = [productSlugs, "Active"];
         const productId = (await db.query(sql, params))[0].Id;
 
-        if (req.user) {
-            sql = "INSERT INTO ProductReviews(ProdId, UserId, Rating, Comment) VALUES (?, ?, ?, ?)";
-            params = [productId, req.user.Id, ratting, comment];
-        } else {
-            sql = "INSERT INTO ProductReviews(ProdId, GuestName, Rating, Comment) VALUES (?, ?, ?, ?)";
-            params = [productId, userName, ratting, comment];
-        };
+        sql = "INSERT INTO ProductReviews(ProdId, UserId, UserName, Rating, Comment) VALUES (?, ?, ?, ?, ?)";
+        params = [productId, req.user?.Id, userName, rating, comment];
 
         await db.query(sql, params);
 
@@ -232,14 +232,14 @@ function extractSimpleDeviceCfg(deviceCfg) {
     return simpleDeviceCfg;
 }
 
-// Hàm định dạng lại dữ liệu trả về của productRatting
-const formatProductRatting = (rattingData) => {
+// Hàm định dạng lại dữ liệu trả về của productRating
+const formatProductRating = (ratingData) => {
     return [
-        { index: 5, total: rattingData.Rating5, percent: rattingData.Percentage5 },
-        { index: 4, total: rattingData.Rating4, percent: rattingData.Percentage4 },
-        { index: 3, total: rattingData.Rating3, percent: rattingData.Percentage3 },
-        { index: 2, total: rattingData.Rating2, percent: rattingData.Percentage2 },
-        { index: 1, total: rattingData.Rating1, percent: rattingData.Percentage1 }
+        { index: 5, total: ratingData.Rating5, percent: ratingData.Percentage5 },
+        { index: 4, total: ratingData.Rating4, percent: ratingData.Percentage4 },
+        { index: 3, total: ratingData.Rating3, percent: ratingData.Percentage3 },
+        { index: 2, total: ratingData.Rating2, percent: ratingData.Percentage2 },
+        { index: 1, total: ratingData.Rating1, percent: ratingData.Percentage1 }
     ];
 };
 
