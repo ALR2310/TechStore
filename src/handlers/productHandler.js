@@ -125,24 +125,63 @@ router.get("/:slugs", async (req, res) => {
                 product[0].SimpleDeviceCfg = extractSimpleDeviceCfg(product[0].DeviceCfg);
                 product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
 
-                sqlSimilar = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+                // Lấy ra danh sách sản phẩm đã xem từ cookie
+                let viewedProducts = req.cookies.viewed || [];
+
+                // Nếu danh sách rỗng và người dùng đã đăng nhập thì lấy từ database ra
+                if (viewedProducts.length === 0 && req.user) {
+                    const sqlViewedProducts = `SELECT ProdId FROM ProductViewed WHERE UserId = ? AND Status = 'Active' 
+                        ORDER BY AtCreate DESC LIMIT 3`;
+                    const results = await db.query(sqlViewedProducts, [req.user.Id]);
+
+                    viewedProducts = results.map(row => row.ProdId);
+
+                    res.cookie('viewed', viewedProducts, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+                }
+
+                // Thêm sản phẩm vào danh sách đã xem
+                if (!viewedProducts.includes(product[0].Id)) {
+                    viewedProducts.unshift(product[0].Id);
+
+                    // Giới hạn sản phẩm lưu trong cookie
+                    if (viewedProducts.length > 3) { viewedProducts.pop(); }
+
+                    res.cookie('viewed', viewedProducts, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+                    if (req.user) await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)
+                        ON DUPLICATE KEY UPDATE AtCreate = CURRENT_TIMESTAMP`, [product[0].Id, req.user.Id]);
+                }
+
+                // query lấy ra các sản phẩm tương tự
+                const sqlSimilar = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
                     FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`;
 
-                sqlRating = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
+                // query lấy ra sản phẩm đã xem
+                const sqlViewed = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
+                    FROM Product p WHERE Id IN (?) AND Status = ? LIMIT 3`;
+
+                // query lấy ra đánh giá của sản phẩm
+                const sqlRating = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
                     SUM(CASE WHEN Rating = 2 THEN 1 ELSE 0 END) AS Rating2, SUM(CASE WHEN Rating = 3 THEN 1 ELSE 0 END) AS Rating3, 
                     SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4, SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5,
                     ROUND(AVG(Rating), 1) AS AverageRating, COUNT(*) as Total FROM ProductReviews WHERE ProdId = ? AND Status = ?`;
 
-                sqlReview = `SELECT * FROM ProductReviews WHERE ProdId = ? AND Status = ? ORDER BY AtCreate DESC`;
+                // query lấy ra đánh giá và bình luận của người dùng trên sản phẩm
+                const sqlReview = `SELECT * FROM ProductReviews WHERE ProdId = ? AND Status = ? ORDER BY AtCreate DESC`;
 
-                // Lấy ra sản phẩm tương tự và các đánh giá của sản phẩm
-                const [similarProduct, productRating, productReview] = await db.queryAll([
+                // Thực hiện các truy vấn
+                const [productSimilar, productViewed, productRating, productReview] = await db.queryAll([
                     { sql: sqlSimilar, params: [product[0].CateId, product[0].Id, "Active"] },
+                    { sql: sqlViewed, params: [viewedProducts, "Active"] },
                     { sql: sqlRating, params: [product[0].Id, "Active"] },
                     { sql: sqlReview, params: [product[0].Id, "Active"] }
                 ]);
 
-                similarProduct.forEach(prdItem => {
+                productSimilar?.forEach(prdItem => {
+                    prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
+                });
+
+                productViewed?.forEach(prdItem => {
                     prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
                 });
 
@@ -160,13 +199,13 @@ router.get("/:slugs", async (req, res) => {
 
                 // Định dạng lại dữ liệu đánh giá
                 const formattedRating = {
-                    Average: productRating[0].AverageRating,
+                    Average: productRating[0].AverageRating || 0,
                     Total: productRating[0].Total,
                     Rating: formatProductRating(productRating[0])
                 };
 
                 return res.render("product/details", {
-                    product: product[0], similarProduct, productRating: formattedRating, productReview
+                    product: product[0], productSimilar, productViewed, productRating: formattedRating, productReview
                 });
             }
         }
@@ -199,8 +238,6 @@ router.post("/danh-gia", async (req, res) => {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
-
-
 });
 
 // Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm

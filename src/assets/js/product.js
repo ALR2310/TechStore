@@ -38,15 +38,22 @@ function importProductCfg(content) {
     });
 }
 
-// // Lấy nội dung cấu hình sản phẩm khi load trang
+// Lấy nội dung cấu hình sản phẩm khi load trang
 $('#btn-show-product-cfg').on("click", () => {
     importProductCfg($('#txt-product-cfg').val());
+});
+
+// Đặt chiều cao cho thẻ product content
+$(document).ready(function () {
+    $('#product-content').height(
+        $('#sidebar-product-details').height() - 24 -24
+    );
 });
 
 // Sự kiện nút xem thêm thông tin
 $('#btn-show-more').on('click', function () {
     $(this).closest('.show-more-content').addClass('d-none');
-    $('.product-content').removeClass('overflow-hidden').css('height', '100%');
+    $('#product-content').removeClass('overflow-hidden').css('height', '100%');
 });
 
 // Hàm cho nút xem thêm sản phẩm
@@ -110,8 +117,8 @@ $('#btn-product-review').on('click', function () {
 $(document).ready(function () {
     const rating = parseFloat($('#product-rating-average').text().split('/')[0]);
     const ratingContainer = $('.star-rating');
-    const fullStars = Math.floor(rating); 
-    const hasHalfStar = rating % 1 !== 0; 
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
     const maxStars = 5;
 
     let starsHtml = '';
@@ -130,10 +137,10 @@ $(document).ready(function () {
 });
 
 // Chức năng hiển thị số sao đánh giá từ người dùng
-$(document).ready(function() {
-    $('.userRating').each(function() {
+$(document).ready(function () {
+    $('.userRating').each(function () {
         const rating = $(this).data('rating');
-        $(this).find('i').each(function(index) {
+        $(this).find('i').each(function (index) {
             if (index < rating) {
                 $(this).addClass('text-warning');
             }

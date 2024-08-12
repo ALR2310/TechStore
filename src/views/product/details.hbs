@@ -7,7 +7,7 @@
         <strong class="d-flex mt-3 mb-2 fs-4">{{product.ProdName}}</strong>
         <span id="product-slugs" class="d-none">{{product.Slugs}}</span>
         <div class="d-flex align-items-center mb-3">
-            <span class="text-warning">0.0 <i class="fa-sharp fa-solid fa-star"></i></span>
+            <span class="text-warning">{{productRating.Average}} <i class="fa-sharp fa-solid fa-star"></i></span>
             <a href="#product-review"
                 class="ms-2 link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
                 Xem đánh giá</a>
@@ -72,9 +72,10 @@
 </div>
 
 <div class="row justify-content-between mt-3">
+    {{!-- Nội dung sản phẩm --}}
     <div class="col-7 bg-white rounded">
-        <div class=" position-relative pt-4 pb-4 ps-2 pe-2">
-            <div class="product-content overflow-hidden" style="height: 839px;">
+        <div class="position-relative pt-4 pb-4 ps-2 pe-2">
+            <div id="product-content" class="overflow-hidden">
                 {{{product.Content}}}
             </div>
 
@@ -86,12 +87,13 @@
         </div>
     </div>
 
+    {{!-- Nội dung bên --}}
     <div class="col-4 p-0" style="width: 40.5%;">
-        <div class="">
+        <div id="sidebar-product-details">
+            {{!-- Cấu hình sản phẩm --}}
             {{#if product.SimpleDeviceCfg}}
-            <div class="p-4 bg-white mb-3 rounded">
+            <div id="sidebar-product-cfg" class="p-4 bg-white rounded mb-3">
                 <strong class="d-block fs-4 text-center mb-3">Cấu hình sản phẩm</strong>
-
                 <div class="border p-1 rounded">
                     <table class="table table-striped table-borderless m-0">
                         <tbody>
@@ -109,12 +111,55 @@
             </div>
             {{/if}}
 
-            {{#if similarProduct}}
-            <div class="p-4 bg-white rounded">
+            {{!-- Các sản phẩm tương tự --}}
+            {{#if productSimilar}}
+            <div id="sidebar-product-similar" class="p-4 bg-white rounded mb-3">
                 <strong class="d-block fs-4 text-center mb-3">Sản phẩm tương tự</strong>
+                <div>
+                    {{#each productSimilar}}
+                    <div class="card border-0">
+                        <div class="row g-0">
+                            <div class="col-4">
+                                <a href="{{this.Slugs}}" class="d-block w-100">
+                                    <img src="/{{this.Image}}" class="p-2 w-100" alt="Logo" style="height: 125px;">
+                                </a>
+                            </div>
+                            <div class="col-8">
+                                <div class="p-2">
+                                    <a href="{{this.Slugs}}"
+                                        class="multi-line-ellipsis text-decoration-none fw-bold pointer text-black"
+                                        style="font-size: 15px;">{{this.ProdName}}</a>
+                                    <p class="text-secondary text-decoration-line-through" style="font-size: 15px;">
+                                        {{formatNumToCurrency this.Price}}₫</p>
+                                    <div class="d-flex align-items-center">
+                                        <strong class="text-danger me-3">{{formatNumToCurrency
+                                            this.FinalPrice}}₫</strong>
+                                        <button
+                                            class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
+                                            style="font-size: 11px;width: 50px;">-{{this.Discount}}%</button>
+                                    </div>
+                                    <div style="font-size: 12px;">
+                                        <span class="text-warning">
+                                            0.0 <i class="fa-sharp fa-solid fa-star"></i>
+                                        </span>
+                                        <span class="ms-2">(0 đánh giá)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+
+            {{!-- Các sản phẩm đã xem --}}
+            {{#if productViewed}}
+            <div id="sidebar-product-viewed" class="p-4 bg-white rounded">
+                <strong class="d-block fs-4 text-center mb-3">Đã xem gần đây</strong>
 
                 <div>
-                    {{#each similarProduct}}
+                    {{#each productViewed}}
                     <div class="card border-0">
                         <div class="row g-0">
                             <div class="col-4">
@@ -154,13 +199,14 @@
     </div>
 </div>
 
+{{!-- Đánh giá sản phẩm --}}
 <div id="product-review" class="row mt-3">
     <div class="bg-white rounded p-4">
         <strong class="fs-4">Đánh &amp; giá nhận xét {{product.ProdName}}</strong>
         <div class="row mt-3">
             <div class="col">
                 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-                    <p id="product-rating-average" class="text-danger fw-bold fs-4">3.6/5</span>
+                    <p id="product-rating-average" class="text-danger fw-bold fs-4">{{productRating.Average}}/5</span>
                     <div class="star-rating">
                         <i class="fas fa-star unrated"></i>
                         <i class="fas fa-star unrated"></i>
