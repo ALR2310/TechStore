@@ -153,12 +153,15 @@ router.get("/:slugs", async (req, res) => {
                 }
 
                 // query lấy ra các sản phẩm tương tự
-                const sqlSimilar = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
-                    FROM Product p WHERE CateId = ? AND Id != ? AND Status = ? ORDER BY RAND() LIMIT 3`;
+                const sqlSimilar = `SELECT p.*, TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice, 
+                    ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating, COUNT(pv.Id) AS TotalRating FROM Product p 
+                    LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId WHERE p.CateId = ? AND p.Id != ? AND p.Status = ? 
+                    GROUP BY p.Id ORDER BY RAND() LIMIT 3;`;
 
                 // query lấy ra sản phẩm đã xem
-                const sqlViewed = `SELECT *, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 
-                    FROM Product p WHERE Id IN (?) AND Status = ? LIMIT 3`;
+                const sqlViewed = `SELECT p.*, TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                     ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating, COUNT(pv.Id) AS TotalRating FROM Product p 
+                     LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId WHERE p.Id IN (?) AND p.Status = ? GROUP BY p.Id LIMIT 3`;
 
                 // query lấy ra đánh giá của sản phẩm
                 const sqlRating = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
@@ -176,14 +179,6 @@ router.get("/:slugs", async (req, res) => {
                     { sql: sqlRating, params: [product[0].Id, "Active"] },
                     { sql: sqlReview, params: [product[0].Id, "Active"] }
                 ]);
-
-                productSimilar?.forEach(prdItem => {
-                    prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
-                });
-
-                productViewed?.forEach(prdItem => {
-                    prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
-                });
 
                 // Tính phần trăm tiến trình đánh giá sản phẩm
                 if (productRating[0].Total > 0) {
