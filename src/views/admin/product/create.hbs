@@ -6,7 +6,16 @@
     <div class="col-8">
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm:</label>
-            <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
+            <div class="input-group">
+                <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
+                <button class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#import-from-url">
+                    Nhập thông tin từ Website</button>
+            </div>
+        </div>
+
+        <div id="import-from-url" class="mb-3 collapse input-group">
+            <input type="url" class="form-control" placeholder="URL đến trang web">
+            <button class="btn btn-success">Nhập thông tin</button>
         </div>
 
         <div class="mb-3">
@@ -21,7 +30,9 @@
             <div class="col">
                 <label class="form-label">Hình ảnh:</label>
                 <input id="product-image-file" type="file" class="form-control" accept=".png, .jpg, .jpeg">
+                <input id="product-image-url" type="url" class="form-control d-none" placeholder="URL hình ảnh">
             </div>
+
             <div class="col">
                 <label class="form-label">Nhãn tìm kiếm:</label>
                 <select id="product-tags" class="form-select" name="tags[]" multiple multiple data-allow-new="true">
@@ -108,7 +119,8 @@
         <div class="row">
             <div class="col-2">
                 <label class="form-label">Số lượng:</label>
-                <input id="product-quantity" type="number" min="0" class="form-control" placeholder="Nhập số lượng">
+                <input id="product-quantity" type="number" min="0" class="form-control" value="1"
+                    placeholder="Nhập số lượng">
             </div>
             <div class="col">
                 <label class="form-label">Giá bán (<span id="product-price-text"></span> đồng):</label>

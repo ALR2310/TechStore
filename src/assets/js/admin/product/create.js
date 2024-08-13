@@ -191,7 +191,7 @@ $('#btn-import-product-cfg').on('change', function (e) {
 // Nhập văn bản cấu hình cho bảng
 $('#text_import-product-cfg').on("input", _.debounce(function () {
     deleteAllRows();
-    let contentCfg = formatProductTextCfg($(this).val())
+    let contentCfg = formatProductTextCfg($(this).val());
     importProductCfg(contentCfg);
 }, 200));
 
@@ -217,6 +217,11 @@ $('#product-image-file').on('change', function (event) {
             showToast("Tệp bạn chọn không phải là tệp hợp lệ", "danger");
         }
     }
+});
+
+// Xem trước hình ảnh từ URL
+$('#product-image-url').on('input', function () {
+    $('#product-image-preview').attr('src', $(this).val());
 });
 
 // Đặt thời gian mặt định
@@ -331,12 +336,19 @@ $('#product-price').on('input', function () {
 });
 
 // Nút thêm sản phẩm
-$('#btn-product-save').on('click', function () {
+$('#btn-product-save').on('click', async function () {
+    const urlInput = $('#product-image-url').val();
+    const fileInput = document.getElementById('product-image-file');
+    const imageBlob = await createBlobFromSource(urlInput, fileInput);
+    const imageFile = new File([imageBlob], 'image.png', { type: imageBlob.type });
+
+    console.log(imageFile);
+
     const formData = new FormData();
     formData.append('CateId', $('#product-category').val());
     formData.append('BrandId', $('#product-brand').val());
     formData.append('BrandSeriesId', $('#product-brand-series').val());
-    formData.append('Image', $('#product-image-file')[0].files[0]);
+    formData.append('Image', imageFile);
     formData.append('ProdName', $('#product-name').val());
     formData.append('Quantity', $('#product-quantity').val());
     formData.append('Price', formatNumber($('#product-price').val()));
@@ -365,3 +377,83 @@ $('#btn-product-save').on('click', function () {
         }
     });
 });
+
+// Sự kiện nhập thông tin sản phẩm từ server
+$('#import-from-url').find('button').on('click', function () {
+    const urlInput = $(this).parent().find('input').val();
+
+    try {
+        const url = new URL(urlInput);
+        const hostname = url.hostname;
+
+        if (hostname !== 'gearvn.com')
+            return showToast("Hiện chỉ hỗ trợ mỗi gearvn.com", "danger");
+
+        $.ajax({
+            type: "POST",
+            url: "/admin/product/import-from-url",
+            data: JSON.stringify({ url: urlInput }),
+            dataType: "json",
+            contentType: "application/json",
+            success: async (res) => {
+                console.log(res);
+                if (res.success) {
+                    $('#product-name').val(res.data.prdName);
+                    $('#product-discount').val(res.data.prdDiscount);
+                    $('#product-price').val(res.data.prdPrice);
+                    $('#product-image-url').val(res.data.prdImg);
+
+                    // Kích hoạt sự kiện input cho thẻ 
+                    $('#product-name').trigger('input');
+                    $('#product-image-url').trigger("input");
+
+                    deleteAllRows(); // Xoá các dòng cũ trên bảng
+                    importProductCfg(res.data.prdDeviceCfg); // Nhập cấu hình sản phẩm
+                    productContentEditor.setData(res.data.prdContent); // Nhập mô tả sản phẩm
+                }
+            },
+            error: (err) => {
+                console.log(err);
+                showToast("Lỗi máy chủ", "danger");
+            }
+        });
+    } catch (e) {
+        return showToast("Url không hợp lệ", "danger");
+    }
+});
+
+// Hàm tạo tệp blob từ url hình ảnh hoặc file input
+async function createBlobFromSource(url = '', fileInput = null) {
+    if (url) {
+        // Tạo Blob từ URL
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return blob;
+        } catch (error) {
+            console.error('Có lỗi khi tải hình ảnh từ URL:', error);
+            return null;
+        }
+    } else if (fileInput && fileInput.files.length > 0) {
+        // Tạo Blob từ file input
+        return fileInput.files[0];
+    } else {
+        console.error('Không có URL hoặc tệp tin để tạo Blob.');
+        return null;
+    }
+}
+
+// Kiểm tra tên sản phẩm đã tồn tại chưa trong database
+$('#product-name').on('input', _.debounce(function () {
+    $.ajax({
+        type: "POST",
+        url: "/admin/product/check-product-name",
+        data: JSON.stringify({ ProdName: $(this).val() }),
+        dataType: "json",
+        contentType: "application/json",
+        error: function (err) {
+            console.log("Lỗi máy chủ", err);
+            showToast(err.responseJSON.message, "warning");
+        }
+    });
+}, 1000));
