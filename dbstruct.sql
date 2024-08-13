@@ -41,7 +41,8 @@ CREATE TABLE Categories(
     CateName VARCHAR(50),
     Slugs VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    UNIQUE KEY `CateName_UNIQUE` (`CateName`)
 );
 
 -- Bảng thương hiệu sản phẩm
@@ -49,7 +50,8 @@ CREATE TABLE Brands(
     Id INT AUTO_INCREMENT PRIMARY KEY,
     BrandName VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    UNIQUE KEY `BrandName_UNIQUE` (`BrandName`)
 );
 
 -- Bảng loạt thương hiệu
@@ -58,7 +60,8 @@ CREATE TABLE BrandSeries(
     BrandId INT REFERENCES Brands(Id),
     SeriesName VARCHAR(50),
     AtCreate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Status ENUM('Active', 'Inactive') DEFAULT 'Active' 
+    Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    UNIQUE KEY `SeriesName_UNIQUE` (`SeriesName`)
 );
 
 -- Bảng sản phẩm

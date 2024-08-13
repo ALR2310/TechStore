@@ -18,7 +18,7 @@ function handleScraper(html) {
 
     // Trích dữ liệu từ bảng cấu hình sản phẩm
     let textTableProductCfg = '';
-    descContent.children().eq(2).find('tr').each((index, element) => {
+    descContent.find('table').find('tr').each((index, element) => {
         const key = $(element).find('td').eq(0).text().trim();
         const value = $(element).find('td').eq(1).text().trim();
         if (key && value) {
@@ -26,13 +26,15 @@ function handleScraper(html) {
         }
     });
 
-    descContent.children().eq(0).remove(); // Xoá thẻ <p> rỗng
+    descContent.children().first().remove(); // Xoá thẻ <p> rỗng
     descContent.children().eq(0).remove(); // Xóa thẻ <p> tiêu đề
     descContent.children().eq(0).remove(); // Xoá bảng cấu hình
+    descContent.children().eq(0).remove();
+    descContent.find('table').remove();
 
     const product = {
         prdName: $('.product-name').text(),
-        prdPrice: $('.product-price.has-countdown').find('del').text().replace(/[\.,₫]/g, ''),
+        prdPrice: $('.product-price.has-countdown').find('del').text().replace(/[.,₫]/g, ''),
         prdDiscount: $('.product-price.has-countdown').find('.pro-percent').text().replace(/[-%]/g, ''),
         prdImg: $('.boxlazy-img--aspect').attr("href"),
         prdContent: descContent.html().trim(),

@@ -244,19 +244,22 @@ $('#product-brand').on('change', function () {
 
 // Nút thêm loại sản phẩm
 $('#add-category-form').find("button").on("click", function () {
+    $(this).addClass("disabled");
     const cateName = $('#add-category-form').find("input").val();
 
-    if (!cateName) { showToast("Vui lòng điền tên danh mục", "danger"); return; }
+    if (!cateName) {
+        $(this).removeClass("disabled");
+        return showToast("Vui lòng điền tên danh mục", "danger");
+    }
 
     $.ajax({
         type: "POST",
         url: "/admin/categories/create",
-        data: JSON.stringify({
-            CateName: cateName,
-        }),
+        data: JSON.stringify({ CateName: cateName, }),
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
+            $(this).removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: cateName, selected: true });
                 $('#product-category').append(optionHTML).val(res.data.insertId);
@@ -264,6 +267,7 @@ $('#add-category-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
+            $(this).removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -272,19 +276,22 @@ $('#add-category-form').find("button").on("click", function () {
 
 // Nút thêm thương hiệu sản phẩm
 $('#add-brand-form').find("button").on("click", function () {
+    $(this).addClass("disabled");
     const brandName = $('#add-brand-form').find("input").val();
 
-    if (!brandName) { showToast("Vui này điền đầy đủ thông tin", "danger"); return; }
+    if (!brandName) {
+        $(this).removeClass("disabled");
+        return showToast("Vui này điền đầy đủ thông tin", "danger");
+    }
 
     $.ajax({
         type: "POST",
         url: "/admin/brands/create",
-        data: JSON.stringify({
-            BrandName: brandName,
-        }),
+        data: JSON.stringify({ BrandName: brandName, }),
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
+            $(this).removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: brandName, selected: true });
                 $('#product-brand').append(optionHTML).val(res.data.insertId);
@@ -292,6 +299,7 @@ $('#add-brand-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
+            $(this).removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -300,10 +308,14 @@ $('#add-brand-form').find("button").on("click", function () {
 
 // Nút thêm Loạt thương hiệu
 $('#add-brandSeries-form').find("button").on("click", function () {
+    $(this).addClass("disabled");
     const brandId = $('#product-brand').val();
     const SeriesName = $('#add-brandSeries-form').find("input").val();
 
-    if (!brandId || !SeriesName) { showToast("Vui này điền đầy đủ thông tin", "danger"); return; }
+    if (!brandId || !SeriesName) {
+        $(this).removeClass("disabled");
+        return showToast("Vui này điền đầy đủ thông tin", "danger");
+    }
 
     $.ajax({
         type: "POST",
@@ -315,6 +327,7 @@ $('#add-brandSeries-form').find("button").on("click", function () {
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
+            $(this).removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: SeriesName, selected: true });
                 optionHTML.attr('data-brand', brandId);
@@ -323,6 +336,7 @@ $('#add-brandSeries-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
+            $(this).removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -337,12 +351,11 @@ $('#product-price').on('input', function () {
 
 // Nút thêm sản phẩm
 $('#btn-product-save').on('click', async function () {
+    $(this).addClass("disabled");
     const urlInput = $('#product-image-url').val();
     const fileInput = document.getElementById('product-image-file');
     const imageBlob = await createBlobFromSource(urlInput, fileInput);
     const imageFile = new File([imageBlob], 'image.png', { type: imageBlob.type });
-
-    console.log(imageFile);
 
     const formData = new FormData();
     formData.append('CateId', $('#product-category').val());
@@ -367,11 +380,13 @@ $('#btn-product-save').on('click', async function () {
         contentType: false,
         dataType: "json",
         success: (res) => {
+            $(this).removeClass("disabled");
             if (res.success) {
                 showToast(res.message, "success");
             }
         },
         error: (err) => {
+            $(this).removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -380,14 +395,17 @@ $('#btn-product-save').on('click', async function () {
 
 // Sự kiện nhập thông tin sản phẩm từ server
 $('#import-from-url').find('button').on('click', function () {
+    $(this).addClass("disabled");
     const urlInput = $(this).parent().find('input').val();
 
     try {
         const url = new URL(urlInput);
         const hostname = url.hostname;
 
-        if (hostname !== 'gearvn.com')
+        if (hostname !== 'gearvn.com') {
+            $(this).removeClass("disabled");
             return showToast("Hiện chỉ hỗ trợ mỗi gearvn.com", "danger");
+        }
 
         $.ajax({
             type: "POST",
@@ -396,7 +414,7 @@ $('#import-from-url').find('button').on('click', function () {
             dataType: "json",
             contentType: "application/json",
             success: async (res) => {
-                console.log(res);
+                $(this).removeClass("disabled");
                 if (res.success) {
                     $('#product-name').val(res.data.prdName);
                     $('#product-discount').val(res.data.prdDiscount);
@@ -406,6 +424,7 @@ $('#import-from-url').find('button').on('click', function () {
                     // Kích hoạt sự kiện input cho thẻ 
                     $('#product-name').trigger('input');
                     $('#product-image-url').trigger("input");
+                    $('#product-price').trigger("input");
 
                     deleteAllRows(); // Xoá các dòng cũ trên bảng
                     importProductCfg(res.data.prdDeviceCfg); // Nhập cấu hình sản phẩm
@@ -413,11 +432,14 @@ $('#import-from-url').find('button').on('click', function () {
                 }
             },
             error: (err) => {
+                $(this).removeClass("disabled");
                 console.log(err);
                 showToast("Lỗi máy chủ", "danger");
             }
         });
     } catch (e) {
+        $(this).removeClass("disabled");
+        console.log(e);
         return showToast("Url không hợp lệ", "danger");
     }
 });
