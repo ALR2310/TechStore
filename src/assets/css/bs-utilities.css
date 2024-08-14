@@ -336,3 +336,43 @@
 .smooth-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.link-hover-primary:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-primary);
+}
+
+.link-hover-secondary:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-secondary);
+}
+
+.link-hover-success:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-success);
+}
+
+.link-hover-danger:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-danger);
+}
+
+.link-hover-warning:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-warning);
+}
+
+.link-hover-info:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-info);
+}
+
+.link-hover-light:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-light);
+}
+
+.link-hover-dark:hover {
+    transition: all 0.3s ease;
+    color: var(--bs-dark);
+}

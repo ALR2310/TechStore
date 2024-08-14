@@ -1,3 +1,4 @@
+{{!-- Banner trang chủ --}}
 <div class="bg-white rounded">
     <div id="carouselBanner" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-indicators">
@@ -44,22 +45,22 @@
     </div>
 </div>
 
-{{!-- Laptop Gaming bán chạy --}}
+{{!-- Danh sách các sản phẩm nổi bật theo danh mục --}}
+{{#each categories}}
 <div class="bg-white rounded p-2 mt-3">
     <div class="d-flex justify-content-between align-items-center">
-        <strong class="fs-4">Laptop Gaming bán chạy</strong>
-        <a href="/san-pham/laptop-gaming"
-            class="fs-5 link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+        <strong class="fs-4">{{this.products.0.0.CateName}} bán chạy</strong>
+        <a href="/san-pham/{{this.products.0.0.CateSlugs}}" class="fs-5 text-decoration-none link-hover-danger">
             Xem tất cả</a>
     </div>
 
-    <div id="prdLaptopGamingCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner p-2">
-            {{#each prdLaptopGaming}}
+    <div id="carousel-{{@index}}" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner ps-2 pe-2">
+            {{#each this.products}}
             <div class="carousel-item {{#if @first}}active{{/if}}">
                 <div class="row">
                     {{#each this}}
-                    <div class="flex-grow-1 mb-2 ps-1 pe-1" style="max-width: 20%;">
+                    <div class="flex-grow-1 ps-1 pe-1" style="max-width: 20%;">
                         <a name="product-details" href="/san-pham/{{this.Slugs}}" target="_top"
                             class="card text-decoration-none border-focus-danger border-hover-danger h-100">
                             <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2" />
@@ -106,8 +107,7 @@
                                     {{/if}}
                                 </div>
                                 <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">
-                                    {{formatNumToCurrency
-                                    this.Price}} ₫</p>
+                                    {{formatNumToCurrency this.Price}} ₫</p>
                                 <div class="d-flex align-items-center">
                                     <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}}₫</strong>
                                     <button
@@ -116,8 +116,9 @@
                                 </div>
                                 <div class="mt-2 d-flex justify-content-end align-items-center"
                                     style="font-size: 13px;">
-                                    <span class="text-warning">0.0<i class="fa-sharp fa-solid fa-star"></i></span>
-                                    <span class="ms-2">(0 đánh giá)</span>
+                                    <span class="text-warning">{{this.AverageRating}}<i
+                                            class="fa-sharp fa-solid fa-star"></i></span>
+                                    <span class="ms-2">({{this.TotalRating}} đánh giá)</span>
                                 </div>
                             </div>
                         </a>
@@ -127,116 +128,19 @@
             </div>
             {{/each}}
         </div>
+        <!-- Nút điều khiển carousel -->
         <div class="position-absolute top-50 start-0 translate-middle-y">
-            <button class="btn bg-body-secondary rounded-circle d-flex ms-1" data-bs-target="#prdLaptopGamingCarousel"
+            <button class="btn bg-body-secondary rounded-circle d-flex ms-1" data-bs-target="#carousel-{{@index}}"
                 data-bs-slide="prev">
                 <i class="bi bi-chevron-left" style="width: 15px"></i>
             </button>
         </div>
         <div class="position-absolute top-50 end-0 translate-middle-y">
-            <button class="btn bg-body-secondary rounded-circle d-flex me-1" data-bs-target="#prdLaptopGamingCarousel"
+            <button class="btn bg-body-secondary rounded-circle d-flex me-1" data-bs-target="#carousel-{{@index}}"
                 data-bs-slide="next">
                 <i class="bi bi-chevron-right" style="width: 15px"></i>
             </button>
         </div>
     </div>
 </div>
-
-
-{{!-- Laptop văn phòng bán chạy --}}
-<div class="bg-white rounded p-2 mt-3">
-    <div class="d-flex justify-content-between align-items-center">
-        <strong class="fs-4">Laptop văn phòng bán chạy</strong>
-        <a href="/san-pham/laptop-gaming"
-            class="fs-5 link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
-            Xem tất cả</a>
-    </div>
-
-    <div id="prdLaptopCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner p-2">
-            {{#each prdLaptop}}
-            <div class="carousel-item {{#if @first}}active{{/if}}">
-                <div class="row">
-                    {{#each this}}
-                    <div class="flex-grow-1 mb-2 ps-1 pe-1" style="max-width: 20%;">
-                        <a name="product-details" href="/san-pham/{{this.Slugs}}" target="_top"
-                            class="card text-decoration-none border-focus-danger border-hover-danger h-100">
-                            <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2" />
-                            <div class="card-body">
-                                <strong class="card-title multi-line-ellipsis"
-                                    style="font-size: 15px;">{{this.ProdName}}</strong>
-                                <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
-                                    style="font-size: 12px;">
-                                    {{#if this.DeviceCfg.CPU}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-microchip"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.CPU}}</span>
-                                    </div>
-                                    {{/if}}
-                                    {{#if this.DeviceCfg.VGA}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-vr-cardboard"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.VGA}}</span>
-                                    </div>
-                                    {{/if}}
-                                    {{#if this.DeviceCfg.RAM}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-memory"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.RAM}}</span>
-                                    </div>
-                                    {{/if}}
-                                    {{#if this.DeviceCfg.Disk}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-hard-drive"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.Disk}}</span>
-                                    </div>
-                                    {{/if}}
-                                    {{#if this.DeviceCfg.Display}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-display-code"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.Display}}</span>
-                                    </div>
-                                    {{/if}}
-                                    {{#if this.DeviceCfg.Refresh}}
-                                    <div class="flex-grow-1" style="min-width: 60px;">
-                                        <i class="fa-regular fa-radar"></i>
-                                        <span class="ms-1">{{this.DeviceCfg.Refresh}}</span>
-                                    </div>
-                                    {{/if}}
-                                </div>
-                                <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">
-                                    {{formatNumToCurrency
-                                    this.Price}} ₫</p>
-                                <div class="d-flex align-items-center">
-                                    <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}}₫</strong>
-                                    <button
-                                        class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
-                                        style="font-size: 13px;width: 50px;">-{{this.Discount}}%</button>
-                                </div>
-                                <div class="mt-2 d-flex justify-content-end align-items-center"
-                                    style="font-size: 13px;">
-                                    <span class="text-warning">0.0<i class="fa-sharp fa-solid fa-star"></i></span>
-                                    <span class="ms-2">(0 đánh giá)</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-            {{/each}}
-        </div>
-        <div class="position-absolute top-50 start-0 translate-middle-y">
-            <button class="btn bg-body-secondary rounded-circle d-flex ms-1" data-bs-target="#prdLaptopCarousel"
-                data-bs-slide="prev">
-                <i class="bi bi-chevron-left" style="width: 15px"></i>
-            </button>
-        </div>
-        <div class="position-absolute top-50 end-0 translate-middle-y">
-            <button class="btn bg-body-secondary rounded-circle d-flex me-1" data-bs-target="#prdLaptopCarousel"
-                data-bs-slide="next">
-                <i class="bi bi-chevron-right" style="width: 15px"></i>
-            </button>
-        </div>
-    </div>
-</div>
+{{/each}}

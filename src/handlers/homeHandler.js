@@ -4,26 +4,35 @@ const db = require('../configs/dbConnect.js');
 
 router.get('/', async (req, res) => {
     try {
-        const sqlProduct = `
-            SELECT 
-                p.*, 
-                pd.DeviceCfg,
-                TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
-                c.CateName, 
-                FLOOR((ROW_NUMBER() OVER (ORDER BY p.id) - 1) / 5) + 1 AS GroupNumber 
-            FROM 
-                Product p JOIN categories c ON p.CateId = c.Id 
-                JOIN ProductDetails pd ON p.Id = pd.ProdId
-            WHERE 
-                c.CateName = ? AND 
-                p.Status = "Active" 
-            LIMIT 12`;
+        // Danh mục sản phẩm muốn lấy
+        const categories = ["Laptop Gaming", "Laptop", "PC"];
+        const queries = categories.map(category => ({
+            sql: `
+                SELECT 
+                    p.*, 
+                    pd.DeviceCfg,
+                    TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                    c.CateName, 
+                    c.Slugs AS CateSlugs,
+                    ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
+                    COUNT(pv.Id) AS TotalRating,
+                    FLOOR((ROW_NUMBER() OVER (ORDER BY p.id) - 1) / 5) + 1 AS GroupNumber 
+                FROM Product p 
+                    JOIN categories c ON p.CateId = c.Id 
+                    JOIN ProductDetails pd ON p.Id = pd.ProdId
+                    LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
+                WHERE 
+                    c.CateName = ? AND 
+                    p.Status = "Active" 
+                GROUP BY 
+                    p.Id, pd.DeviceCfg
+                LIMIT 12`,
+            params: [category]
+        }));
 
-        const [prdLaptop, prdLaptopGaming] = await db.queryAll([
-            { sql: sqlProduct, params: ["Laptop"] },
-            { sql: sqlProduct, params: ["Laptop Gaming"] }
-        ]);
+        const results = await db.queryAll(queries);
 
+        // Nhóm các sản phẩm từ trường GroupNumber
         const groupBy = (products) =>
             Object.values(products.reduce((acc, prd) => {
                 prd.DeviceCfg = extractSimpleDeviceCfg(prd.DeviceCfg);
@@ -32,10 +41,13 @@ router.get('/', async (req, res) => {
                 return acc;
             }, {}));
 
-        const prdLaptopGroups = groupBy(prdLaptop);
-        const prdLaptopGamingGroups = groupBy(prdLaptopGaming);
+        // Tạo một danh sách các nhóm sản phẩm theo từng danh mục và loại bỏ các nhóm rỗng
+        const productsGroupedByCategory = results.map((products, index) => ({
+            category: categories[index],
+            products: groupBy(products)
+        })).filter(group => group.products.length > 0);
 
-        return res.render('home/index', { prdLaptop: prdLaptopGroups, prdLaptopGaming: prdLaptopGamingGroups });
+        return res.render('home/index', { categories: productsGroupedByCategory });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
