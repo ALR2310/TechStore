@@ -24,8 +24,7 @@ router.get('/', async (req, res) => {
                 WHERE 
                     c.CateName = ? AND 
                     p.Status = "Active" 
-                GROUP BY 
-                    p.Id, pd.DeviceCfg
+                GROUP BY p.Id, pd.DeviceCfg
                 LIMIT 12`,
             params: [category]
         }));

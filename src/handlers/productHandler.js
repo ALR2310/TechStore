@@ -59,33 +59,17 @@ router.get("/:slugs", async (req, res) => {
         const category = await db.query('SELECT Id FROM Categories WHERE Slugs = ?', [slugs]);
 
         if (category?.length > 0) {
-            const sqlCount = `
-                SELECT 
-                    COUNT(*) AS Total 
-                FROM 
-                    Product p 
-                JOIN 
-                    ProductDetails pd ON p.Id = pd.ProdId 
-                WHERE 
-                    p.CateId = ? 
-                    ${priceParams ? `AND ${priceParams}` : ''} 
-                    ${cpuParams ? `AND ${cpuParams}` : ''}
-                    ${ramParams ? `AND ${ramParams}` : ''} 
-                    ${vgaParams ? `AND ${vgaParams}` : ''}
-                    ${demandParams ? `AND ${demandParams}` : ''} 
-                    ${brandParams ? `AND ${brandParams}` : ''} 
-                    AND p.Status = ?`;
-
             const sqlProduct = `
                 SELECT 
                     p.*, 
                     pd.DeviceCfg, 
-                    (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice,
-                    (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS total 
-                FROM 
-                    Product p 
-                JOIN 
-                    ProductDetails pd ON p.Id = pd.ProdId 
+                    TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                    (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS TotalProduct,
+                    ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
+                    COUNT(pv.Id) AS TotalRating
+                FROM Product p 
+                    JOIN ProductDetails pd ON p.Id = pd.ProdId 
+                    LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
                 WHERE 
                     p.CateId = ? 
                     ${priceParams ? `AND ${priceParams}` : ''} 
@@ -95,25 +79,19 @@ router.get("/:slugs", async (req, res) => {
                     ${demandParams ? `AND ${demandParams}` : ''} 
                     ${brandParams ? `AND ${brandParams}` : ''} 
                     AND p.Status = ? 
-                ORDER BY 
-                    ${sortParams} 
-                LIMIT 
-                    ${countParams ? `${countParams}` : 12}`;
+                GROUP BY p.Id, pd.DeviceCfg
+                ORDER BY ${sortParams} 
+                LIMIT ${countParams ? `${countParams}` : 12}`;
 
             // Lấy ra danh sách sản phẩm và tổng số lượng sản phẩm
-            const [product, totalProduct] = await db.queryAll([
-                { sql: sqlProduct, params: [category[0].Id, category[0].Id, "Active"] },
-                { sql: sqlCount, params: [category[0].Id, "Active"] }
-            ]);
+            const product = await db.query(sqlProduct, [category[0].Id, category[0].Id, "Active"]);
 
             product.forEach(prdItem => {
-                const simpleDeviceCfg = extractSimpleDeviceCfg(prdItem.DeviceCfg);
-                prdItem.DeviceCfg = simpleDeviceCfg;
-                prdItem.Total = product.length;
-                prdItem.FinalPrice = parseFloat(prdItem.FinalPrice).toFixed(0);
+                prdItem.DeviceCfg = extractSimpleDeviceCfg(prdItem.DeviceCfg);
+                prdItem.CurrentTotalProduct = product.length;
             });
 
-            return res.render("product/index", { product, totalProduct });
+            return res.render("product/index", { product });
         } else {
             // Lấy ra sản phẩm và mô tả chi tiết sản phẩm
             const sql = `SELECT p.*, pd.DeviceCfg, pd.Content, (p.Price - (p.Price * (p.Discount / 100))) AS FinalPrice 

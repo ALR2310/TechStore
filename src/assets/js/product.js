@@ -46,7 +46,7 @@ $('#btn-show-product-cfg').on("click", () => {
 // Đặt chiều cao cho thẻ product content
 $(document).ready(function () {
     $('#product-content').height(
-        $('#sidebar-product-details').height() - 24 -24
+        $('#sidebar-product-details').height() - 24 - 24
     );
 });
 
@@ -58,7 +58,7 @@ $('#btn-show-more').on('click', function () {
 
 // Hàm cho nút xem thêm sản phẩm
 function viewMoreProduct() {
-    const newUrl = getUrlParams("count", $('#product-count').text());
+    const newUrl = getUrlParams("count", $('#product-count').text().trim());
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 };
 
