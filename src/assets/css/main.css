@@ -301,7 +301,15 @@ p {
     background: none;
 }
 
-.multi-line-ellipsis {
+.text-line-1 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+}
+
+.text-line-2 {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -332,8 +340,6 @@ p {
     font-weight: bold;
     font-size: 18px;
 }
-
-
 
 .star-rating {
     display: block;
@@ -374,4 +380,8 @@ p {
     position: absolute;
     color: var(--bs-secondary);
     z-index: 1;
+}
+
+.search-result a:not(:last-child) {
+    margin-bottom: 8px;
 }

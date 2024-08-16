@@ -165,11 +165,37 @@
                 </div>
 
                 {{!-- Search --}}
-                <div class="input-group input-group-search align-items-center me-3" style="width: 100%;">
-                    <input type="text" class="form-control" placeholder="Bạn cần tìm gì?">
-                    <button class="btn bg-white" type="button">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
+                <div class="position-relative me-3" style="width: 100%;">
+                    <div class="input-group input-group-search align-items-center">
+                        <input id="txt_search" type="text" class="form-control" placeholder="Bạn cần tìm gì?">
+                        <button class="btn bg-white" type="button">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+
+                    <div class="search-result position-absolute bg-white shadow-lg w-100 mt-1 rounded p-3"
+                        style="display: none;">
+                        <a class="d-flex text-decoration-none w-100 placeholder-glow" aria-hidden="true">
+                            <div class="bg-secondary placeholder me-3">
+                                <img src="/imgs/default-product.png" style="width: 50px;visibility: hidden">
+                            </div>
+                            <div class="w-100">
+                                <span class="placeholder w-75 bg-secondary"></span>
+                                <span class="placeholder w-25 bg-secondary"></span>
+                                <span class="placeholder w-25 bg-secondary"></span>
+                            </div>
+                        </a>
+                        <a class="d-flex text-decoration-none w-100 placeholder-glow" aria-hidden="true">
+                            <div class="bg-secondary placeholder me-3">
+                                <img src="/imgs/default-product.png" style="width: 50px;visibility: hidden">
+                            </div>
+                            <div class="w-100">
+                                <span class="placeholder w-75 bg-secondary"></span>
+                                <span class="placeholder w-25 bg-secondary"></span>
+                                <span class="placeholder w-25 bg-secondary"></span>
+                            </div>
+                        </a>
+                    </div>
                 </div>
 
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -234,7 +260,7 @@
                                     </a>
                                 </li>
 
-                                 <li class="user-menu_item">
+                                <li class="user-menu_item">
                                     <dir class="line"></dir>
                                 </li>
                                 {{/if}}

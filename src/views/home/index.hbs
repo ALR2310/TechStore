@@ -48,7 +48,7 @@
 {{!-- Danh sách các sản phẩm nổi bật theo danh mục --}}
 {{#each categories}}
 <div class="bg-white rounded p-2 mt-3">
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center mb-2">
         <strong class="fs-4">{{this.products.0.0.CateName}} bán chạy</strong>
         <a href="/san-pham/{{this.products.0.0.CateSlugs}}" class="fs-5 text-decoration-none link-hover-danger">
             Xem tất cả</a>
@@ -65,7 +65,7 @@
                             class="card text-decoration-none border-focus-danger border-hover-danger h-100">
                             <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2" />
                             <div class="card-body">
-                                <strong class="card-title multi-line-ellipsis"
+                                <strong class="card-title text-line-2"
                                     style="font-size: 15px;">{{this.ProdName}}</strong>
                                 <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
                                     style="font-size: 12px;">

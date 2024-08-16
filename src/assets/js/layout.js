@@ -112,3 +112,44 @@ $('#btn-facebook').on('click', () => {
         }
     });
 });
+
+// Input Tìm kiếm sản phẩm
+$('#txt_search').on('focus', function () {
+    $('.search-result').show();
+}).on('blur', function () {
+    setTimeout(() => { $('.search-result').hide(); }, 100);
+}).on('input', _.debounce(function () {
+    $.ajax({
+        type: "GET",
+        url: "/search/preview",
+        data: { value: this.value, },
+        success: (res) => {
+            const resultsContainer = $('.search-result');
+            resultsContainer.empty();
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(product => {
+                    const productElement = `
+                        <a href="/san-pham/${product.Slugs}" class="d-flex text-decoration-none">
+                            <img src="${product.Image}" class="me-3" style="width: 50px;">
+                            <div>
+                                <p class="text-black text-line-1" style="font-size: 14px;">${product.ProdName}</p>
+                                <div class="d-flex align-items-center" style="font-size: 14px;">
+                                    <strong class="text-danger me-2">${formatNumToCurrency(product.FinalPrice)}₫</strong>
+                                    <p class="text-secondary text-decoration-line-through">${formatNumToCurrency(product.Price)}₫</p>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    resultsContainer.append(productElement);
+                });
+            } else {
+                $('.search-result').html('<p>Không tìm thấy sản phẩm nào.</p>');
+            }
+        },
+        error: (err) => {
+            console.error(err);
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
+}, 500));

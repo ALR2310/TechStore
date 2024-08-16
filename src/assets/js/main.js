@@ -36,6 +36,7 @@ function formatNumber(number) {
 
 // Hàm định dạng giá trị số thành tiền với các dấu .
 function formatNumToCurrency(value) {
+    if (typeof value !== 'string') value = value.toString();
     value = value.replace(/\D/g, '');
     return new Intl.NumberFormat('vi-VN').format(value);
 }

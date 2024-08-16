@@ -53,6 +53,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/search/preview', async (req, res) => {
+    const { value } = req.query;
+
+    try {
+        const sql = `SELECT p.*, CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice 
+            FROM Product p WHERE ProdName LIKE ? AND p.Status = "Active" ORDER BY p.AtUpdate DESC LIMIT 6`;
+        const product = await db.query(sql, [`%${value}%`]);
+        return res.status(200).json({ success: true, message: 'Lấy dữ liệu thành công', data: product });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
+    }
+});
+
 // Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm
 function extractSimpleDeviceCfg(deviceCfg) {
     const cfgLines = deviceCfg.split('\n').map(line => line.trim());
