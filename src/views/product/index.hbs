@@ -61,16 +61,10 @@
                         <label for="filter-price-option0" class="pointer w-100">Tất cả</label>
                     </div>
                     <div class="form-check text-black">
-                        <input id="filter-price-option6" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" data-params="10"
-                            name="filter-price" />
-                        <label for="filter-price-option6" class="pointer w-100">Dưới 10 triệu</label>
-                    </div>
-                    <div class="form-check text-black">
                         <input id="filter-price-option1" type="radio"
-                            class="form-check-input form-check-input-danger rounded pointer" data-params="10-15"
+                            class="form-check-input form-check-input-danger rounded pointer" data-params="15"
                             name="filter-price" />
-                        <label for="filter-price-option1" class="pointer w-100">Từ 10 - 15 triệu</label>
+                        <label for="filter-price-option1" class="pointer w-100">Dưới 15 triệu</label>
                     </div>
                     <div class="form-check text-black">
                         <input id="filter-price-option2" type="radio"
@@ -300,7 +294,7 @@
                 {{#each product}}
                 <div class="col-3 mb-2 ps-1 pe-1">
                     <a name="product-details" href="/san-pham/{{this.Slugs}}" target="_top"
-                        class="card text-decoration-none border-focus-danger border-hover-danger">
+                        class="card text-decoration-none border-focus-danger border-hover-danger h-100">
                         <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2" />
                         <div class="card-body">
                             <strong class="card-title multi-line-ellipsis"

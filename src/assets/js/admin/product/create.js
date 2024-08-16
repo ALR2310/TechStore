@@ -478,4 +478,4 @@ $('#product-name').on('input', _.debounce(function () {
             showToast(err.responseJSON.message, "warning");
         }
     });
-}, 1000));
+}, 500));

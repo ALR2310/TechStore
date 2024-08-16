@@ -1,3 +1,14 @@
+<div class="row justify-content-between mb-3">
+    <div id="import-from-url" class="input-group w-50">
+        <input type="url" class="form-control" placeholder="URL đến trang web">
+        <button class="btn btn-info">Nhập sản phẩm</button>
+    </div>
+
+    <button id="btn-product-save" class="btn btn-sm btn-success" style="width: 150px;">
+        <i class="bi bi-save"></i> <span class="ps-2">Lưu sản phẩm</span>
+    </button>
+</div>
+
 <div class="row mb-3">
     <div class="col-4">
         <img id="product-image-preview" src="/imgs/default-product.png" alt="Product image" class="w-100 rounded">
@@ -6,22 +17,13 @@
     <div class="col-8">
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm:</label>
-            <div class="input-group">
-                <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
-                <button class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#import-from-url">
-                    Nhập thông tin từ Website</button>
-            </div>
-        </div>
-
-        <div id="import-from-url" class="mb-3 collapse input-group">
-            <input type="url" class="form-control" placeholder="URL đến trang web">
-            <button class="btn btn-success">Nhập thông tin</button>
+            <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
         </div>
 
         <div class="mb-3">
             <label class="form-label">URL sản phẩm:</label>
             <div class="input-group">
-                <span class="input-group-text" id="basic-addon3">http://localhost:4850/product/</span>
+                <span class="input-group-text" id="basic-addon3">http://localhost:4850/san-pham/</span>
                 <input id="product-slug" type="text" class="form-control" placeholder="Url sản phẩm">
             </div>
         </div>
@@ -189,11 +191,7 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-between">
-            <button id="btn-product-save" class="btn btn-sm btn-success">
-                <i class="bi bi-save"></i> <span class="ps-2">Lưu sản phẩm</span>
-            </button>
-
+        <div class="d-flex justify-content-end">
             <div class="btn-group">
                 <button id="btn-add-product-cfg" class="btn btn-sm btn-primary ">
                     <i class="bi bi-plus-square"></i>

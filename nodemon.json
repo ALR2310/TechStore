@@ -1,3 +1,6 @@
 {
-    "ext": "js,mjs,cjs"
+    "ext": "js,mjs,cjs",
+    "ignore": [
+        "techstore.db"
+    ]
 }

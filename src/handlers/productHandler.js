@@ -13,13 +13,12 @@ router.get("/:slugs", async (req, res) => {
     switch (sort) {
         case 'newest': sortParams = "p.AtUpdate DESC"; break;
         case 'oldest': sortParams = "p.AtUpdate ASC"; break;
-        case 'asc': sortParams = "p.Price ASC"; break;
-        case 'desc': sortParams = "p.Price DESC"; break;
+        case 'asc': sortParams = "FinalPrice ASC"; break;
+        case 'desc': sortParams = "FinalPrice DESC"; break;
         default: sortParams = "p.AtUpdate DESC"; break;
     }
     switch (price) {
-        case "10": priceParams = "p.Price <= 10000000"; break;
-        case '10-15': priceParams = "p.Price BETWEEN 10000000 AND 15000000"; break;
+        case '15': priceParams = "p.Price <= 15000000"; break;
         case '15-20': priceParams = "p.Price BETWEEN 15000000 AND 20000000"; break;
         case '20-25': priceParams = "p.Price BETWEEN 20000000 AND 25000000"; break;
         case '25-30': priceParams = "p.Price BETWEEN 25000000 AND 30000000"; break;
@@ -63,7 +62,7 @@ router.get("/:slugs", async (req, res) => {
                 SELECT 
                     p.*, 
                     pd.DeviceCfg, 
-                    TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                    CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice, 
                     (SELECT COUNT(*) FROM Product WHERE CateId = ?) AS TotalProduct,
                     ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
                     COUNT(pv.Id) AS TotalRating
@@ -126,20 +125,29 @@ router.get("/:slugs", async (req, res) => {
 
                     res.cookie('viewed', viewedProducts, { maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-                    if (req.user) await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)
-                        ON DUPLICATE KEY UPDATE AtCreate = CURRENT_TIMESTAMP`, [product[0].Id, req.user.Id]);
+                    // Nếu đã đăng nhập thì lưu vào database
+                    if (req.user) {
+                        const checkResult = await db.query(`SELECT COUNT(*) as count FROM ProductViewed WHERE ProdId = ? AND UserId = ?`,
+                            [product[0].Id, req.user.Id]);
+
+                        if (checkResult.count > 0)
+                            await db.query(`UPDATE ProductViewed SET AtCreate = CURRENT_TIMESTAMP WHERE ProdId = ? AND UserId = ?`,
+                                [product[0].Id, req.user.Id]);
+                        else await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)`, [product[0].Id, req.user.Id]);
+                    }
                 }
 
                 // query lấy ra các sản phẩm tương tự
-                const sqlSimilar = `SELECT p.*, TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice, 
+                const sqlSimilar = `SELECT p.*, CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice, 
                     ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating, COUNT(pv.Id) AS TotalRating FROM Product p 
                     LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId WHERE p.CateId = ? AND p.Id != ? AND p.Status = ? 
-                    GROUP BY p.Id ORDER BY RAND() LIMIT 3;`;
+                    GROUP BY p.Id ORDER BY RANDOM() LIMIT 3;`;
 
                 // query lấy ra sản phẩm đã xem
-                const sqlViewed = `SELECT p.*, TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                const placeholders = viewedProducts.map(() => '?').join(',');
+                const sqlViewed = `SELECT p.*, CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice,
                      ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating, COUNT(pv.Id) AS TotalRating FROM Product p 
-                     LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId WHERE p.Id IN (?) AND p.Status = ? GROUP BY p.Id LIMIT 3`;
+                     LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId WHERE p.Id IN (${placeholders}) AND p.Status = ? GROUP BY p.Id LIMIT 3`;
 
                 // query lấy ra đánh giá của sản phẩm
                 const sqlRating = `SELECT SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1, 
@@ -153,7 +161,7 @@ router.get("/:slugs", async (req, res) => {
                 // Thực hiện các truy vấn
                 const [productSimilar, productViewed, productRating, productReview] = await db.queryAll([
                     { sql: sqlSimilar, params: [product[0].CateId, product[0].Id, "Active"] },
-                    { sql: sqlViewed, params: [viewedProducts, "Active"] },
+                    { sql: sqlViewed, params: [...viewedProducts, "Active"] },
                     { sql: sqlRating, params: [product[0].Id, "Active"] },
                     { sql: sqlReview, params: [product[0].Id, "Active"] }
                 ]);

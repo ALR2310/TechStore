@@ -6,6 +6,7 @@ const helpers = {
 
     // Định dạng một chuỗi số thành tiền tệ Việt Nam (VNĐ)
     formatNumToCurrency: function (value) {
+        if (typeof value !== 'string') value = value.toString();
         value = value.replace(/\D/g, '');
         return new Intl.NumberFormat('vi-VN').format(value);
     },

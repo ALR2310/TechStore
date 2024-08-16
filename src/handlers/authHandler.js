@@ -37,19 +37,20 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
-        const getUser = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ? AND Status = ?',
+        const User = await db.query('SELECT * FROM User WHERE Username = ? OR Email = ? AND Status = ?',
             [username, username, "Active"]);
 
-        if (getUser.length === 0) return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
+        if (User.length === 0) return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
 
-        const checkPwd = await bcrypt.compare(password, getUser[0].Password);
+        const checkPwd = await bcrypt.compare(password, User[0].Password);
 
         if (!checkPwd) return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác' });
 
-        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [getUser[0].Id]))[0]?.Token
-            || crypto.randomBytes(32).toString('hex');
-
-        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [getUser[0].Id, authToken]);
+        let authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [User[0].Id]))[0]?.Token;
+        if (!authToken) {
+            authToken = crypto.randomBytes(32).toString('hex');
+            await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [User[0].Id, authToken]);
+        }
 
         return res.cookie('authToken', authToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -73,7 +74,7 @@ router.get('/loginGoogle/callback', passport.authenticate('google', { failureRed
         let userId = checkEmail[0]?.Id;
 
         if (checkEmail.length > 0) {
-            const checkGoogleId = await db.query('SELECT * FROM User WHERE GoogleId = ? AND Email = ? AND Status = ?', 
+            const checkGoogleId = await db.query('SELECT * FROM User WHERE GoogleId = ? AND Email = ? AND Status = ?',
                 [GGId, Email, "Active"]);
 
             if (checkGoogleId.length == 0) {
@@ -85,10 +86,11 @@ router.get('/loginGoogle/callback', passport.authenticate('google', { failureRed
             await db.query('INSERT INTO UserInfo (UserId, FullName) VALUES (?, ?)', [userId, fullName]);
         }
 
-        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
-            || crypto.randomBytes(32).toString('hex');
-
-        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [userId, authToken]);
+        let authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [User[0].Id]))[0]?.Token;
+        if (!authToken) {
+            authToken = crypto.randomBytes(32).toString('hex');
+            await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [User[0].Id, authToken]);
+        }
 
         return res.cookie('authToken', authToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -119,10 +121,11 @@ router.get('/loginFacebook/callback', passport.authenticate('facebook', { failur
         userId = (await db.query('INSERT INTO User (FacebookId) VALUES (?)', [FBId])).insertId;
         await db.query('INSERT INTO UserInfo (UserId, FullName, Gender) VALUES (?, ?, ?)', [userId, fullName, Gender]);
 
-        const authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [userId]))[0]?.Token
-            || crypto.randomBytes(32).toString('hex');
-
-        await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [userId, authToken]);
+        let authToken = (await db.query('SELECT Token FROM authtoken WHERE UserId = ?', [User[0].Id]))[0]?.Token;
+        if (!authToken) {
+            authToken = crypto.randomBytes(32).toString('hex');
+            await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [User[0].Id, authToken]);
+        }
 
         return res.cookie('authToken', authToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000,

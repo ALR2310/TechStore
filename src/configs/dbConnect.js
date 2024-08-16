@@ -1,18 +1,5 @@
-const mysql = require('mysql2/promise');
-
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    waitForConnections: true,
-    connectionLimit: 10,
-    maxIdle: 10,
-    idleTimeout: 60000,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0,
-});
+const sqlite3 = require('sqlite3').verbose();
+const database = new sqlite3.Database('techstore.db');
 
 const db = {
     /**
@@ -27,11 +14,20 @@ const db = {
      * // Truy vấn có tham số
      * const result = await db.query('SELECT * FROM user WHERE username = ?', ['admin'])
      * */
-    query: async (sql = '', params = []) => {
-        const connection = await pool.getConnection();
-        const result = (await connection.query(sql, params))[0];
-        connection.release();
-        return result;
+    query: (sql, params = []) => {
+        return new Promise((resolve, reject) => {
+            const isSelect = sql.trim().toLowerCase().startsWith('select');
+            if (isSelect)
+                database.all(sql, params, (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                });
+            else
+                database.run(sql, params, function (err) {
+                    if (err) reject(err);
+                    else resolve({ insertId: this.lastID, changes: this.changes });
+                });
+        });
     },
 
     /**
@@ -51,12 +47,10 @@ const db = {
      *     { sql: 'SELECT * FROM user WHERE email = ?', params: [email] }
      * ]);
      * */
-    queryAll: async (queries = [{ sql: '', params: [] }]) => {
-        const promise = queries.map(query => {
-            return db.query(query.sql, query.params);
-        });
-        return await Promise.all(promise);
-    }
+    queryAll: (queries = []) => {
+        const promises = queries.map(query => db.query(query.sql, query.params));
+        return Promise.all(promises);
+    },
 };
 
 module.exports = db;

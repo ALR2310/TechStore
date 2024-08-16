@@ -11,14 +11,14 @@ router.get('/', async (req, res) => {
                 SELECT 
                     p.*, 
                     pd.DeviceCfg,
-                    TRUNCATE(p.Price - (p.Price * (p.Discount / 100)), 0) AS FinalPrice,
+                    CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice, 
                     c.CateName, 
                     c.Slugs AS CateSlugs,
                     ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
                     COUNT(pv.Id) AS TotalRating,
                     FLOOR((ROW_NUMBER() OVER (ORDER BY p.id) - 1) / 5) + 1 AS GroupNumber 
                 FROM Product p 
-                    JOIN categories c ON p.CateId = c.Id 
+                    JOIN Categories c ON p.CateId = c.Id 
                     JOIN ProductDetails pd ON p.Id = pd.ProdId
                     LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
                 WHERE 

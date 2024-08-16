@@ -5,6 +5,7 @@ const upload = require('../middleware/upload');
 const path = require("path");
 const fs = require("fs");
 const scraper = require("../utils/scraper");
+const myUtils = require('../utils/myUtils');
 
 
 router.get('/', (req, res) => {
@@ -111,7 +112,9 @@ router.post("/categories/create", async (req, res) => {
     if (!CateName) return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
-        const result = await db.query("INSERT INTO Categories (CateName) VALUES (?)", [CateName]);
+        const cateSlugs = myUtils.formatToSlugs(CateName);
+
+        const result = await db.query("INSERT INTO Categories (CateName, Slugs) VALUES (?, ?)", [CateName, cateSlugs]);
         return res.status(200).json({ success: true, message: "Thêm danh mục thành công", data: result });
     } catch (e) {
         console.error(e);
