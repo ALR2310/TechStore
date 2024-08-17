@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../configs/dbConnect.js');
+const myUtils = require("../utils/myUtils");
 
 router.get('/', async (req, res) => {
     try {
@@ -34,7 +35,7 @@ router.get('/', async (req, res) => {
         // Nhóm các sản phẩm từ trường GroupNumber
         const groupBy = (products) =>
             Object.values(products.reduce((acc, prd) => {
-                prd.DeviceCfg = extractSimpleDeviceCfg(prd.DeviceCfg);
+                prd.DeviceCfg = myUtils.extractSimpleDeviceCfg(prd.DeviceCfg);
                 acc[prd.GroupNumber] = acc[prd.GroupNumber] || [];
                 acc[prd.GroupNumber].push(prd);
                 return acc;
@@ -53,7 +54,62 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/search/preview', async (req, res) => {
+router.get('/tim-kiem', async (req, res) => {
+    const { name, sort, price, count } = req.query;
+
+    let sortParams, priceParams, countParams;
+
+    switch (sort) {
+        case 'newest': sortParams = "p.AtUpdate DESC"; break;
+        case 'oldest': sortParams = "p.AtUpdate ASC"; break;
+        case 'asc': sortParams = "FinalPrice ASC"; break;
+        case 'desc': sortParams = "FinalPrice DESC"; break;
+        default: sortParams = "p.AtUpdate DESC"; break;
+    }
+    switch (price) {
+        case '15': priceParams = "p.Price <= 15000000"; break;
+        case '15-20': priceParams = "p.Price BETWEEN 15000000 AND 20000000"; break;
+        case '20-25': priceParams = "p.Price BETWEEN 20000000 AND 25000000"; break;
+        case '25-30': priceParams = "p.Price BETWEEN 25000000 AND 30000000"; break;
+        case '30': priceParams = "p.Price >= 30000000"; break;
+    }
+    if (count) countParams = parseInt(count) + 12;
+
+    try {
+        const sql = `
+            SELECT 
+                p.*, 
+                pd.DeviceCfg, 
+                CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice, 
+                (SELECT COUNT(*) FROM Product WHERE ProdName LIKE ?) AS TotalProduct,
+                ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
+                COUNT(pv.Id) AS TotalRating
+            FROM Product p 
+                JOIN ProductDetails pd ON p.Id = pd.ProdId 
+                LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
+            WHERE 
+                p.ProdName LIKE ? 
+                ${priceParams ? `AND ${priceParams}` : ''} 
+                AND p.Status = ? 
+            GROUP BY p.Id, pd.DeviceCfg
+            ORDER BY ${sortParams} 
+            LIMIT ${countParams ? `${countParams}` : 12}`;
+
+        const products = await db.query(sql, [`%${name}%`, `%${name}%`, "Active"]);
+
+        products.forEach(prdItem => {
+            prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
+            prdItem.CurrentTotalProduct = products.length;
+        });
+
+        return res.render('home/search', { product: products });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
+    }
+});
+
+router.get('/tim-kiem/preview', async (req, res) => {
     const { value } = req.query;
 
     try {
@@ -66,34 +122,5 @@ router.get('/search/preview', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
-
-// Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm
-function extractSimpleDeviceCfg(deviceCfg) {
-    const cfgLines = deviceCfg.split('\n').map(line => line.trim());
-    const simpleDeviceCfg = {};
-
-    cfgLines.forEach(line => {
-        if (line.startsWith('CPU') || line.startsWith('CPU;')) {
-            const match = line.match(/Ultra\s+\d+/) || line.match(/i[0-9]-\d+[A-Za-z]/) || line.match(/Ryzen(?:™)?\s[0-9]+/);
-            simpleDeviceCfg.CPU = match ? match[0] : 'none';
-        } else if (line.startsWith('VGA') || line.startsWith('Card đồ họa')) {
-            const match = line.match(/RTX(?:™)? (\d+)/i) || line.match(/AMD Radeon/i) || line.match(/Intel® Arc/i);
-            simpleDeviceCfg.VGA = match ? match[0] : 'none';
-        } else if (line.startsWith('RAM')) {
-            const match = line.match(/[0-9]+GB/);
-            simpleDeviceCfg.RAM = match ? match[0] : 'none';
-        } else if (line.startsWith('Ổ') || line.startsWith('Ổ cứng')) {
-            const match = line.match(/[0-9]+TB/) || line.match(/[0-9]+GB/);
-            simpleDeviceCfg.Disk = match ? match[0] : 'none';
-        } else if (line.startsWith('Màn hình')) {
-            const match = line.match(/(\d+(\.\d+)?[-\s]inch)/i) || line.match(/(\d+(\.\d+)?)"/i);
-            simpleDeviceCfg.Display = match ? match[0] : 'none';
-            const match1 = line.match(/(\d+Hz)/i);
-            simpleDeviceCfg.Refresh = match1 ? match1[0] : 'none';
-        }
-    });
-
-    return simpleDeviceCfg;
-}
 
 module.exports = router;

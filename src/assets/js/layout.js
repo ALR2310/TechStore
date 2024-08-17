@@ -118,10 +118,18 @@ $('#txt_search').on('focus', function () {
     $('.search-result').show();
 }).on('blur', function () {
     setTimeout(() => { $('.search-result').hide(); }, 100);
+}).keypress(function (e) {
+    if (e.which === 13) {
+        const currentUrl = new URL(window.location.origin + '/tim-kiem');
+        const params = new URLSearchParams(currentUrl.search);
+        params.set('name', this.value);
+        const searchUrl = `${currentUrl.origin}${currentUrl.pathname}?${params.toString()}`;
+        Turbo.visit(searchUrl, { action: 'replace' });
+    }
 }).on('input', _.debounce(function () {
     $.ajax({
         type: "GET",
-        url: "/search/preview",
+        url: "/tim-kiem/preview",
         data: { value: this.value, },
         success: (res) => {
             const resultsContainer = $('.search-result');

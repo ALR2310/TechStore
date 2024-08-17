@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../configs/dbConnect");
 const path = require('path');
+const myUtils = require("../utils/myUtils");
 
 
 router.get("/:slugs", async (req, res) => {
@@ -86,7 +87,7 @@ router.get("/:slugs", async (req, res) => {
             const product = await db.query(sqlProduct, [category[0].Id, category[0].Id, "Active"]);
 
             product.forEach(prdItem => {
-                prdItem.DeviceCfg = extractSimpleDeviceCfg(prdItem.DeviceCfg);
+                prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
                 prdItem.CurrentTotalProduct = product.length;
             });
 
@@ -99,7 +100,7 @@ router.get("/:slugs", async (req, res) => {
             const product = await db.query(sql, [slugs, "Active"]);
 
             if (product?.length > 0) {
-                product[0].SimpleDeviceCfg = extractSimpleDeviceCfg(product[0].DeviceCfg);
+                product[0].SimpleDeviceCfg = myUtils.extractSimpleDeviceCfg(product[0].DeviceCfg);
                 product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
 
                 // Lấy ra danh sách sản phẩm đã xem từ cookie
@@ -220,35 +221,6 @@ router.post("/danh-gia", async (req, res) => {
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
-
-// Hàm trích xuất thông tin cấu hình cơ bản từ trường cấu hình trong sản phẩm
-function extractSimpleDeviceCfg(deviceCfg) {
-    const cfgLines = deviceCfg.split('\n').map(line => line.trim());
-    const simpleDeviceCfg = {};
-
-    cfgLines.forEach(line => {
-        if (line.startsWith('CPU') || line.startsWith('CPU;')) {
-            const match = line.match(/Ultra\s+\d+/) || line.match(/i[0-9]-\d+[A-Za-z]/) || line.match(/Ryzen(?:™)?\s[0-9]+/);
-            simpleDeviceCfg.CPU = match ? match[0] : 'none';
-        } else if (line.startsWith('VGA') || line.startsWith('Card đồ họa')) {
-            const match = line.match(/RTX(?:™)? (\d+)/i) || line.match(/AMD Radeon/i) || line.match(/Intel® Arc/i);
-            simpleDeviceCfg.VGA = match ? match[0] : 'none';
-        } else if (line.startsWith('RAM')) {
-            const match = line.match(/[0-9]+GB/);
-            simpleDeviceCfg.RAM = match ? match[0] : 'none';
-        } else if (line.startsWith('Ổ') || line.startsWith('Ổ cứng')) {
-            const match = line.match(/[0-9]+TB/) || line.match(/[0-9]+GB/);
-            simpleDeviceCfg.Disk = match ? match[0] : 'none';
-        } else if (line.startsWith('Màn hình')) {
-            const match = line.match(/(\d+(\.\d+)?[-\s]inch)/i) || line.match(/(\d+(\.\d+)?)"/i);
-            simpleDeviceCfg.Display = match ? match[0] : 'none';
-            const match1 = line.match(/(\d+Hz)/i);
-            simpleDeviceCfg.Refresh = match1 ? match1[0] : 'none';
-        }
-    });
-
-    return simpleDeviceCfg;
-}
 
 // Hàm định dạng lại dữ liệu trả về của productRating
 const formatProductRating = (ratingData) => {

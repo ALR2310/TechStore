@@ -56,12 +56,6 @@ $('#btn-show-more').on('click', function () {
     $('#product-content').removeClass('overflow-hidden').css('height', '100%');
 });
 
-// Hàm cho nút xem thêm sản phẩm
-function viewMoreProduct() {
-    const newUrl = getUrlParams("count", $('#product-count').text().trim());
-    Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
-};
-
 
 // Chức năng chọn rating
 var selectedIndex = -1;
@@ -150,7 +144,7 @@ $(document).ready(function () {
 
 
 
-// --------------- Các sự kiện lọc sản phẩm --------------------------------------------- 
+// ------------------ Các sự kiện lọc sản phẩm --------------------------------------------- 
 
 // Hàm đặt các tham số mặt định khi load trang
 function setDefaultParams() {
@@ -190,3 +184,9 @@ $('button[name="btn-filter-brands"]').on('click', function () {
     const newUrl = getUrlParams('brand', $(this).data('params'));
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 });
+
+// Hàm cho nút xem thêm sản phẩm
+function viewMoreProduct() {
+    const newUrl = getUrlParams("count", $('#product-count').text().trim());
+    Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
+};

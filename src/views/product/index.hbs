@@ -267,12 +267,12 @@
 
     {{! Content }}
     <div class="col-9">
-        {{! Sort }}
         <turbo-frame id="product-container">
+            {{! Sort }}
             <div class="row mb-2">
                 <div class="d-flex justify-content-between align-items-center p-1">
                     <p>
-                        Tìm thấy<strong>{{#if product}} {{product.0.TotalProduct}} {{else}}0{{/if}}</strong>kết quả
+                        Tìm thấy<strong>{{#if product}} {{product.0.TotalProduct}} {{else}} 0 {{/if}}</strong>kết quả
                     </p>
                     <span id="product-count" class="d-none">{{product.0.CurrentTotalProduct}}</span>
 
