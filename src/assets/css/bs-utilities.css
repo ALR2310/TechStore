@@ -43,7 +43,6 @@
 }
 
 .form-outline>.form-control:not(:placeholder-shown)~label,
-/* .form-outline>.form-control:valid~label, */
 .form-outline>.form-control:focus~label {
     transform: translateY(-250%);
     background-color: var(--bs-white);

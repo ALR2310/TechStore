@@ -4,7 +4,8 @@ const db = require("../configs/dbConnect");
 const myUtils = require("../utils/myUtils");
 const path = require("path");
 
-router.get('/da-xem-gan-day', async (req, res) => {
+
+router.get('/', async (req, res) => {
     if (!req.user)
         return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
 
@@ -33,7 +34,7 @@ router.get('/da-xem-gan-day', async (req, res) => {
             prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
         });
 
-        return res.render('user/viewed', { product: productViewed });
+        return res.render('user/index', { product: productViewed });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });

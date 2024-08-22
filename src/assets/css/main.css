@@ -385,3 +385,28 @@ p {
 .search-result a:not(:last-child) {
     margin-bottom: 8px;
 }
+
+.profile-menu-left {
+    color: var(--bs-secondary);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 16px;
+}
+
+.profile-menu-left.active {
+    color: var(--bs-danger);
+}
+
+.profile-menu-left:hover {
+    color: var(--bs-danger);
+}
+
+.profile-menu-left i {
+    flex: 1;
+}
+
+.profile-menu-left span {
+    flex: 7;
+}

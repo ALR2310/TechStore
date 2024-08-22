@@ -31,7 +31,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // View Engine
-app.engine('hbs', engine({ extname: ".hbs", helpers: require('./configs/helpersHBS') }));
+app.engine('hbs', engine({
+  extname: ".hbs",
+  partialsDir: [
+    path.join(__dirname, 'views/partials'), {
+      dir: path.join(__dirname, 'views/user/partials'),
+      namespace: 'user'
+    }
+  ],
+  helpers: require('./configs/helpersHBS')
+}));
 app.set('view engine', 'hbs');
 
 // Folder Views

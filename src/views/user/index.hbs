@@ -1,0 +1,54 @@
+<div class="row">
+    {{!-- Profile Menu Left --}}
+    <div class="col-3">
+        <div class="bg-white rounded">
+            <div class="d-flex align-items-center p-3">
+                <img src="/imgs/default-profile.png" alt="" style="width: 40px;">
+                <span class="fw-bold fs-5 ms-3">ALRIP</span>
+            </div>
+
+            <hr class="m-0">
+
+            <a href="#profile" class="profile-menu-left">
+                <i class="fa-solid fa-user"></i>
+                <span>Thông tin tài khoản</span>
+            </a>
+            <a href="#address" class="profile-menu-left">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Địa chỉ nhận hàng</span>
+            </a>
+            <a href="#order" class="profile-menu-left">
+                <i class="fa-solid fa-bags-shopping"></i>
+                <span>Quản lý đơn hàng</span>
+            </a>
+            <a href="#viewed" class="profile-menu-left">
+                <i class="fa-solid fa-eye"></i>
+                <span>Sản phẩm đã xem</span>
+            </a>
+            <a href="/auth/logout" class="profile-menu-left">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </div>
+    </div>
+
+    {{!-- Content --}}
+    <div class="col-9">
+        <div class="tab-content">
+            <div id="profile" class="tab-pane fade show active">
+                {{> user/profile }}
+            </div>
+            <div id="address" class="tab-pane fade">
+                {{> user/address }}
+            </div>
+            <div id="order" class="tab-pane fade">
+                {{> user/order }}
+            </div>
+            <div id="viewed" class="tab-pane fade">
+                {{> user/viewed }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/user.js"></script>
