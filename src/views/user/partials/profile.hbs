@@ -3,18 +3,21 @@
 
     <div class="d-flex align-items-center w-75 mb-3">
         <label class="text-end text-nowrap me-4" style="width: 26%">Họ Tên</label>
-        <input id="profile-fullName" type="text" class="form-control" placeholder="Nhập họ và tên" style="width: 74%">
+        <input id="profile-fullName" type="text" class="form-control" placeholder="Nhập họ và tên"
+            value="{{userInfo.FullName}}" style="width: 74%">
     </div>
 
     <div class="d-flex align-items-center w-75 mb-3">
         <label class="text-end text-nowrap me-4" style="width: 26%">Giới Tính</label>
         <div class="d-flex align-items-center" style="width: 74%;">
             <div class="form-check">
-                <input id="profile-gender1" name="profile-gender" class="form-check-input pointer" checked type="radio">
+                <input id="profile-gender1" name="profile-gender" class="form-check-input pointer" value="Nam"
+                    type="radio" {{#if (eq userInfo.Gender 'Nam' ) }} checked {{/if}}>
                 <label for="profile-gender1" class="form-check-label pointer">Nam</label>
             </div>
             <div class="form-check ms-3">
-                <input id="profile-gender2" name="profile-gender" class="form-check-input pointer" type="radio">
+                <input id="profile-gender2" name="profile-gender" class="form-check-input pointer" value="Nữ"
+                    type="radio" {{#if (eq userInfo.Gender 'Nữ' ) }} checked {{/if}}>
                 <label for="profile-gender2" class="form-check-label pointer">Nữ</label>
             </div>
         </div>
@@ -23,22 +26,23 @@
     <div class="d-flex align-items-center w-75 mb-3">
         <label class="text-end text-nowrap me-4" style="width: 26%">Số Điện Thoại</label>
         <input id="profile-phoneNumber" type="number" class="form-control" placeholder="Nhập số điện thoại"
-            style="width: 74%">
+            value="{{userInfo.PhoneNumber}}" style="width: 74%">
     </div>
 
     <div class="d-flex align-items-center w-75 mb-3">
         <label class="text-end text-nowrap me-4" style="width: 26%">Email</label>
-        <input id="profile-email" type="email" class="form-control" placeholder="Nhập địa chỉ Email" style="width: 74%">
+        <input id="profile-email" type="email" class="form-control" placeholder="Nhập địa chỉ Email"
+            value="{{user.Email}}" style="width: 74%">
     </div>
 
     <div class="d-flex align-items-center w-75 mb-3">
         <label class="text-end text-nowrap me-4" style="width: 26%">Ngày sinh</label>
-        <input id="profile-dateOfBirth" type="date" class="form-control" placeholder="Nhập ngày sinh"
-            style="width: 74%">
+        <input id="profile-dateOfBirth" type="datetime-local" class="form-control" placeholder="Nhập ngày sinh"
+            value="{{userInfo.DoB}}" style="width: 74%">
     </div>
 
     <div class="d-flex align-items-center w-75 mb-3">
         <span class="me-4 visible" style="width: 26%"></span>
-        <button class="btn btn-danger" style="width: 150px">Lưu Thay Đổi</button>
+        <button id="btn-profile-save" class="btn btn-danger" style="width: 150px">Lưu Thay Đổi</button>
     </div>
 </div>

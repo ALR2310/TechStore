@@ -1,4 +1,3 @@
-
 // Sự kiện đặt class cho profile menu
 $(document).ready(function () {
     $('.profile-menu-left').on('click', function (event) {
@@ -21,4 +20,31 @@ $(document).ready(function () {
 
     var hash = window.location.hash || '#profile';
     $('.profile-menu-left[href="' + hash + '"]').trigger('click');
+});
+
+// Nút lưu thông tin người dùng
+$('#btn-profile-save').on('click', function () {
+    const data = {
+        fullName: $('#profile-fullName').val(),
+        gender: $('input[name="profile-gender"]:checked').val(),
+        phoneNumber: $('#profile-phoneNumber').val(),
+        email: $("#profile-email").val(),
+        dateOfBirth: $('#profile-dateOfBirth').val()
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/tai-khoan/update",
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        success: function (res) {
+            if (res.success)
+                showToast(res.message, 'success');
+        },
+        error: function (err) {
+            console.error(err);
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
 });

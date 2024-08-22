@@ -34,7 +34,26 @@ router.get('/', async (req, res) => {
             prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
         });
 
-        return res.render('user/index', { product: productViewed });
+        return res.render('user/index', { productViewed });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
+    }
+});
+
+router.post('/update', async (req, res) => {
+    const { fullName, gender, phoneNumber, email, dateOfBirth } = req.body;
+
+    if (!fullName || !gender || !phoneNumber || !email || !dateOfBirth)
+        return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
+    else if (!req.user)
+        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
+
+    try {
+        await db.query(`UPDATE User SET Email = ? WHERE Id = ?`, [email, req.user.Id]);
+        await db.query(`UPDATE UserInfo SET FullName = ?, PhoneNumber = ?, Gender = ?, DoB = ? WHERE UserId = ?`,
+            [fullName, phoneNumber, gender, dateOfBirth, req.user.Id]);
+        return res.status(200).json({ success: true, message: "Cập nhật thông tin thành công" });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
