@@ -132,9 +132,10 @@ router.get("/:slugs", async (req, res) => {
                             [product[0].Id, req.user.Id]);
 
                         if (checkResult.count > 0)
-                            await db.query(`UPDATE ProductViewed SET AtCreate = CURRENT_TIMESTAMP WHERE ProdId = ? AND UserId = ?`,
-                                [product[0].Id, req.user.Id]);
-                        else await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)`, [product[0].Id, req.user.Id]);
+                            await db.query(`UPDATE ProductViewed SET AtCreate = ? WHERE ProdId = ? AND UserId = ?`,
+                                ['CURRENT_TIMESTAMP', product[0].Id, req.user.Id]);
+                        else
+                            await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)`, [product[0].Id, req.user.Id]);
                     }
                 }
 

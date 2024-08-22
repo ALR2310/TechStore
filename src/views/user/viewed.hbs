@@ -1,0 +1,72 @@
+{{#if product}}
+<div class="row">
+    {{#each product}}
+    <div class="flex-grow-1 mb-2 ps-1 pe-1" style="max-width: 20%;">
+        <a name="product-details" href="/san-pham/{{this.Slugs}}" target="_top"
+            class="card text-decoration-none border-focus-danger border-hover-danger h-100">
+            <img src="/{{this.Image}}" alt="Laptop Logo" class="card-img-top p-2" />
+            <div class="card-body">
+                <strong class="card-title text-line-2" style="font-size: 15px;">{{this.ProdName}}</strong>
+                <div class="d-flex flex-wrap mt-2 p-2 align-items-center bg-secondary-subtle rounded"
+                    style="font-size: 12px;">
+                    {{#if this.DeviceCfg.CPU}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-microchip"></i>
+                        <span class="ms-1">{{this.DeviceCfg.CPU}}</span>
+                    </div>
+                    {{/if}}
+                    {{#if this.DeviceCfg.VGA}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-vr-cardboard"></i>
+                        <span class="ms-1">{{this.DeviceCfg.VGA}}</span>
+                    </div>
+                    {{/if}}
+                    {{#if this.DeviceCfg.RAM}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-memory"></i>
+                        <span class="ms-1">{{this.DeviceCfg.RAM}}</span>
+                    </div>
+                    {{/if}}
+                    {{#if this.DeviceCfg.Disk}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-hard-drive"></i>
+                        <span class="ms-1">{{this.DeviceCfg.Disk}}</span>
+                    </div>
+                    {{/if}}
+                    {{#if this.DeviceCfg.Display}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-display-code"></i>
+                        <span class="ms-1">{{this.DeviceCfg.Display}}</span>
+                    </div>
+                    {{/if}}
+                    {{#if this.DeviceCfg.Refresh}}
+                    <div class="flex-grow-1" style="min-width: 60px;">
+                        <i class="fa-regular fa-radar"></i>
+                        <span class="ms-1">{{this.DeviceCfg.Refresh}}</span>
+                    </div>
+                    {{/if}}
+                </div>
+                <p class="mt-2 text-decoration-line-through" style="font-size: 13px;">
+                    {{formatNumToCurrency this.Price}} ₫
+                </p>
+                <div class="d-flex align-items-center">
+                    <strong class="text-danger me-3">{{formatNumToCurrency this.FinalPrice}} ₫</strong>
+                    <button class="btn btn-sm text-danger rounded-0 border border-danger bg-danger-subtle pt-0 pb-0"
+                        style="font-size: 13px;width: 50px;">-{{this.Discount}}%</button>
+                </div>
+                <div class="mt-2 d-flex justify-content-end align-items-center" style="font-size: 13px;">
+                    <span class="text-warning">{{this.AverageRating}}<i class="fa-sharp fa-solid fa-star"></i></span>
+                    <span class="ms-2">({{this.TotalRating}} đánh giá)</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    {{/each}}
+</div>
+
+{{else}}
+<div class="row justify-content-center">
+    <img src="/imgs/empty.png" alt="not found" style="width: 300px;" />
+    <h5 class="text-center">Rất tiếc, chúng tôi không tìm thấy sản phẩm phù hợp cho bạn</h5>
+</div>
+{{/if}}
