@@ -9,23 +9,23 @@
 
             <hr class="m-0">
 
-            <a href="#profile" class="profile-menu-left">
+            <a href="#ho-so" class="profile-menu-left">
                 <i class="fa-solid fa-user"></i>
                 <span>Thông tin tài khoản</span>
             </a>
-            <a href="#address" class="profile-menu-left">
+            <a href="#dia-chi" class="profile-menu-left">
                 <i class="fa-solid fa-location-dot"></i>
                 <span>Địa chỉ nhận hàng</span>
             </a>
-            <a href="#order" class="profile-menu-left">
+            <a href="#don-hang" class="profile-menu-left">
                 <i class="fa-solid fa-bags-shopping"></i>
                 <span>Quản lý đơn hàng</span>
             </a>
-            <a href="#viewed" class="profile-menu-left">
+            <a href="#da-xem" class="profile-menu-left">
                 <i class="fa-solid fa-eye"></i>
                 <span>Sản phẩm đã xem</span>
             </a>
-            <a href="/auth/logout" class="profile-menu-left">
+            <a href="/auth/logout" class="profile-menu-left" data-turbo="false">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>Đăng xuất</span>
             </a>
@@ -35,16 +35,16 @@
     {{!-- Content --}}
     <div class="col-9">
         <div class="tab-content">
-            <div id="profile" class="tab-pane fade show active">
+            <div id="ho-so" class="tab-pane fade show active">
                 {{> user/profile }}
             </div>
-            <div id="address" class="tab-pane fade">
+            <div id="dia-chi" class="tab-pane fade">
                 {{> user/address }}
             </div>
-            <div id="order" class="tab-pane fade">
+            <div id="don-hang" class="tab-pane fade">
                 {{> user/order }}
             </div>
-            <div id="viewed" class="tab-pane fade">
+            <div id="da-xem" class="tab-pane fade">
                 {{> user/viewed }}
             </div>
         </div>

@@ -259,7 +259,7 @@ $('#add-category-form').find("button").on("click", function () {
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
-            $(this).removeClass("disabled");
+            $('#add-category-form').removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: cateName, selected: true });
                 $('#product-category').append(optionHTML).val(res.data.insertId);
@@ -267,7 +267,7 @@ $('#add-category-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
-            $(this).removeClass("disabled");
+            $('#add-category-form').removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -291,7 +291,7 @@ $('#add-brand-form').find("button").on("click", function () {
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
-            $(this).removeClass("disabled");
+            $('#add-brand-form').removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: brandName, selected: true });
                 $('#product-brand').append(optionHTML).val(res.data.insertId);
@@ -299,7 +299,7 @@ $('#add-brand-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
-            $(this).removeClass("disabled");
+            $('#add-brand-form').removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -327,7 +327,7 @@ $('#add-brandSeries-form').find("button").on("click", function () {
         dataType: "json",
         contentType: "application/json",
         success: (res) => {
-            $(this).removeClass("disabled");
+            $('#add-brandSeries-form').removeClass("disabled");
             if (res.success) {
                 const optionHTML = $('<option>', { value: res.data.insertId, text: SeriesName, selected: true });
                 optionHTML.attr('data-brand', brandId);
@@ -336,7 +336,7 @@ $('#add-brandSeries-form').find("button").on("click", function () {
             }
         },
         error: (err) => {
-            $(this).removeClass("disabled");
+            $('#add-brandSeries-form').removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -380,13 +380,13 @@ $('#btn-product-save').on('click', async function () {
         contentType: false,
         dataType: "json",
         success: (res) => {
-            $(this).removeClass("disabled");
+            $('#btn-product-save').removeClass("disabled");
             if (res.success) {
                 showToast(res.message, "success");
             }
         },
         error: (err) => {
-            $(this).removeClass("disabled");
+            $('#btn-product-save').removeClass("disabled");
             console.log(err);
             showToast("Lỗi máy chủ", "danger");
         }
@@ -414,7 +414,7 @@ $('#import-from-url').find('button').on('click', function () {
             dataType: "json",
             contentType: "application/json",
             success: async (res) => {
-                $(this).removeClass("disabled");
+                $('#import-from-url').removeClass("disabled");
                 if (res.success) {
                     $('#product-name').val(res.data.prdName);
                     $('#product-discount').val(res.data.prdDiscount);
@@ -432,13 +432,13 @@ $('#import-from-url').find('button').on('click', function () {
                 }
             },
             error: (err) => {
-                $(this).removeClass("disabled");
+                $('#import-from-url').removeClass("disabled");
                 console.log(err);
                 showToast("Lỗi máy chủ", "danger");
             }
         });
     } catch (e) {
-        $(this).removeClass("disabled");
+        $('#import-from-url').removeClass("disabled");
         console.log(e);
         return showToast("Url không hợp lệ", "danger");
     }

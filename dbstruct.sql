@@ -19,9 +19,21 @@ CREATE TABLE IF NOT EXISTS UserInfo(
     PhoneNumber TEXT,
     Gender TEXT CHECK(Gender IN('Nam', 'Nữ')) DEFAULT 'Nam',
     DoB TEXT DEFAULT '0001-01-01 00:00:00',
-    Address TEXT,
-    Country TEXT DEFAULT "Việt Nam",
     AtCreate TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng địa chỉ nhận hàng
+CREATE TABLE IF NOT EXISTS ShippingAddress (
+    Id INTEGER PRIMARY KEY,
+    UserId INTEGER REFERENCES User(Id),
+    FullName TEXT,
+    PhoneNumber TEXT,
+    AddressLine TEXT,
+    AddressType TEXT CHECK(AddressType IN('Văn phòng', 'Nhà riêng')) DEFAULT 'Nhà riêng',
+    Country TEXT DEFAULT "Việt Nam",
+    IsDefault INTEGER CHECK(IsDefault IN(0, 1)) DEFAULT 0,
+    AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
+    Status TEXT CHECK(Status IN('Active', 'Inactive')) DEFAULT 'Active'
 );
 
 -- Bảng mã xác thực người dùng
@@ -178,6 +190,28 @@ CREATE TABLE IF NOT EXISTS PurchaseHistory(
     AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
     Status TEXT CHECK(Status IN('Active', 'Inactive')) DEFAULT 'Active'
 );
+
+-- Trigger để đảm bảo chỉ có một địa chỉ mặc định cho mỗi User của bảng ShippingAddress
+CREATE TRIGGER set_default_address
+BEFORE INSERT ON ShippingAddress
+FOR EACH ROW
+WHEN NEW.IsDefault = 1
+BEGIN
+    UPDATE ShippingAddress 
+    SET IsDefault = 0 
+    WHERE UserId = NEW.UserId;
+END;
+
+-- Trigger để cập nhật địa chỉ khác khi IsDefault thay đổi của bảng ShippingAddress
+CREATE TRIGGER update_default_address
+BEFORE UPDATE ON ShippingAddress
+FOR EACH ROW
+WHEN NEW.IsDefault = 1 AND OLD.IsDefault != NEW.IsDefault
+BEGIN
+    UPDATE ShippingAddress 
+    SET IsDefault = 0 
+    WHERE UserId = NEW.UserId AND Id != NEW.Id;
+END;
 
 -- Dữ liệu 
 INSERT INTO User(Email, UserName, Password, Role) VALUES ('anle@gmail.com', 'anle', '$2a$10$weMkH.qB0S.Nv1Jih.3tTuSmtilJwNGs4GtyMN6rom5rj7.UcezXa', 'Admin');

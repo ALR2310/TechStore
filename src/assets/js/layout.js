@@ -71,6 +71,11 @@ $('#btn-login').on('click', () => {
     });
 });
 
+$('#login-password').on('keydown', (e) => {
+    if (e.keyCode === 13)
+        $('#btn-login').click();
+});
+
 // Đăng nhập bằng google
 $('#btn-google').on('click', () => {
     const width = 530, height = 600;
