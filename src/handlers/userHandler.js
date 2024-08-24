@@ -2,13 +2,11 @@ const express = require("express");
 const router = express.Router();
 const db = require("../configs/dbConnect");
 const myUtils = require("../utils/myUtils");
+const { checkUser } = require('../middleware/authenticate');
 const path = require("path");
 
 
-router.get('/', async (req, res) => {
-    if (!req.user)
-        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
-
+router.get('/', checkUser, async (req, res) => {
     try {
         const sqlProductViewed = `
             SELECT 
@@ -48,13 +46,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/profile-update', async (req, res) => {
+router.post('/profile-update', checkUser, async (req, res) => {
     const { fullName, gender, phoneNumber, email, dateOfBirth } = req.body;
 
     if (!fullName || !gender || !phoneNumber || !email || !dateOfBirth)
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-    else if (!req.user)
-        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
 
     try {
         await db.query(`UPDATE User SET Email = ? WHERE Id = ?`, [email, req.user.Id]);
@@ -67,13 +63,11 @@ router.post('/profile-update', async (req, res) => {
     }
 });
 
-router.post('/address-create', async (req, res) => {
+router.post('/address-create', checkUser, async (req, res) => {
     const { fullName, phoneNumber, AddressLine, AddressType } = req.body;
 
     if (!fullName || !phoneNumber || !AddressLine || !AddressType)
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-    else if (!req.user)
-        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
 
     try {
         // Kiểm tra xem đã có địa chỉ mặt định tồn tại chưa
@@ -94,13 +88,11 @@ router.post('/address-create', async (req, res) => {
     }
 });
 
-router.post('/address-default', async (req, res) => {
+router.post('/address-default', checkUser, async (req, res) => {
     const { Id } = req.body;
 
     if (!Id)
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-    else if (!req.user)
-        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
 
     try {
         await db.query(`UPDATE ShippingAddress SET IsDefault = 1 WHERE Id = ?`, [Id]);
@@ -111,13 +103,11 @@ router.post('/address-default', async (req, res) => {
     }
 });
 
-router.post('/address-delete', async (req, res) => {
+router.post('/address-delete', checkUser, async (req, res) => {
     const { Id } = req.body;
 
     if (!Id)
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-    else if (!req.user)
-        return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
 
     try {
         await db.query(`UPDATE ShippingAddress SET IsDefault = 0, Status = ? WHERE Id = ?`, ["Inactive", Id]);
