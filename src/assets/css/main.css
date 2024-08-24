@@ -410,3 +410,36 @@ p {
 .profile-menu-left span {
     flex: 7;
 }
+
+.cart-status-item {
+    position: relative;
+    color: var(--bs-secondary-color);
+}
+
+.cart-status-item:not(:first-child)::after {
+    content: "";
+    position: absolute;
+    top: 25%;
+    right: 60%;
+    width: 80%;
+    height: 1px;
+    border-top: 1px dashed #535353;
+}
+
+.cart-status-item i {
+    padding: 6px;
+    border: 1px solid var(--bs-secondary-color);
+    border-radius: 50%;
+    border-color: rgba(var(--bs-secondary-rgb), 1);
+    background-color: var(--bs-body-bg);
+}
+
+.cart-status-item.active i {
+    color: #fff;
+    background-color: rgba(var(--bs-danger-rgb), 1);
+    border-color: rgba(var(--bs-danger-rgb), 1);
+}
+
+.cart-status-item.active p {
+    color: var(--bs-danger);
+}

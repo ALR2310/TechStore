@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../configs/dbConnect.js');
 const myUtils = require("../utils/myUtils");
+const { checkUser } = require('../middleware/authenticate');
 
 router.get('/', async (req, res) => {
     try {
@@ -121,6 +122,10 @@ router.get('/tim-kiem/preview', async (req, res) => {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
+});
+
+router.get('/gio-hang', checkUser, async (req, res) => {
+    res.render('home/cart');
 });
 
 module.exports = router;
