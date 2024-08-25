@@ -37,3 +37,12 @@ function viewMoreProduct() {
     const newUrl = getUrlParams("count", $('#product-count').text().trim());
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 };
+
+
+//----------------------Trang giỏ hàng------------------------------
+
+$('input[name="cart-address"]').on('focus', function () {
+    $(this).closest('.input-group').addClass('bs-focus');
+}).on('blur', function () {
+    $(this).closest('.input-group').removeClass('bs-focus');
+});

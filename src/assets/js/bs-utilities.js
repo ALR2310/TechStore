@@ -48,3 +48,22 @@ document.querySelectorAll('[aria-expanded-icon]').forEach(function (element) {
         element.setAttribute('aria-expanded-icon', currentIcon.classList.contains('fa-rotate-180') ? 'false' : 'true');
     });
 });
+
+// Tạo chức năng tăng giảm số trên thẻ input-group-number
+document.querySelectorAll('.input-group-number').forEach(function (group) {
+    const input = group.querySelector('input');
+    const btnMinus = group.querySelector('button:first-child');
+    const btnPlus = group.querySelector('button:last-child');
+
+    btnMinus.addEventListener('click', function () {
+        let currentValue = parseInt(input.value);
+        if (currentValue > parseInt(input.min))
+            input.value = currentValue - 1;
+    });
+
+    btnPlus.addEventListener('click', function () {
+        let currentValue = parseInt(input.value);
+        if (currentValue < parseInt(input.max))
+            input.value = currentValue + 1;
+    });
+});
