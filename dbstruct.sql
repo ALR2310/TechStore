@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS UserInfo(
 );
 
 -- Bảng địa chỉ nhận hàng
-CREATE TABLE IF NOT EXISTS ShippingAddress (
+CREATE TABLE IF NOT EXISTS Address (
     Id INTEGER PRIMARY KEY,
     UserId INTEGER REFERENCES User(Id),
     FullName TEXT,
@@ -131,17 +131,10 @@ CREATE TABLE IF NOT EXISTS Tags(
 CREATE TABLE IF NOT EXISTS Cart(
     Id INTEGER PRIMARY KEY,
     UserId INTEGER REFERENCES User(Id),
-    AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
-    Status TEXT CHECK(Status IN('Active', 'Inactive')) DEFAULT 'Active'
-);
-
--- Bảng chi tiết giỏ hàng
-CREATE TABLE IF NOT EXISTS CartItem(
-    Id INTEGER PRIMARY KEY,
-    CartId INTEGER REFERENCES Cart(Id),
     ProdId INTEGER REFERENCES Product(Id),
     Quantity INTEGER DEFAULT 1,
-    AtCreate TEXT DEFAULT CURRENT_TIMESTAMP
+    AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
+    Status TEXT CHECK(Status IN('Active', 'Inactive')) DEFAULT 'Active'
 );
 
 -- Bảng phương thức thanh toán
@@ -164,8 +157,7 @@ CREATE TABLE IF NOT EXISTS Shipment(
 CREATE TABLE IF NOT EXISTS Orders(
     Id INTEGER PRIMARY KEY,
     UserId INTEGER REFERENCES User(Id),
-    PayId INTEGER REFERENCES Payments(Id),
-    ShipId INTEGER REFERENCES Shipment(Id),
+    AdrId INTEGER REFERENCES Address(Id),
     TotalPrice REAL DEFAULT 0,
     AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
     Status TEXT CHECK(Status IN('Pending', 'Processing', 'Completed', 'Cancelled')) DEFAULT 'Pending'
@@ -191,24 +183,24 @@ CREATE TABLE IF NOT EXISTS PurchaseHistory(
     Status TEXT CHECK(Status IN('Active', 'Inactive')) DEFAULT 'Active'
 );
 
--- Trigger để đảm bảo chỉ có một địa chỉ mặc định cho mỗi User của bảng ShippingAddress
+-- Trigger để đảm bảo chỉ có một địa chỉ mặc định cho mỗi User của bảng Address
 CREATE TRIGGER set_default_address
-BEFORE INSERT ON ShippingAddress
+BEFORE INSERT ON Address
 FOR EACH ROW
 WHEN NEW.IsDefault = 1
 BEGIN
-    UPDATE ShippingAddress 
+    UPDATE Address 
     SET IsDefault = 0 
     WHERE UserId = NEW.UserId;
 END;
 
--- Trigger để cập nhật địa chỉ khác khi IsDefault thay đổi của bảng ShippingAddress
+-- Trigger để cập nhật địa chỉ khác khi IsDefault thay đổi của bảng Address
 CREATE TRIGGER update_default_address
-BEFORE UPDATE ON ShippingAddress
+BEFORE UPDATE ON Address
 FOR EACH ROW
 WHEN NEW.IsDefault = 1 AND OLD.IsDefault != NEW.IsDefault
 BEGIN
-    UPDATE ShippingAddress 
+    UPDATE Address 
     SET IsDefault = 0 
     WHERE UserId = NEW.UserId AND Id != NEW.Id;
 END;

@@ -86,7 +86,7 @@ $('#btn-product-review').on('click', function () {
         rating: getSelectedRating(),
         comment: $('#product-review-comment').val(),
         userName: $('#product-review-username').val(),
-        productSlugs: $('#product-slugs').text()
+        productId: $('#prdId').text()
     };
 
     $.ajax({
@@ -190,3 +190,28 @@ function viewMoreProduct() {
     const newUrl = getUrlParams("count", $('#product-count').text().trim());
     Turbo.visit(newUrl, { frame: 'product-container', action: 'replace' });
 };
+
+// -------------------------------------------------------------------------
+
+$('#btn-add-to-cart').on('click', function () {
+    $.ajax({
+        type: "POST",
+        url: "/gio-hang/create",
+        data: JSON.stringify({ productId: $('#prdId').text() }),
+        dataType: 'json',
+        contentType: "application/json",
+        success: function (res) {
+            if (res.success) {
+                showToast(res.message, 'success');
+                let cartCount = parseInt($('#cart-count').text());
+                $('#cart-count').text(cartCount + 1);
+            } else {
+                showToast(res.message, 'warning');
+            }
+        },
+        error: function (err) {
+            console.error(err);
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
+});

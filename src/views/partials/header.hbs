@@ -231,9 +231,10 @@
                             <div class="d-flex justify-content-center align-items-center position-relative">
                                 <i class="fa-regular fa-cart-shopping pe-2" style="font-size: 22px;"></i>
                                 <p class="text-nowrap menu-text" style="font-size: 12px;">Giỏ<br>hàng</p>
-                                <span class="position-absolute translate-middle badge rounded-pill bg-warning"
+                                <span id="cart-count"
+                                    class="position-absolute translate-middle badge rounded-pill bg-warning"
                                     style="padding: 3px 5px;top: 4px;left: 24px;">
-                                    0
+                                    {{#if user}} {{user.CartCount}} {{else}} 0 {{/if}}
                                 </span>
                             </div>
                         </a>
@@ -246,7 +247,7 @@
                             <i class="fa-regular fa-user" style="font-size: 22px;"></i>
                             <div class="d-flex align-items-center" style="height: 35px">
                                 <p class="text-nowrap menu-text ps-2" style="font-size: 12px;">
-                                    Xin chào<br><span>{{userInfo.FullName}}</span>
+                                    Xin chào<br><span>{{user.FullName}}</span>
                                 </p>
                             </div>
 

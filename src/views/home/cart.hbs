@@ -1,6 +1,11 @@
 <div class="d-flex justify-content-center">
+    <a id="btn-cart-back" class="w-50 mb-3 text-decoration-none link-hover-danger pointer">
+        <i class="fa-regular fa-chevron-left"></i> Quay lại</a>
+</div>
+
+<div class="d-flex justify-content-center">
     <div class="bg-white rounded w-50">
-        <div class="row text-center m-2 p-3 bg-danger-subtle rounded">
+        <div id="cart-status" class="row text-center m-2 p-3 bg-danger-subtle rounded">
             <div class="col-3 cart-status-item active">
                 <i class="fa-solid fa-basket-shopping"></i>
                 <p class="text-nowrap mt-1">Giỏ hàng</p>
@@ -19,69 +24,92 @@
             </div>
         </div>
 
-        <div class="p-4 pb-0">
+        <turbo-frame id="cart-container" class="p-4 pb-0 d-block">
 
             {{!-- Cart order --}}
-            <div id="cart-order" class="d-none">
-                <div class="row">
+            <div id="cart-order">
+                {{#if cart}}
+                {{#each cart}}
+                <div class="row" data-cart="{{this.CartId}}" data-prod="{{this.Id}}">
                     <div class="col-2">
                         <div class="border rounded p-1">
-                            <img src="/imgs/default-product.png" alt="" class="w-100">
+                            <img src="{{this.Image}}" class="w-100">
                         </div>
                     </div>
                     <div class="col-7">
                         <div class="d-flex flex-column justify-content-between w-100 h-100">
-                            <strong>Laptop gaming ASUS ROG Zephyrus G16 GA605WI QR090WS</strong>
+                            <strong>{{this.ProdName}}</strong>
 
-                            <button class="btn btn-sm btn-light border mt-1 w-25">
+                            <button class="btn btn-sm btn-light border mt-1 w-25"
+                                onclick="deleteCartItem({{this.CartId}})">
                                 <i class="fa-regular fa-trash-can"></i> Xoá
                             </button>
                         </div>
                     </div>
                     <div class="col-3">
-                        <p class="text-danger fs-5 fw-bold text-end">26.490.000₫</p>
-                        <p class="text-decoration-line-through text-muted text-end">28.490.000₫</p>
-                        <div class="d-flex justify-content-end ">
-                            <div class="input-group input-group-sm input-group-number w-75">
-                                <button class="btn border fw-bold text-center" style="width: 30px;">-</button>
-                                <input type="number" readonly class="form-control no-focus text-center" value="1"
-                                    min="1" max="10">
-                                <button class="btn border fw-bold text-center" style="width: 30px;">+</button>
+                        <p class="cart-order-price text-danger fs-5 fw-bold text-end">{{formatNumToCurrency
+                            this.FinalPrice}}₫</p>
+                        <p class="text-decoration-line-through text-muted text-end">{{formatNumToCurrency this.Price}}₫
+                        </p>
+                        <div class="d-flex justify-content-end">
+                            <div class="input-group input-group-sm input-group-number flex-nowrap w-75">
+                                <button class="btn border fw-bold text-center" onclick="handleCartOrder(100)"
+                                    style="width: 30px;">-</button>
+                                <input type="number" readonly
+                                    class="cart-order-quantity form-control no-focus text-center"
+                                    value="{{this.CartQuantity}}" min="1" max="10">
+                                <button class="btn border fw-bold text-center" onclick="handleCartOrder(100)"
+                                    style="width: 30px;">+</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                {{/each}}
+                {{else}}
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                    <p class="mb-3 fw-bold">Giỏ hàng của bạn đang trống</p>
+                    <a href="/" target="_top" class="btn btn-outline-primary mb-2 w-50">Tiếp tục mua hàng</a>
+                </div>
+                {{/if}}
             </div>
-
 
             {{!-- Cart info --}}
             <div id="cart-info" class="d-none">
                 <p class="fs-5 fw-bold mb-3">Địa chỉ nhận hàng</p>
 
                 <div class="mb-3">
-                    <div class="input-group rounded flex-nowrap" tabindex="1">
+                    {{#if address}}
+                    {{#each address}}
+                    <div class="cart-info input-group rounded flex-nowrap" tabindex="-1">
                         <div class="input-group-text">
-                            <input id="cart-address1" name="cart-address" type="radio" class="form-check-input pointer">
+                            <input id="cart-address{{this.Id}}" name="cart-info-address" type="radio"
+                                value="{{this.Id}}" class="form-check-input pointer" {{#if
+                                this.IsDefault}}checked{{/if}}>
                         </div>
-                        <label for="cart-address1" class="ps-2 border p-2 w-100 rounded-end pointer">
-                            <strong>Lê Thanh An - 0523926718</strong>
-                            <p class="text-muted text-line-1">Tỉnh Khánh Hòa, Thị xã Ninh Hòa, Xã Ninh Xuân, Thôn phước
-                                lâm
-                            </p>
+                        <label for="cart-address{{this.Id}}" class="ps-2 border p-2 w-100 rounded-end pointer">
+                            <strong>
+                                <span class="cart-info-name">{{this.FullName}}</span> -
+                                <span class="cart-info-phone">{{this.PhoneNumber}}</span>
+                            </strong>
+                            <p class="cart-info-address text-muted text-line-1">{{this.AddressLine}}</p>
                         </label>
                     </div>
-
-                    {{!-- <div class="text-danger">
+                    {{/each}}
+                    {{else}}
+                    <div class="text-danger">
                         <p class="fw-bold text-center mb-2">Chưa có địa chỉ nhận hàng?</p>
                         <div class="d-flex justify-content-center">
-                            <button class="btn btn-sm btn-primary" style="width: 31%;">+Thêm ngay</button>
+                            <a href="/tai-khoan#dia-chi" target="_top" class="btn btn-sm btn-primary"
+                                style="width: 31%;">+Thêm
+                                ngay</a>
                         </div>
-                    </div> --}}
-
+                    </div>
+                    {{/if}}
                 </div>
 
                 <div class="form-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Lưu ý, yêu cầu khác (Không bắt buộc)">
+                    <input id="cart-info-note" type="text" class="form-control"
+                        placeholder="Lưu ý, yêu cầu khác (Không bắt buộc)">
                     <label>Lưu ý, yêu cầu khác (Không bắt buộc)</label>
                 </div>
 
@@ -100,44 +128,50 @@
             </div>
 
             {{!-- Cart pay--}}
-            <div id="cart-pay" class="">
+            <div id="cart-pay" class="d-none">
                 <p class="fs-5 fw-bold mb-3">Thông tin đặt hàng</p>
 
                 <ul>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Khách hàng</span>
-                            <span style="flex: 3;">Lê Thanh An</span>
+                            <span class="fw-bold" style="flex: 1;">Khách hàng:</span>
+                            <span id="cart-pay-name" class="text-muted" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Số điện thoại</span>
-                            <span style="flex: 3;">0523926718</span>
+                            <span class="fw-bold" style="flex: 1;">Số điện thoại:</span>
+                            <span id="cart-pay-phone" class="text-muted" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Địa chỉ nhận hàng</span>
-                            <span style="flex: 3;">Tỉnh khánh hoà, Thị xã ninh hoà, Xã ninh xuân</span>
+                            <span class="fw-bold" style="flex: 1;">Địa chỉ nhận hàng:</span>
+                            <span id="cart-pay-address" class="text-muted" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Tạm tính</span>
-                            <span style="flex: 3;">26.490.000₫</span>
+                            <span class="fw-bold" style="flex: 1;">Lưu ý của khách hàng:</span>
+                            <span id="cart-pay-note" class="text-muted" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Phí vận chuyển</span>
-                            <span style="flex: 3;">Miễn phí</span>
+                            <span class="fw-bold" style="flex: 1;">Tạm tính:</span>
+                            <span id="cart-pay-price" class="text-danger" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                     <li>
                         <div class="d-flex mb-2">
-                            <span class="fw-bold" style="flex: 1;">Tổng tiền</span>
-                            <span style="flex: 3;">26.490.000₫</span>
+                            <span class="fw-bold" style="flex: 1;">Phí vận chuyển:</span>
+                            <span class="text-muted" style="flex: 2; font-weight: 600">Miễn phí</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="d-flex mb-2">
+                            <span class="fw-bold" style="flex: 1;">Tổng tiền:</span>
+                            <span id="cart-pay-total" class="text-danger" style="flex: 2; font-weight: 600"></span>
                         </div>
                     </li>
                 </ul>
@@ -155,32 +189,93 @@
 
             </div>
 
+            {{!-- Cart complete --}}
+            <div id="cart-complete" class="d-none">
+                <div class="bg-success-subtle text-success fw-bold fs-5 p-3 text-center rounded mb-3">
+                    <i class="fa-solid fa-box-check"></i>
+                    Đặt hàng thành công
+                </div>
 
-        </div>
+                <p class="fw-bold mb-3">Cảm ơn quý khách đã cho chúng tôi có cơ hội phục vụ quý khách.<br>
+                    Nhân viên của chúng tôi sẽ liên hệ với quý khách trong thời gian sớm nhất.</p>
 
-        <hr class="m-4">
+                <div class="bg-secondary-subtle rounded p-3">
+                    <ul class="m-0">
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Khách hàng:</span>
+                                <span id="cart-complete-name" class="text-muted"
+                                    style="flex: 2;font-weight: 600"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Số điện thoại:</span>
+                                <span id="cart-complete-phone" class="text-muted"
+                                    style="flex: 2;font-weight: 600"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Email:</span>
+                                <span class="text-muted" style="flex: 2;font-weight: 600">{{user.Email}}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Giao đến:</span>
+                                <span id="cart-complete-address" class="text-muted"
+                                    style="flex: 2;font-weight: 600"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Lưu ý:</span>
+                                <span id="cart-complete-note" class="text-muted"
+                                    style="flex: 2;font-weight: 600"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Tổng tiền:</span>
+                                <span id="cart-complete-total" class="text-danger"
+                                    style="flex: 2;font-weight: 600"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex mb-2">
+                                <span class="fw-bold" style="flex: 1;">Hình thức thanh toán:</span>
+                                <span class="text-muted" style="flex: 2;font-weight: 600">Thanh toán khi nhận hàng
+                                    (COD)</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="/tai-khoan#don-hang" class="btn btn-outline-info bg-info-subtle w-100 fw-bold p-2">Quảng lý
+                        đơn hàng</a>
+                </div>
 
-        <div class="fw-bold p-4 pt-0">
-            <div class="d-flex justify-content-between mb-2">
-                <p>Phí vận chuyển:</p>
-                <p>Miễn phí</p>
+                <a href="/" class="btn btn-outline-primary w-100 fw-bold mt-3 mb-3 p-2 border-2">Tiếp tục mua hàng</a>
             </div>
 
-            <div class="d-flex justify-content-between">
-                <p class="fs-5">Tổng tiền:</p>
-                <p class="text-danger fs-4">26.490.000₫</p>
+        </turbo-frame>
+
+        <div id="cart-footer">
+            <hr class="m-4">
+
+            <div class="fw-bold p-4 pt-0">
+                <div class="d-flex justify-content-between mb-2">
+                    <p>Phí vận chuyển:</p>
+                    <p>Miễn phí</p>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <p class="fs-5">Tổng tiền:</p>
+                    <p id="cart-total-price" class="text-danger fs-4">26.490.000₫</p>
+                </div>
+
+                <button id="btn-cart-order" class="btn btn-danger mt-4 p-3 w-100 fw-bold">ĐẶT HÀNG NGAY</button>
             </div>
-
-            <button class="btn btn-danger mt-4 p-3 w-100 fw-bold">ĐẶT HÀNG NGAY</button>
         </div>
-
-
-
-
-        {{!-- <div class="d-flex flex-column align-items-center justify-content-center p-4">
-            <p class="mb-3">Giỏ hàng của bạn đang trống</p>
-            <button class="btn btn-outline-primary mb-2 w-50">Tiếp tục mua hàng</button>
-        </div> --}}
     </div>
 </div>
 

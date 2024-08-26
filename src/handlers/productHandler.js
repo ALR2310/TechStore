@@ -201,20 +201,14 @@ router.get("/:slugs", async (req, res) => {
 });
 
 router.post("/danh-gia", async (req, res) => {
-    const { rating, comment, userName, productSlugs } = req.body;
+    const { rating, comment, userName, productId } = req.body;
 
-    if (!rating || !comment || !productSlugs)
+    if (!rating || !comment || !productId)
         return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
-        let sql = "SELECT Id FROM Product WHERE Slugs = ? AND Status = ?";
-        let params = [productSlugs, "Active"];
-        const productId = (await db.query(sql, params))[0].Id;
-
-        sql = "INSERT INTO ProductReviews(ProdId, UserId, UserName, Rating, Comment) VALUES (?, ?, ?, ?, ?)";
-        params = [productId, req.user?.Id, userName, rating, comment];
-
-        await db.query(sql, params);
+        const sql = "INSERT INTO ProductReviews(ProdId, UserId, UserName, Rating, Comment) VALUES (?, ?, ?, ?, ?)";
+        await db.query(sql, [productId, req.user?.Id, userName, rating, comment]);
 
         return res.status(201).json({ success: true, message: 'Đánh giá sản phẩm thành công' });
     } catch (e) {

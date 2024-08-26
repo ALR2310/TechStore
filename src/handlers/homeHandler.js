@@ -124,8 +124,4 @@ router.get('/tim-kiem/preview', async (req, res) => {
     }
 });
 
-router.get('/gio-hang', checkUser, async (req, res) => {
-    res.render('home/cart');
-});
-
 module.exports = router;

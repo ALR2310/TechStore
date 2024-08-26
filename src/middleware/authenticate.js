@@ -6,12 +6,16 @@ const authenticate = {
     checkToken: async (req, res, next) => {
         try {
             const authToken = req.cookies.authToken;
-            const getAuthToken = await db.query('SELECT * FROM authtoken WHERE Token = ?', [authToken]);
-            const user = await db.query('SELECT * FROM user WHERE Id = ?', [getAuthToken[0]?.UserId]);
+            const checkAuthToken = await db.query('SELECT * FROM authtoken WHERE Token = ?', [authToken]);
+
+            const sqlUser = `SELECT u.*, ui.FullName, ui.PhoneNumber, ui.Gender, ui.DoB, 
+                SUM(CASE WHEN c.Status = 'Active' THEN 1 ELSE 0 END) AS CartCount
+                FROM User u JOIN UserInfo ui ON u.Id = ui.UserId LEFT JOIN Cart c ON u.Id = c.UserId
+                WHERE u.Id = ? GROUP BY u.Id, ui.FullName, ui.PhoneNumber, ui.Gender, ui.DoB;`;
+            const user = await db.query(sqlUser, [checkAuthToken[0]?.UserId]);
 
             req.user = user[0];
             res.locals.user = req.user;
-            res.locals.userInfo = (await db.query("SELECT * FROM UserInfo WHERE UserId = ?", [req?.user?.Id]))[0];
 
             if (req.path.startsWith('/admin'))
                 if (!req.user || req.user?.Role != 'Admin')

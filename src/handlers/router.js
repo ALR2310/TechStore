@@ -7,6 +7,7 @@ router.use(authenticate.checkToken);
 router.use('/', require('./homeHandler'));
 router.use('/auth', require('./authHandler'));
 router.use('/admin', require('./adminHandler'));
+router.use('/gio-hang', require('./cartHandler'));
 router.use('/tai-khoan', require('./userHandler'));
 router.use('/san-pham', require('./productHandler'));
 router.use((req, res, next) => {

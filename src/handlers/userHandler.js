@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require("../configs/dbConnect");
 const myUtils = require("../utils/myUtils");
 const { checkUser } = require('../middleware/authenticate');
-const path = require("path");
 
 
 router.get('/', checkUser, async (req, res) => {
@@ -27,19 +26,19 @@ router.get('/', checkUser, async (req, res) => {
             GROUP BY p.Id, pd.DeviceCfg
             ORDER BY pv.AtCreate DESC;`;
 
-        const sqlShippingAddress = `SELECT * FROM ShippingAddress WHERE UserId = ? AND Status = ? ORDER BY IsDefault DESC`;
+        const sqlAddress = `SELECT * FROM Address WHERE UserId = ? AND Status = ? ORDER BY IsDefault DESC`;
 
         // Thực thi truy vấn
-        const [productViewed, shippingAddress] = await db.queryAll([
+        const [productViewed, Address] = await db.queryAll([
             { sql: sqlProductViewed, params: [req.user.Id, "Active"] },
-            { sql: sqlShippingAddress, params: [req.user.Id, "Active"] }
+            { sql: sqlAddress, params: [req.user.Id, "Active"] }
         ]);
 
         productViewed.forEach(prdItem => {
             prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
         });
 
-        return res.render('user/index', { productViewed, shippingAddress });
+        return res.render('user/index', { productViewed, Address });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
@@ -71,14 +70,14 @@ router.post('/address-create', checkUser, async (req, res) => {
 
     try {
         // Kiểm tra xem đã có địa chỉ mặt định tồn tại chưa
-        let sql = `SELECT * FROM ShippingAddress WHERE UserId = ? AND IsDefault = ? AND Status = ?`;
+        let sql = `SELECT * FROM Address WHERE UserId = ? AND IsDefault = ? AND Status = ?`;
         const result = await db.query(sql, [req.user.Id, 1, "Active"]);
 
         // Thêm địa chỉ mới vào bảng
         if (result.length > 0)
-            sql = `INSERT INTO ShippingAddress(UserId, FullName, PhoneNumber, AddressLine, AddressType) VALUES (?, ?, ?, ?, ?)`;
+            sql = `INSERT INTO Address(UserId, FullName, PhoneNumber, AddressLine, AddressType) VALUES (?, ?, ?, ?, ?)`;
         else
-            sql = `INSERT INTO ShippingAddress(UserId, FullName, PhoneNumber, AddressLine, AddressType, IsDefault) VALUES (?, ?, ?, ?, ?, 1)`;
+            sql = `INSERT INTO Address(UserId, FullName, PhoneNumber, AddressLine, AddressType, IsDefault) VALUES (?, ?, ?, ?, ?, 1)`;
 
         await db.query(sql, [req.user.Id, fullName, phoneNumber, AddressLine, AddressType]);
         return res.status(200).json({ success: true, message: "Thêm địa chỉ mới thành công" });
@@ -95,7 +94,7 @@ router.post('/address-default', checkUser, async (req, res) => {
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
 
     try {
-        await db.query(`UPDATE ShippingAddress SET IsDefault = 1 WHERE Id = ?`, [Id]);
+        await db.query(`UPDATE Address SET IsDefault = 1 WHERE Id = ?`, [Id]);
         return res.status(200).json({ success: true, message: "Đặt địa chỉ mặt định thành công" });
     } catch (e) {
         console.error(e);
@@ -110,12 +109,33 @@ router.post('/address-delete', checkUser, async (req, res) => {
         return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
 
     try {
-        await db.query(`UPDATE ShippingAddress SET IsDefault = 0, Status = ? WHERE Id = ?`, ["Inactive", Id]);
+        await db.query(`UPDATE Address SET IsDefault = 0, Status = ? WHERE Id = ?`, ["Inactive", Id]);
         return res.status(200).json({ success: true, message: "Xóa địa chỉ thành công" });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });
+
+router.post('/order-create', checkUser, async (req, res) => {
+    const { addressId, totalPrice, cartItems } = req.body;
+
+    try {
+        const result = await db.query(`INSERT INTO Orders(UserId, AdrId, TotalPrice) VALUES (?, ?, ?)`,
+            [req.user.Id, addressId, totalPrice]);
+
+        const cartQueries = cartItems.map(item => ({
+            sql: `INSERT INTO OrderItems(OrdId, ProdId, Quantity) VALUES (?, ?, ?)`,
+            params: [result.insertId, item.prodId, item.quantity]
+        }));
+
+        await db.queryAll(cartQueries);
+        return res.status(201).json({ success: true, message: 'Tạo đơn hàng thành công' });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
+    }
+});
+
 
 module.exports = router;

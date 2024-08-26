@@ -5,7 +5,7 @@
 
     <div class="col-8 p-4 border-start">
         <strong class="d-flex mt-3 mb-2 fs-4">{{product.ProdName}}</strong>
-        <span id="product-slugs" class="d-none">{{product.Slugs}}</span>
+        <span id="prdId" class="d-none">{{product.Id}}</span>
         <div class="d-flex align-items-center mb-3">
             <span class="text-warning">{{productRating.Average}} <i class="fa-sharp fa-solid fa-star"></i></span>
             <a href="#product-review"
@@ -35,7 +35,7 @@
         </div>
         <div class="row mb-4">
             <div class="col-8">
-                <button class="btn btn-danger w-75 h-100">
+                <button id="btn-add-to-cart" class="btn btn-danger w-75 h-100">
                     <span class="fw-bold fs-5">MUA NGAY</span>
                     <p style="font-size: 14px;">(Giao tận nơi hoặc nhận tại cửa hàng)</p>
                 </button>
@@ -320,7 +320,7 @@
                         <div class="d-flex align-items-center w-25 {{#if userInfo}}visually-hidden{{/if}}">
                             <label class="text-nowrap me-3 fw-bold ">Họ tên</label>
                             <input id="product-review-username" type="text" class="form-control"
-                                placeholder="Nhập họ tên" value="{{userInfo.FullName}}">
+                                placeholder="Nhập họ tên" value="{{user.FullName}}">
                         </div>
                     </div>
                     <hr class="m-0">

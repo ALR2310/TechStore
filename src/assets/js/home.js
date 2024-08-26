@@ -46,3 +46,155 @@ $('input[name="cart-address"]').on('focus', function () {
 }).on('blur', function () {
     $(this).closest('.input-group').removeClass('bs-focus');
 });
+
+var currentStep = 0;
+var steps = ['#cart-order', '#cart-info', '#cart-pay', '#cart-complete'];
+var $cartStatusItems = $('.cart-status-item');
+
+// Sự kiện click cho nút đặt hàng
+$('#btn-cart-order').on('click', function () {
+    if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep(currentStep);
+    }
+});
+
+// Sự kiện click cho nút Quay lại
+$('#btn-cart-back').on('click', function () {
+    if (currentStep > 0) {
+        currentStep--;
+        updateStep(currentStep);
+    } else {
+        window.location.href = "/";
+    }
+});
+
+// Hàm cập nhật giao diện khi chuyển bước
+function updateStep(step) {
+    $(steps.join(',')).addClass('d-none');
+    $(steps[step]).removeClass('d-none');
+
+    $cartStatusItems.removeClass('active');
+    $cartStatusItems.each(function (index) {
+        if (index <= step) $(this).addClass('active');
+    });
+
+    switch (step) {
+        case 0: handleCartOrder(); break;
+        case 1: handleCartInfo(); break;
+        case 2: handleCartPay(); break;
+        case 3: handleCartComplete(); break;
+    }
+} updateStep(currentStep);
+
+// Hàm xử lý khi ở bước Order
+function handleCartOrder(delay = 0) {
+    setTimeout(() => {
+        const prdPrice = $('.cart-order-price');
+        let totalPrice = 0;
+
+        prdPrice.each(function (index) {
+            let priceText = $(this).text().replace(/\./g, '').replace('₫', '');
+            let price = parseFloat(priceText);
+            let quantity = parseInt($('.cart-order-quantity').eq(index).val());
+            totalPrice += price * quantity;
+        });
+
+        $('#cart-total-price').text(formatNumToCurrency(totalPrice) + '₫');
+    }, delay);
+}
+
+// Hàm xử lý khi ở bước Info
+var cartItems;
+function handleCartInfo() {
+    cartItems = [];
+
+    $('#cart-order .row').each(function () {
+        const cartId = $(this).data('cart');
+        const prodId = $(this).data('prod');
+        const quantity = $(this).find('.cart-order-quantity').val();
+
+        cartItems.push({
+            id: cartId,
+            prodId: prodId,
+            quantity: parseInt(quantity)
+        });
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "/gio-hang/update",
+        data: JSON.stringify(cartItems),
+        dataType: "json",
+        contentType: "application/json",
+        error: function (err) {
+            console.log(err);
+            showToast(err.responseJSON.message, 'error');
+        }
+    });
+}
+
+// Hàm xử lý khi ở bước Pay
+function handleCartPay() {
+    const infoContainer = $('input[name="cart-info-address"]:checked').closest('.cart-info');
+    $('#cart-pay-name').text(infoContainer.find('.cart-info-name').text());
+    $('#cart-pay-phone').text(infoContainer.find('.cart-info-phone').text());
+    $('#cart-pay-address').text(infoContainer.find('.cart-info-address').text());
+    $('#cart-pay-note').text($('#cart-info-note').val() || 'Không có lưu ý');
+    $('#cart-pay-price').text($('#cart-total-price').text());
+    $('#cart-pay-total').text($('#cart-total-price').text());
+}
+
+// Hàm xử lý khi ở bước Complete
+function handleCartComplete() {
+    $('#btn-cart-back').addClass("d-none");
+    $('#cart-footer').addClass("d-none");
+    $('#cart-complete-name').text($('#cart-pay-name').text());
+    $('#cart-complete-phone').text($('#cart-pay-phone').text());
+    $('#cart-complete-address').text($('#cart-pay-address').text());
+    $('#cart-complete-note').text($('#cart-pay-note').text());
+    $('#cart-complete-total').text($('#cart-pay-total').text());
+
+    const data = {
+        addressId: $('input[name="cart-info-address"]:checked').val(),
+        totalPrice: $('#cart-complete-total').text().replace(/\./g, '').replace('₫', ''),
+        cartItems: cartItems
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/tai-khoan/order-create",
+        data: JSON.stringify(data),
+        dataType: 'json',
+        contentType: "application/json",
+        success: function (res) {
+            console.log(res);
+        },
+        error: function (err) {
+            console.error(err);
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
+}
+
+// Hàm xoá sản phẩm khỏi giỏ hàng
+function deleteCartItem(cartId) {
+    $.ajax({
+        url: "/gio-hang/delete",
+        type: "POST",
+        data: JSON.stringify({ cartId: cartId }),
+        dataType: "json",
+        contentType: "application/json",
+        success: function (res) {
+            if (res.success) {
+                Turbo.visit(window.location.href, { frame: 'cart-container', action: 'replace' });
+                showToast(res.message, 'success');
+                handleCartOrder(200); // Cập nhật tổng tiền sản phẩm
+            }
+        },
+        error: function (err) {
+            console.err(err);
+            showToast(err.responseJSON.message, 'danger');
+        }
+    });
+}
