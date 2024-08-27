@@ -204,3 +204,15 @@ $('.order-tabs').on('click', function (e) {
         window.history.replaceState(null, null, '#don-hang');
     }, { once: true });
 });
+
+// Sự kiện tìm kiếm sản phẩm
+$('#order-search').on('input', _.debounce(function () {
+    const url = window.location.origin + window.location.pathname + '?q=' + encodeURIComponent($(this).val());
+
+    Turbo.visit(url, { frame: 'order-container', action: 'replace' });
+}, 500));
+
+// Nút tìm kiếm sản phẩm
+$('#btn-order-search').on('click', function () {
+    $('#order-search').trigger('input');
+});

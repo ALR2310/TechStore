@@ -6,7 +6,7 @@ const { checkUser } = require('../middleware/authenticate');
 
 
 router.get('/', checkUser, async (req, res) => {
-    const { ordtype } = req.query;
+    const { ordtype, q } = req.query;
 
     try {
         const sqlProductViewed = `
@@ -43,6 +43,9 @@ router.get('/', checkUser, async (req, res) => {
         // Lấy thông tin đơn hàng
         let ordersSql = `SELECT * FROM Orders WHERE UserId = ?`;
         let ordersParams = [req.user.Id];
+        const searchKey = q?.trim().replace('#', '');
+
+        if (q) { ordersSql += ` AND Code LIKE "%${searchKey}%"`; }
 
         if (ordtype) {
             const statusMap = { "2": "Processing", "3": "Delivering", "4": "Completed", "5": "Cancelled" };
@@ -67,8 +70,6 @@ router.get('/', checkUser, async (req, res) => {
             ...order,
             OrderItems: orderItemsResults[index]
         }));
-
-        console.log(ordersWithItems);
 
         return res.render('user/index', { productViewed, address, orders: ordersWithItems });
     } catch (e) {
