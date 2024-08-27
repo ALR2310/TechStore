@@ -156,11 +156,12 @@ CREATE TABLE IF NOT EXISTS Shipment(
 -- Bảng đơn hàng
 CREATE TABLE IF NOT EXISTS Orders(
     Id INTEGER PRIMARY KEY,
+    Code TEXT UNIQUE,
     UserId INTEGER REFERENCES User(Id),
     AdrId INTEGER REFERENCES Address(Id),
     TotalPrice REAL DEFAULT 0,
     AtCreate TEXT DEFAULT CURRENT_TIMESTAMP,
-    Status TEXT CHECK(Status IN('Pending', 'Processing', 'Completed', 'Cancelled')) DEFAULT 'Pending'
+    Status TEXT CHECK(Status IN('Processing', 'Delivering', 'Completed', 'Cancelled')) DEFAULT 'Processing'
 );
 
 -- Bảng chi tiết đơn hàng

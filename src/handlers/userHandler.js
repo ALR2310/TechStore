@@ -6,6 +6,8 @@ const { checkUser } = require('../middleware/authenticate');
 
 
 router.get('/', checkUser, async (req, res) => {
+    const { ordtype } = req.query;
+
     try {
         const sqlProductViewed = `
             SELECT 
@@ -29,7 +31,7 @@ router.get('/', checkUser, async (req, res) => {
         const sqlAddress = `SELECT * FROM Address WHERE UserId = ? AND Status = ? ORDER BY IsDefault DESC`;
 
         // Thực thi truy vấn
-        const [productViewed, Address] = await db.queryAll([
+        const [productViewed, address] = await db.queryAll([
             { sql: sqlProductViewed, params: [req.user.Id, "Active"] },
             { sql: sqlAddress, params: [req.user.Id, "Active"] }
         ]);
@@ -38,7 +40,37 @@ router.get('/', checkUser, async (req, res) => {
             prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
         });
 
-        return res.render('user/index', { productViewed, Address });
+        // Lấy thông tin đơn hàng
+        let ordersSql = `SELECT * FROM Orders WHERE UserId = ?`;
+        let ordersParams = [req.user.Id];
+
+        if (ordtype) {
+            const statusMap = { "2": "Processing", "3": "Delivering", "4": "Completed", "5": "Cancelled" };
+            if (statusMap[ordtype]) { ordersSql += ` AND Status = ?`; ordersParams.push(statusMap[ordtype]); }
+        }
+
+        ordersSql += ` ORDER BY AtCreate DESC`;
+
+        // Thực hiện truy vấn lấy đơn hàng
+        const orders = await db.query(ordersSql, ordersParams);
+
+        const orderQueries = orders.map(order => ({
+            sql: `SELECT oi.OrdId, oi.ProdId, oi.Quantity, p.Image, p.ProdName, 
+                CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice FROM OrderItems oi
+                JOIN Product p ON oi.ProdId = p.Id WHERE oi.OrdId = ?`,
+            params: [order.Id]
+        }));
+        const orderItemsResults = await db.queryAll(orderQueries);
+
+        // Tạo mảng các đơn hàng với thông tin chi tiết
+        const ordersWithItems = orders.map((order, index) => ({
+            ...order,
+            OrderItems: orderItemsResults[index]
+        }));
+
+        console.log(ordersWithItems);
+
+        return res.render('user/index', { productViewed, address, orders: ordersWithItems });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
@@ -120,18 +152,33 @@ router.post('/address-delete', checkUser, async (req, res) => {
 router.post('/order-create', checkUser, async (req, res) => {
     const { addressId, totalPrice, cartItems } = req.body;
 
+    const orderCode = await generateOrderCode(db);
+
+    await db.query('BEGIN TRANSACTION');
+
     try {
-        const result = await db.query(`INSERT INTO Orders(UserId, AdrId, TotalPrice) VALUES (?, ?, ?)`,
-            [req.user.Id, addressId, totalPrice]);
+        const result = await db.query(`INSERT INTO Orders(Code, UserId, AdrId, TotalPrice) VALUES (?, ?, ?, ?)`,
+            [orderCode, req.user.Id, addressId, totalPrice]);
 
-        const cartQueries = cartItems.map(item => ({
-            sql: `INSERT INTO OrderItems(OrdId, ProdId, Quantity) VALUES (?, ?, ?)`,
-            params: [result.insertId, item.prodId, item.quantity]
-        }));
+        const combinedQueries = cartItems.flatMap(item => [
+            {
+                sql: `INSERT INTO OrderItems(OrdId, ProdId, Quantity) VALUES (?, ?, ?)`,
+                params: [result.insertId, item.prodId, item.quantity]
+            },
+            {
+                sql: `UPDATE Cart SET Status = ? WHERE Status = ?`,
+                params: ["Inactive", "Active"]
+            }
+        ]);
 
-        await db.queryAll(cartQueries);
+        console.log(combinedQueries);
+
+        await db.queryAll(combinedQueries);
+        await db.query('COMMIT');
+
         return res.status(201).json({ success: true, message: 'Tạo đơn hàng thành công' });
     } catch (e) {
+        await db.query('ROLLBACK');
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
@@ -139,3 +186,16 @@ router.post('/order-create', checkUser, async (req, res) => {
 
 
 module.exports = router;
+
+
+const generateOrderCode = async (db) => {
+    let code, isUnique = false;
+
+    while (!isUnique) {
+        code = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+        const rows = await db.query('SELECT 1 FROM Orders WHERE Code = ?', [code]);
+        if (rows.length === 0) isUnique = true;
+    }
+
+    return code;
+};

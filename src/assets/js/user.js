@@ -184,4 +184,23 @@ function deleteAddress(Id) {
             showToast(err.responseJSON.message, 'danger');
         }
     });
-} 
+}
+
+
+
+// --------------------------Trang orders ------------------------------------
+
+// Chức năng hiển thị giao diện cho trang orders
+$('.order-tabs').on('click', function (e) {
+    e.preventDefault();
+
+    $('.order-tabs').removeClass('active');
+    $(this).addClass('active');
+
+    const url = $(this).attr('href');
+    Turbo.visit(url, { frame: 'order-container', action: 'replace' });
+
+    document.addEventListener('turbo:frame-load', function () {
+        window.history.replaceState(null, null, '#don-hang');
+    }, { once: true });
+});

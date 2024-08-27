@@ -168,7 +168,8 @@ function handleCartComplete() {
         dataType: 'json',
         contentType: "application/json",
         success: function (res) {
-            console.log(res);
+            if (res.success)
+                showToast(res.message + " Kiểm tra đơn hàng ngay!", 'success');
         },
         error: function (err) {
             console.error(err);

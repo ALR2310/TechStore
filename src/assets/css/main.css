@@ -467,3 +467,58 @@ p {
 #cart-info .input-group:not(:first-child) {
     margin-top: 16px;
 }
+
+.order-tabs {
+    text-decoration: none;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    flex-grow: 1;
+    padding: .5rem;
+    font-weight: bold;
+    color: var(--bs-secondary);
+}
+
+.order-tabs.active {
+    border-bottom: 3px solid var(--bs-danger);
+    color: var(--bs-danger);
+}
+
+.order-item:not(:first-child) {
+    margin-top: 16px;
+}
+
+.order-search-box {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: var(--bs-border-radius);
+    color: var(--bs-secondary);
+}
+
+.order-search-box i {
+    padding: 0 8px;
+}
+
+.order-search-box input {
+    border: none;
+    padding: 4px;
+    outline: none;
+    flex: 1;
+}
+
+.order-search-box span {
+    display: flex;
+    align-items: center;
+    width: 3px;
+    height: 20px;
+    background: #CFCFCF;
+    margin: auto;
+}
+
+.order-search-box button {
+    background-color: transparent;
+    border: none;
+    padding: 0 8px;
+    color: var(--bs-primary);
+}

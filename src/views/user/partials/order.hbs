@@ -1,0 +1,68 @@
+<div class="bg-white rounded-top mb-3">
+    <p class="fw-bold fs-5 p-3">Quản lý đơn hàng</p>
+
+    <div class="d-flex justify-content-evenly">
+        <a href="?ordtype=1" class="order-tabs active">Tất cả</a>
+        <a href="?ordtype=2" class="order-tabs">Đang xử lý</a>
+        <a href="?ordtype=3" class="order-tabs">Đang vận chuyển</a>
+        <a href="?ordtype=4" class="order-tabs">Hoàn thành</a>
+        <a href="?ordtype=5" class="order-tabs">Đã huỷ</a>
+    </div>
+</div>
+
+<div class="order-search-box bg-white mb-3 border">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" placeholder="Tìm đơn hàng theo mã đơn hàng">
+    <span></span>
+    <button>Tìm đơn hàng</button>
+</div>
+
+<turbo-frame id="order-container">
+    {{#if orders}}
+    {{#each orders}}
+    <div class="bg-white rounded order-item p-4">
+        <div class="d-flex align-items-center justify-content-between">
+            {{#if (eq this.Status "Processing")}}
+            <p class="fw-bold text-warning"><i class="fa-solid fa-cart-shopping"></i> Đang xử lý</p>
+            {{/if}}
+            {{#if (eq this.Status "Delivering")}}
+            <p class="fw-bold text-info"><i class="fa-solid fa-truck"></i> Đang vận chuyển</p>
+            {{/if}}
+            {{#if (eq this.Status "Completed")}}
+            <p class="fw-bold text-success"><i class="fa-solid fa-check-to-slot"></i> Giao thành công</p>
+            {{/if}}
+            {{#if (eq this.Status "Cancelled")}}
+            <p class="fw-bold text-danger"><i class="fa-solid fa-ban fa-rotate-90"></i> Đã huỷ</p>
+            {{/if}}
+
+            <p class="fw-bold">#{{this.Code}}</p>
+        </div>
+
+        <hr>
+
+        {{#each this.OrderItems}}
+        <div class="d-flex p-2">
+            <div class="rounded border p-1" style="flex: 1.2;">
+                <img src="{{this.Image}}" class="w-100">
+            </div>
+            <div class="d-flex ms-3" style="flex: 10;">
+                <p class="fw-bold mt-2 w-75">{{this.ProdName}}</p>
+            </div>
+            <div class="d-flex flex-column justify-content-center ms-3" style="flex: 2;">
+                <p class="text-secondary text-end fw-bold">{{formatNumToCurrency this.FinalPrice}}₫</p>
+                <p class="text-secondary text-end fw-bold">x{{this.Quantity}}</sp>
+            </div>
+        </div>
+        {{/each}}
+
+        <hr>
+
+        <div class="text-end">
+            <p class="fw-bold">Tổng tiền: <span class="text-danger">{{formatNumToCurrency this.TotalPrice}}₫</span></p>
+            <div class="mt-2"><a href="#" class="btn btn-sm btn-outline-primary ps-3 pe-3">Xem chi tiết</a></div>
+        </div>
+
+    </div>
+    {{/each}}
+    {{/if}}
+</turbo-frame>
