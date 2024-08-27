@@ -57,21 +57,31 @@ router.get('/', checkUser, async (req, res) => {
         // Thực hiện truy vấn lấy đơn hàng
         const orders = await db.query(ordersSql, ordersParams);
 
-        const orderQueries = orders.map(order => ({
+        // Thực hiện truy vấn lấy sản phẩm của đơn hàng
+        const orderItemsQueries = orders.map(order => ({
             sql: `SELECT oi.OrdId, oi.ProdId, oi.Quantity, p.Image, p.ProdName, 
                 CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice FROM OrderItems oi
                 JOIN Product p ON oi.ProdId = p.Id WHERE oi.OrdId = ?`,
             params: [order.Id]
         }));
-        const orderItemsResults = await db.queryAll(orderQueries);
+        const orderItemsResults = await db.queryAll(orderItemsQueries);
+
+        // Thực hiện truy vấn lấy địa chỉ nhận hàng
+        const orderAddressQueries = orders.map(order => ({
+            sql: `SELECT * FROM Address WHERE Id = ? AND Status = ?`, params: [order.AdrId, "Active"]
+        }));
+        const orderAddressResults = await db.queryAll(orderAddressQueries);
 
         // Tạo mảng các đơn hàng với thông tin chi tiết
-        const ordersWithItems = orders.map((order, index) => ({
+        const ordersResult = orders.map((order, index) => ({
             ...order,
-            OrderItems: orderItemsResults[index]
+            OrderItems: orderItemsResults[index],
+            AddressInfo: orderAddressResults[index]
         }));
 
-        return res.render('user/index', { productViewed, address, orders: ordersWithItems });
+        console.dir(ordersResult, { depth: null });
+
+        return res.render('user/index', { productViewed, address, orders: ordersResult });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });

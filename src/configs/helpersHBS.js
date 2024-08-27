@@ -38,8 +38,22 @@ const helpers = {
     },
 
     // Định dạng một chuỗi thời gian thành định dạng dd/mm/yyyy
-    formatDate(datetime) {
-        const date = new Date(datetime);
+    formatDate(datetimeStr, type) {
+        if (type == 1) {
+            const date = new Date(datetimeStr);
+            const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const day = dayNames[date.getDay()];
+
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const dayOfMonth = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+
+            return `${hours}:${minutes} ${day} - ${dayOfMonth}/${month}/${year}`;
+        }
+
+        const date = new Date(datetimeStr);
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();

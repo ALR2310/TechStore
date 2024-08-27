@@ -59,9 +59,124 @@
 
         <div class="text-end">
             <p class="fw-bold">Tổng tiền: <span class="text-danger">{{formatNumToCurrency this.TotalPrice}}₫</span></p>
-            <div class="mt-2"><a href="#" class="btn btn-sm btn-outline-primary ps-3 pe-3">Xem chi tiết</a></div>
+            <div class="mt-2">
+                <button data-bs-toggle="modal" data-bs-target="#modal-orderDetail{{this.Id}}"
+                    class="btn btn-sm btn-outline-primary ps-3 pe-3">Xem chi tiết</button>
+            </div>
         </div>
 
+    </div>
+    {{/each}}
+    {{/if}}
+
+    {{#if orders}}
+    {{#each orders}}
+    <div id="modal-orderDetail{{this.Id}}" class="modal modal-lg fade" tabindex="-1"
+        aria-labelledby="modal-orderDetail{{this.Id}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 fw-bold w-100" id="modal-orderDetail{{this.Id}}">
+                        <span>Chi tiết đơn hàng #{{this.Code}}</span> -
+                        {{#if (eq this.Status "Processing")}}<span class="text-warning">Đang xử lý</span>{{/if}}
+                        {{#if (eq this.Status "Delivering")}}<span class="text-info">Đang vận chuyển</span>{{/if}}
+                        {{#if (eq this.Status "Completed")}}<span class="text-success">Giao thành công</span>{{/if}}
+                        {{#if (eq this.Status "Cancelled")}}<span class="text-danger">Đã huỷ</span>{{/if}}
+                    </h1>
+
+                    <p class="text-nowrap">Đặt lúc: {{formatDate this.AtCreate 1}}</p>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex mb-3">
+                        <div class="rounded p-2 border" style="flex: 2;">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="/imgs/user-card.png" style="width: 25px">
+                                <p class="fw-bold ms-2">Thông tin khách hàng</p>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <p style="flex: 1;">Người nhận:</p>
+                                <p style="flex: 2;">
+                                    {{this.AddressInfo.0.FullName}} - {{this.AddressInfo.0.PhoneNumber}}
+                                </p>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <p style="flex: 1;">Địa chỉ nhận:</p>
+                                <p style="flex: 2;">{{this.AddressInfo.0.AddressLine}}</p>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <p style="flex: 1;">Thời gian nhận:</p>
+                                <p style="flex: 2;"></p>
+                            </div>
+                        </div>
+
+                        <div class="rounded p-2 ms-3 border" style="flex: 1;">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="/imgs/payment.png" style="width: 25px">
+                                <p class="fw-bold ms-2">Hình thức thanh toán</p>
+                            </div>
+                            {{#if (eq this.Status "Processing")}}<strong class="text-warning">Chưa thanh
+                                toán</strong>{{/if}}
+                            {{#if (eq this.Status "Delivering")}}<strong class="text-warning">Chưa thanh
+                                toán</strong>{{/if}}
+                            {{#if (eq this.Status "Completed")}}<strong class="text-success">Đã thanh
+                                toán</strong>{{/if}}
+                            {{#if (eq this.Status "Cancelled")}}<strong class="text-warning">Chưa thanh
+                                toán</strong>{{/if}}
+                        </div>
+                    </div>
+
+                    <div class="rounded p-2 border mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="/imgs/prd-info.png" style="width: 25px">
+                            <p class="fw-bold ms-2">Thông tin sản phẩm</p>
+                        </div>
+                        {{#each this.OrderItems}}
+                        <div class="d-flex p-2">
+                            <div class="rounded border p-1" style="flex: 1.2;">
+                                <img src="{{this.Image}}" class="w-100">
+                            </div>
+                            <div class="d-flex ms-3" style="flex: 10;">
+                                <p class="fw-bold mt-2 w-75">{{this.ProdName}}</p>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center ms-3" style="flex: 2;">
+                                <p class="text-secondary text-end fw-bold">{{formatNumToCurrency this.FinalPrice}}₫</p>
+                                <p class="text-secondary text-end fw-bold">x{{this.Quantity}}</sp>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+
+                    <div class="w-50" style="margin-left: 50%;">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <p>Giá tạm tính:</p>
+                            <p>{{formatNumToCurrency this.TotalPrice}}₫</p>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <p>Phí vận chuyển:</p>
+                            <p>Miễn phí</p>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <p>Tổng tiền:</p>
+                            <p>{{formatNumToCurrency this.TotalPrice}}₫</p>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <p class="text-success"><i class="fa-solid fa-circle-check"></i> Số tiền đã thanh toán:</p>
+
+                            <p class="text-danger fw-bold">
+                                {{#if (eq this.Status "Completed")}}
+                                {{formatNumToCurrency this.TotalPrice}}đ
+                                {{else}}0đ{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" style="flex: 0.4;">HUỶ ĐƠN HÀNG</button>
+                    <button type="button" class="btn btn-secondary" style="flex: 0.6;"
+                        data-bs-dismiss="modal">ĐÓNG</button>
+                </div>
+            </div>
+        </div>
     </div>
     {{/each}}
     {{/if}}
