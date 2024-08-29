@@ -193,7 +193,8 @@ function viewMoreProduct() {
 
 // -------------------------------------------------------------------------
 
-$('#btn-add-to-cart').on('click', function () {
+
+function addProductToCart(buyNow = false) {
     $.ajax({
         type: "POST",
         url: "/gio-hang/create",
@@ -202,6 +203,9 @@ $('#btn-add-to-cart').on('click', function () {
         contentType: "application/json",
         success: function (res) {
             if (res.success) {
+                if (buyNow)
+                    return Turbo.visit(window.location.href = '/gio-hang', { action: "replace" });
+
                 showToast(res.message, 'success');
                 let cartCount = parseInt($('#cart-count').text());
                 $('#cart-count').text(cartCount + 1);
@@ -214,4 +218,4 @@ $('#btn-add-to-cart').on('click', function () {
             showToast(err.responseJSON.message, 'danger');
         }
     });
-});
+}

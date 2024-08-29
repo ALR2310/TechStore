@@ -35,17 +35,25 @@
         </div>
         <div class="row mb-4">
             <div class="col-8">
-                <button id="btn-add-to-cart" class="btn btn-danger w-75 h-100">
-                    <span class="fw-bold fs-5">MUA NGAY</span>
-                    <p style="font-size: 14px;">(Giao tận nơi hoặc nhận tại cửa hàng)</p>
-                </button>
+                <div class="d-flex" style="width: 90%;">
+                    <button class="btn btn-danger h-100 me-3" style="flex: 3;" onclick="addProductToCart(true)">
+                        <span class="fw-bold fs-5">MUA NGAY</span>
+                        <p style="font-size: 14px;">(Giao tận nơi hoặc nhận tại cửa hàng)</p>
+                    </button>
+
+                    <button class="btn btn-outline-primary" onclick="addProductToCart()">
+                        <i class="fa-regular fa-cart-plus"></i>
+                        <span class="">Thêm <br> vào giỏ hàng</span>
+                    </button>
+
+
+                </div>
+
             </div>
             <div class="col-4">
-                <div>
-                    <p>✔ Bảo hành chính hãng 24 tháng</p>
-                    <p>✔ Hỗ trợ đổi mới trong 7 ngày</p>
-                    <p>✔ Miễn phí giao hàng toàn quốc</p>
-                </div>
+                <p>✔ Bảo hành chính hãng 24 tháng</p>
+                <p>✔ Hỗ trợ đổi mới trong 7 ngày</p>
+                <p>✔ Miễn phí giao hàng toàn quốc</p>
             </div>
         </div>
         <hr>

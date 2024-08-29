@@ -338,40 +338,40 @@
 
 .link-hover-primary:hover {
     transition: all 0.3s ease;
-    color: var(--bs-primary);
+    color: var(--bs-primary) !important;
 }
 
 .link-hover-secondary:hover {
     transition: all 0.3s ease;
-    color: var(--bs-secondary);
+    color: var(--bs-secondary) !important;
 }
 
 .link-hover-success:hover {
     transition: all 0.3s ease;
-    color: var(--bs-success);
+    color: var(--bs-success) !important;
 }
 
 .link-hover-danger:hover {
     transition: all 0.3s ease;
-    color: var(--bs-danger);
+    color: var(--bs-danger) !important;
 }
 
 .link-hover-warning:hover {
     transition: all 0.3s ease;
-    color: var(--bs-warning);
+    color: var(--bs-warning) !important;
 }
 
 .link-hover-info:hover {
     transition: all 0.3s ease;
-    color: var(--bs-info);
+    color: var(--bs-info) !important;
 }
 
 .link-hover-light:hover {
     transition: all 0.3s ease;
-    color: var(--bs-light);
+    color: var(--bs-light) !important;
 }
 
 .link-hover-dark:hover {
     transition: all 0.3s ease;
-    color: var(--bs-dark);
+    color: var(--bs-dark) !important;
 }
