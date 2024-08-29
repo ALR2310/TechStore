@@ -29,8 +29,12 @@ const authenticate = {
 
     // Hàm kiểm tra xem người dùng đã đăng nhập chưa
     checkUser: (req, res, next) => {
-        if (!req.user)
-            return res.status(404).sendFile(path.join(__dirname, '..', 'views', 'layouts', 'error.html'));
+        if (!req.user) {
+            if (req.method == 'POST')
+                return res.status(401).json({ success: false, message: 'Vui lòng đăng nhập để sử dụng chức năng này' });
+            else
+                return res.render("home/login");
+        }
         next();
     }
 };

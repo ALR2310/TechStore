@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const passport = require("passport");
 
+router.get('/', (req, res) => {
+    if (req.user) return res.redirect("/");
+    else return res.render('home/login');
+});
+
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 

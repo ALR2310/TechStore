@@ -87,7 +87,7 @@ router.post('/product/import-from-url', async (req, res) => {
         const product = await scraper(url);
         return res.status(200).json({ success: true, message: "Lấy thông tin sản phẩm thành công", data: product });
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
     }
 });

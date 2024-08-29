@@ -79,8 +79,6 @@ router.get('/', checkUser, async (req, res) => {
             AddressInfo: orderAddressResults[index]
         }));
 
-        console.dir(ordersResult, { depth: null });
-
         return res.render('user/index', { productViewed, address, orders: ordersResult });
     } catch (e) {
         console.error(e);
@@ -181,8 +179,6 @@ router.post('/order-create', checkUser, async (req, res) => {
                 params: ["Inactive", "Active"]
             }
         ]);
-
-        console.log(combinedQueries);
 
         await db.queryAll(combinedQueries);
         await db.query('COMMIT');
