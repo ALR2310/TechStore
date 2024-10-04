@@ -414,7 +414,7 @@ $('#import-from-url').find('button').on('click', function () {
             dataType: "json",
             contentType: "application/json",
             success: async (res) => {
-                $('#import-from-url').removeClass("disabled");
+                $('#import-from-url').find('button').removeClass("disabled");
                 if (res.success) {
                     $('#product-name').val(res.data.prdName);
                     $('#product-discount').val(res.data.prdDiscount);
@@ -432,13 +432,13 @@ $('#import-from-url').find('button').on('click', function () {
                 }
             },
             error: (err) => {
-                $('#import-from-url').removeClass("disabled");
+                $('#import-from-url').find('button').removeClass("disabled");
                 console.log(err);
                 showToast("Lỗi máy chủ", "danger");
             }
         });
     } catch (e) {
-        $('#import-from-url').removeClass("disabled");
+        $('#import-from-url').find('button').removeClass("disabled");
         console.log(e);
         return showToast("Url không hợp lệ", "danger");
     }

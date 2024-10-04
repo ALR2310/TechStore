@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../configs/dbConnect.js');
 const myUtils = require("../utils/myUtils");
-const { checkUser } = require('../middleware/authenticate');
 
 router.get('/', async (req, res) => {
     try {
@@ -48,7 +47,28 @@ router.get('/', async (req, res) => {
             products: groupBy(products)
         })).filter(group => group.products.length > 0);
 
-        return res.render('home/index', { categories: productsGroupedByCategory });
+
+        // Lấy ra danh sách các sản phẩm nổi bật ngẫu nhiên
+        const rdmProduct = await db.query(`
+            SELECT 
+                p.*, 
+                    pd.DeviceCfg,
+                    CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice, 
+                    ROUND(IFNULL(AVG(pv.Rating), 0), 1) AS AverageRating,
+                    COUNT(pv.Id) AS TotalRating
+            FROM Product p
+                JOIN ProductDetails pd ON p.Id = pd.ProdId
+                LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
+            WHERE p.Status = "Active"
+            GROUP BY p.Id, pd.DeviceCfg
+            LIMIT 12
+            `);
+
+        rdmProduct.forEach((prdItem) => {
+            prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
+        });
+
+        return res.render('home/index', { categories: productsGroupedByCategory, rdmProduct });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });

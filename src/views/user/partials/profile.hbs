@@ -12,12 +12,12 @@
         <div class="d-flex align-items-center" style="width: 74%;">
             <div class="form-check">
                 <input id="profile-gender1" name="profile-gender" class="form-check-input pointer" value="Nam"
-                    type="radio" {{#if (eq userInfo.Gender 'Nam' ) }} checked {{/if}}>
+                    type="radio" {{#if (eq user.Gender 'Nam' ) }} checked {{/if}}>
                 <label for="profile-gender1" class="form-check-label pointer">Nam</label>
             </div>
             <div class="form-check ms-3">
                 <input id="profile-gender2" name="profile-gender" class="form-check-input pointer" value="Nữ"
-                    type="radio" {{#if (eq userInfo.Gender 'Nữ' ) }} checked {{/if}}>
+                    type="radio" {{#if (eq user.Gender 'Nữ' ) }} checked {{/if}}>
                 <label for="profile-gender2" class="form-check-label pointer">Nữ</label>
             </div>
         </div>
