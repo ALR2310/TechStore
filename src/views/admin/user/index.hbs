@@ -1,0 +1,66 @@
+<turbo-frame id="tbl-users">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Họ và tên</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Email</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Quyền</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col">Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if users}}
+            {{#each users}}
+            <tr id="row-{{this.Id}}">
+                <th scope="row">{{this.Id}}</th>
+                <td><span class="view-mode">{{this.FullName}}</span><input
+                        class="edit-mode form-control form-control-sm" type="text" value="{{this.FullName}}"
+                        style="display:none;"></td>
+                <td><span class="view-mode">{{this.PhoneNumber}}</span><input
+                        class="edit-mode form-control form-control-sm" type="text" value="{{this.PhoneNumber}}"
+                        style="display:none;"></td>
+                <td><span class="view-mode">{{this.Email}}</span><input class="edit-mode form-control form-control-sm"
+                        type="text" value="{{this.Email}}" style="display:none;"></td>
+                <td><span class="view-mode">{{this.Gender}}</span>
+                    <select class="edit-mode form-select form-select-sm" style="display:none;">
+                        <option value="Nam" {{#if (eq this.Gender 'Nam' )}}selected{{/if}}>Nam</option>
+                        <option value="Nữ" {{#if (eq this.Gender 'Nữ' )}}selected{{/if}}>Nữ</option>
+                    </select>
+                </td>
+                <td><span class="view-mode">{{formatDate this.DoB}}</span><input class="edit-mode form-control form-control-sm"
+                        type="date" value="{{this.DoB}}" style="display:none;"></td>
+                <td><span class="view-mode">{{this.Role}}</span>
+                    <select class="edit-mode form-select form-select-sm" style="display:none;">
+                        <option value="User" {{#if (eq this.Role 'User' )}}selected{{/if}}>User</option>
+                        <option value="Admin" {{#if (eq this.Role 'Admin' )}}selected{{/if}}>Admin</option>
+                    </select>
+                </td>
+                <td class="{{#if (eq this.Status 'Active')}}text-success{{else}}text-danger{{/if}}">
+                    <span class="view-mode">{{this.Status}}</span>
+                    <select class="edit-mode form-select form-select-sm" style="display:none;">
+                        <option value="Active" {{#if (eq this.Status 'Active' )}}selected{{/if}}>Active</option>
+                        <option value="Inactive" {{#if (eq this.Status 'Inactive' )}}selected{{/if}}>Inactive</option>
+                    </select>
+                </td>
+                <td>{{formatDate this.AtCreate}}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-btn" onclick="editUser({{this.Id}})">Sửa</button>
+                    <button class="btn btn-sm btn-success save-btn" onclick="saveUser({{this.Id}})"
+                        style="display:none;">Lưu</button>
+                    <button class="btn btn-sm btn-secondary cancel-btn" onclick="cancelEdit({{this.Id}})"
+                        style="display:none;">Huỷ</button>
+                    <button class="btn btn-sm btn-danger delete-btn" onclick="deleteUser({{this.Id}})">Xoá</button>
+                </td>
+            </tr>
+            {{/each}}
+            {{/if}}
+        </tbody>
+    </table>
+</turbo-frame>
+
+<script src="/js/admin/user.js"></script>
