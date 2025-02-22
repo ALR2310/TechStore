@@ -289,7 +289,6 @@ router.patch("/user", async (req, res) => {
       .json({ success: false, message: "Thiếu ID người dùng" });
   }
 
-  // Cập nhật bảng User
   const userUpdateFields = [];
   const userParams = [];
   if (email !== undefined) {
@@ -305,7 +304,6 @@ router.patch("/user", async (req, res) => {
     userParams.push(status);
   }
 
-  // Cập nhật bảng UserInfo
   const userInfoUpdateFields = [];
   const userInfoParams = [];
   if (fullName !== undefined) {
@@ -333,7 +331,6 @@ router.patch("/user", async (req, res) => {
   }
 
   try {
-    // Cập nhật bảng User
     if (userUpdateFields.length > 0) {
       const userQuery = `UPDATE User SET ${userUpdateFields.join(
         ", "
@@ -347,7 +344,6 @@ router.patch("/user", async (req, res) => {
       }
     }
 
-    // Cập nhật bảng UserInfo
     if (userInfoUpdateFields.length > 0) {
       const userInfoQuery = `UPDATE UserInfo SET ${userInfoUpdateFields.join(
         ", "
@@ -383,6 +379,52 @@ router.delete("/user", async (req, res) => {
       .json({ success: true, message: "Xóa người dùng thành công" });
   } catch (e) {
     console.error(e);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ", data: e });
+  }
+});
+
+router.get("/order", async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+        O.Id, O.TotalPrice, O.AtCreate, O.Status, O.Code,
+        OI.Quantity,
+        P.Image, P.ProdName, P.Slugs,
+        A.FullName, A.PhoneNumber, A.AddressLine
+      FROM Orders as O 
+        JOIN OrderItems as OI ON O.Id = OI.OrdId 
+        JOIN Product as P ON OI.ProdId = P.Id
+        JOIN Address as A ON O.AdrId = A.Id
+    `;
+    const orders = await db.query(sql);
+
+    res.render("admin/order/index", { layout: "admin", orders });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ", data: err });
+  }
+});
+
+router.post("/order/status", async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    if (!id || !status)
+      return res
+        .status(400)
+        .json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
+
+    await db.query("UPDATE Orders SET Status = ? WHERE Id = ?", [status, id]);
+    return res.status(200).json({
+      success: true,
+      message: "Cập nhật trạng thái đơn hàng thành công",
+    });
+  } catch (e) {
+    console.log(e);
     return res
       .status(500)
       .json({ success: false, message: "Lỗi máy chủ", data: e });

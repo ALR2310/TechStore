@@ -249,3 +249,42 @@ INSERT INTO BrandSeries(BrandId, SeriesName) VALUES (7, 'Victus');
 INSERT INTO BrandSeries(BrandId, SeriesName) VALUES (7, 'Pavilion');
 INSERT INTO BrandSeries(BrandId, SeriesName) VALUES (7, 'ProBook');
 INSERT INTO BrandSeries(BrandId, SeriesName) VALUES (7, 'Envy');
+
+-- example data
+INSERT INTO User (Id, Email, UserName, Password, Role, AtCreate, Status) VALUES
+(4, 'nguyenvanan@example.com', 'nguyen.anan', 'password123', 'User', '2023-05-12 14:23:45', 'Active'),
+(5, 'tranthiminh@example.com', 'tran.minh', 'password123', 'User', '2023-04-08 09:15:32', 'Active'),
+(6, 'lethanhhai@example.com', 'le.hai', 'password123', 'Admin', '2023-03-17 17:50:11', 'Active'),
+(7, 'phamvanhoa@example.com', 'pham.hoa', 'password123', 'User', '2023-02-22 20:35:27', 'Inactive'),
+(8, 'nguyenvanbinh@example.com', 'nguyen.binh', 'password123', 'User', '2023-01-30 08:45:59', 'Active'),
+(9, 'dangthimai@example.com', 'dang.mai', 'password123', 'User', '2022-12-11 13:22:14', 'Active'),
+(10, 'hoangvanchien@example.com', 'hoang.chien', 'password123', 'User', '2022-11-05 15:10:33', 'Active'),
+(11, 'lethiminh@example.com', 'le.minh', 'password123', 'User', '2022-10-23 07:55:21', 'Inactive'),
+(12, 'trankhanhlinh@example.com', 'tran.linh', 'password123', 'User', '2022-09-14 12:40:17', 'Active'),
+(13, 'phamthithao@example.com', 'pham.thao', 'password123', 'User', '2022-08-28 18:29:44', 'Active'),
+(14, 'nguyenvanhoa@example.com', 'nguyen.hoa', 'password123', 'User', '2022-07-09 22:18:35', 'Active'),
+(15, 'lethanhbinh@example.com', 'le.binh', 'password123', 'User', '2022-06-21 10:05:56', 'Active'),
+(16, 'nguyenminhtrang@example.com', 'nguyen.trang', 'password123', 'Admin', '2022-05-15 19:50:42', 'Active'),
+(17, 'phamngocanh@example.com', 'pham.anh', 'password123', 'User', '2022-04-30 14:20:18', 'Inactive'),
+(18, 'tranvanhieu@example.com', 'tran.hieu', 'password123', 'User', '2022-03-27 11:33:10', 'Active'),
+(19, 'dovanhung@example.com', 'do.hung', 'password123', 'User', '2022-02-18 16:45:09', 'Active'),
+(20, 'hoangthithu@example.com', 'hoang.thu', 'password123', 'User', '2022-01-07 08:55:30', 'Active');
+
+INSERT INTO UserInfo (Id, UserId, FullName, PhoneNumber, Gender, DoB, AtCreate) VALUES
+(4, 4, 'Nguyễn Văn An', '0987123456', 'Nam', '1995-06-12 00:00:00', '2023-05-12 14:23:45'),
+(5, 5, 'Trần Thị Minh', '0978123456', 'Nữ', '1998-07-23 00:00:00', '2023-04-08 09:15:32'),
+(6, 6, 'Lê Thanh Hải', '0967123456', 'Nam', '1990-01-15 00:00:00', '2023-03-17 17:50:11'),
+(7, 7, 'Phạm Văn Hòa', '0956123456', 'Nam', '1993-03-22 00:00:00', '2023-02-22 20:35:27'),
+(8, 8, 'Nguyễn Văn Bình', '0945123456', 'Nam', '1989-12-01 00:00:00', '2023-01-30 08:45:59'),
+(9, 9, 'Đặng Thị Mai', '0934123456', 'Nữ', '1997-05-10 00:00:00', '2022-12-11 13:22:14'),
+(10, 10, 'Hoàng Văn Chiến', '0923123456', 'Nam', '1992-11-30 00:00:00', '2022-11-05 15:10:33'),
+(11, 11, 'Lê Thị Minh', '0912123456', 'Nữ', '2000-08-19 00:00:00', '2022-10-23 07:55:21'),
+(12, 12, 'Trần Khánh Linh', '0901123456', 'Nữ', '2002-04-25 00:00:00', '2022-09-14 12:40:17'),
+(13, 13, 'Phạm Thị Thảo', '0981234567', 'Nữ', '1996-10-05 00:00:00', '2022-08-28 18:29:44'),
+(14, 14, 'Nguyễn Văn Hòa', '0971234567', 'Nam', '1987-09-12 00:00:00', '2022-07-09 22:18:35'),
+(15, 15, 'Lê Thanh Bình', '0961234567', 'Nam', '1991-02-28 00:00:00', '2022-06-21 10:05:56'),
+(16, 16, 'Nguyễn Minh Trang', '0951234567', 'Nữ', '2001-07-07 00:00:00', '2022-05-15 19:50:42'),
+(17, 17, 'Phạm Ngọc Anh', '0941234567', 'Nữ', '1994-06-15 00:00:00', '2022-04-30 14:20:18'),
+(18, 18, 'Trần Văn Hiếu', '0931234567', 'Nam', '1993-03-09 00:00:00', '2022-03-27 11:33:10'),
+(19, 19, 'Đỗ Văn Hùng', '0921234567', 'Nam', '1990-11-11 00:00:00', '2022-02-18 16:45:09'),
+(20, 20, 'Hoàng Thị Thu', '0911234567', 'Nữ', '1999-12-20 00:00:00', '2022-01-07 08:55:30');
