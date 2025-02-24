@@ -1,0 +1,75 @@
+<div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+    <a href="product/create" class="btn btn-success fw-bold px-3 py-2">
+        <i class="fa-solid fa-plus me-1"></i> Thêm sản phẩm mới
+    </a>
+
+    <div class="input-group w-25">
+        <input id="txt_product_search" type="text" class="form-control" placeholder="Nhập tên sản phẩm..." aria-label="Tìm kiếm sản phẩm">
+        <button id="btn_product_search" class="btn btn-secondary" type="button">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+</div>
+
+<turbo-frame id="frame-product-list" class="row g-4">
+    {{#each products}}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm transition-hover">
+            <div class="row g-0">
+                <div class="col-4">
+                    <a href="/san-pham/{{this.Slugs}}" target="_top">
+                        <img src="/{{this.Image}}" alt="{{this.ProdName}}" class="img-fluid rounded-start"
+                            style="max-width: 150px; object-fit: cover;">
+                    </a>
+                </div>
+                <div class="col-8">
+                    <div class="card-body d-flex flex-column h-100">
+                        <h6 class="card-title text-truncate fw-bold">{{this.ProdName}}</h6>
+                        <div class="mb-2">
+                            <p class="mb-1">Giá bán: <span class="text-success fw-bold">{{formatNumToCurrency
+                                    this.Price}}₫</span></p>
+                            <p class="mb-1">Giảm giá: <span class="text-success fw-bold">{{this.Discount}}%</span></p>
+                            <p class="mb-1">Danh mục: <a href="/san-pham/{{this.CateSlug}}"
+                                    class="text-primary">{{this.CateName}}</a></p>
+                            <p class="mb-1">Thương hiệu: <span class="fw-bold">{{this.BrandName}}</span></p>
+                            {{#if this.SeriesName}}
+                            <p class="mb-1">Thuộc dòng: <span class="fw-bold">{{this.SeriesName}}</span></p>
+                            {{/if}}
+                        </div>
+                        <div class="mt-auto d-flex flex-wrap gap-2">
+                            <a href="/san-pham/{{this.Slugs}}" target="_top" class="btn btn-sm btn-info flex-grow-1">
+                                <i class="fa-solid fa-eye me-1"></i> Xem
+                            </a>
+                            <a href="product/update/{{this.Id}}" target="_top" class="btn btn-sm btn-primary flex-grow-1">
+                                <i class="fa-solid fa-pen me-1"></i> Cập nhật
+                            </a>
+                            <button class="btn btn-sm btn-danger flex-grow-1" onclick="deleteProduct('{{this.Id}}')">
+                                <i class="fa-solid fa-trash me-1"></i> Xoá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</turbo-frame>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+    .card-title {
+        font-size: 1.1rem;
+        color: #333;
+    }
+    .btn {
+        border-radius: 5px;
+    }
+</style>
+
+<script src="/js/admin/product.js"></script>

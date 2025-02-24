@@ -11,6 +11,77 @@ router.get("/", (req, res) => {
   res.render("admin/index", { layout: "admin" });
 });
 
+router.get("/product", async (req, res) => {
+  const { q } = req.query;
+
+  const sql = `SELECT 
+                P.Id, P.Image, P.ProdName, p.Quantity, P.Price, P.Discount, P.Slugs, 
+                C.CateName, C.Slugs AS CateSlugs, C.Id AS CateId,
+                B.Id AS BrandId, B.BrandName,
+                BS.Id AS BrandSeriesId, BS.SeriesName
+              FROM Product AS P
+                JOIN Categories AS C ON P.CateId = C.Id
+                JOIN Brands AS B ON P.BrandId = B.Id
+                JOIN BrandSeries AS BS ON P.BrandSeriesId = BS.Id
+              WHERE P.Status = ? AND P.ProdName LIKE ?
+            `;
+  const products = await db.query(sql, [`Active`, `%${q}%`]);
+
+  res.render("admin/product/index", { layout: "admin", products });
+});
+
+router.delete("/product/delete", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    await db.query(`UPDATE Product SET Status = 'Inactive' WHERE Id = ?`, [id]);
+    return res.status(200).json({ success: true, message: "Xoá thành công" });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ", data: e });
+  }
+});
+
+router.get("/product/update/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const productSql = `SELECT * FROM Product AS P 
+                  JOIN ProductDetails AS PD ON P.Id = PD.ProdId 
+                WHERE P.Id = ?`;
+    const [product, categories, brands, brandSeries, tags] = await db.queryAll([
+      { sql: productSql, params: [id] },
+      { sql: "SELECT * FROM Categories" },
+      { sql: "SELECT * FROM Brands" },
+      { sql: "SELECT * FROM BrandSeries" },
+      { sql: "SELECT * FROM Tags" },
+    ]);
+
+    const uniqueTags = Array.from(
+      new Set(tags.map((tag) => tag.TagName.toLowerCase()))
+    ).map((tagName) => {
+      return tags.find((tag) => tag.TagName.toLowerCase() === tagName);
+    });
+
+    return res
+      .status(200)
+      .render("admin/product/update", {
+        product,
+        categories,
+        brands,
+        brandSeries,
+        tags: uniqueTags,
+      });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ", data: e });
+  }
+});
+
 router.get("/product/create", async (req, res) => {
   try {
     const [categories, brands, brandSeries, tags] = await db.queryAll([
