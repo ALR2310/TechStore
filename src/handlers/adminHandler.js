@@ -15,17 +15,18 @@ router.get("/product", async (req, res) => {
   const { q } = req.query;
 
   const sql = `SELECT 
-                P.Id, P.Image, P.ProdName, p.Quantity, P.Price, P.Discount, P.Slugs, 
-                C.CateName, C.Slugs AS CateSlugs, C.Id AS CateId,
-                B.Id AS BrandId, B.BrandName,
-                BS.Id AS BrandSeriesId, BS.SeriesName
-              FROM Product AS P
-                JOIN Categories AS C ON P.CateId = C.Id
-                JOIN Brands AS B ON P.BrandId = B.Id
-                JOIN BrandSeries AS BS ON P.BrandSeriesId = BS.Id
-              WHERE P.Status = ? AND P.ProdName LIKE ?
-            `;
-  const products = await db.query(sql, [`Active`, `%${q}%`]);
+    P.Id, P.Image, P.ProdName, P.Quantity, P.Price, P.Discount, P.Slugs,
+    C.CateName, C.Slugs AS CateSlugs, C.Id AS CateId,
+    B.Id AS BrandId, B.BrandName,
+    BS.Id AS BrandSeriesId, BS.SeriesName
+  FROM Product AS P
+    JOIN Categories AS C ON P.CateId = C.Id
+    JOIN Brands AS B ON P.BrandId = B.Id
+    JOIN BrandSeries AS BS ON P.BrandSeriesId = BS.Id
+  WHERE P.Status = ? ${q ? "AND P.ProdName LIKE ?" : ""}`;
+
+  const params = q ? ["Active", `%${q}%`] : ["Active"];
+  const products = await db.query(sql, params);
 
   res.render("admin/product/index", { layout: "admin", products });
 });
@@ -36,44 +37,6 @@ router.delete("/product/delete", async (req, res) => {
   try {
     await db.query(`UPDATE Product SET Status = 'Inactive' WHERE Id = ?`, [id]);
     return res.status(200).json({ success: true, message: "Xoá thành công" });
-  } catch (e) {
-    console.error(e);
-    return res
-      .status(500)
-      .json({ success: false, message: "Lỗi máy chủ", data: e });
-  }
-});
-
-router.get("/product/update/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const productSql = `SELECT * FROM Product AS P 
-                  JOIN ProductDetails AS PD ON P.Id = PD.ProdId 
-                WHERE P.Id = ?`;
-    const [product, categories, brands, brandSeries, tags] = await db.queryAll([
-      { sql: productSql, params: [id] },
-      { sql: "SELECT * FROM Categories" },
-      { sql: "SELECT * FROM Brands" },
-      { sql: "SELECT * FROM BrandSeries" },
-      { sql: "SELECT * FROM Tags" },
-    ]);
-
-    const uniqueTags = Array.from(
-      new Set(tags.map((tag) => tag.TagName.toLowerCase()))
-    ).map((tagName) => {
-      return tags.find((tag) => tag.TagName.toLowerCase() === tagName);
-    });
-
-    return res
-      .status(200)
-      .render("admin/product/update", {
-        product,
-        categories,
-        brands,
-        brandSeries,
-        tags: uniqueTags,
-      });
   } catch (e) {
     console.error(e);
     return res
@@ -113,6 +76,7 @@ router.get("/product/create", async (req, res) => {
 
 router.post("/product/create", upload.single("Image"), async (req, res) => {
   const {
+    Id,
     CateId,
     BrandId,
     BrandSeriesId,
@@ -135,16 +99,16 @@ router.post("/product/create", upload.single("Image"), async (req, res) => {
     !Discount ||
     !Slugs ||
     !AtCreate
-  )
+  ) {
     return res
       .status(400)
       .json({ success: false, message: "Vui lòng nhập đầy đủ thông tin" });
+  }
 
   const absoImagePath = req.file ? req.file.path : null;
-  let relaImagePath = path.relative(
-    path.join(__dirname, "..", "assets"),
-    absoImagePath
-  );
+  let relaImagePath = absoImagePath
+    ? path.relative(path.join(__dirname, "..", "assets"), absoImagePath)
+    : null;
 
   if (absoImagePath && Slugs) {
     const extname = path.extname(req.file.originalname);
@@ -159,47 +123,126 @@ router.post("/product/create", upload.single("Image"), async (req, res) => {
   }
 
   try {
-    let sql = `INSERT INTO Product(CateId, BrandId${
-      BrandSeriesId && BrandSeriesId !== "0" ? ", BrandSeriesId" : ""
-    }, Image, 
-            ProdName, Quantity, Price, Discount, Slugs, AtCreate) VALUES(?, ?, ${
-              BrandSeriesId && BrandSeriesId !== "0" ? "?, " : ""
-            }?, ?, ?, ?, ?, ?, ?)`;
+    if (!Id) {
+      let sql = `INSERT INTO Product(CateId, BrandId${
+        BrandSeriesId && BrandSeriesId !== "0" ? ", BrandSeriesId" : ""
+      }, Image, ProdName, Quantity, Price, Discount, Slugs, AtCreate) 
+                 VALUES(?, ?, ${
+                   BrandSeriesId && BrandSeriesId !== "0" ? "?, " : ""
+                 }?, ?, ?, ?, ?, ?, ?)`;
 
-    let params = [CateId, BrandId];
-    if (BrandSeriesId && BrandSeriesId !== "0") params.push(BrandSeriesId);
-    params.push(
-      relaImagePath,
-      ProdName,
-      Quantity,
-      Price,
-      Discount,
-      Slugs,
-      AtCreate
-    );
+      let params = [CateId, BrandId];
+      if (BrandSeriesId && BrandSeriesId !== "0") params.push(BrandSeriesId);
+      params.push(
+        relaImagePath,
+        ProdName,
+        Quantity,
+        Price,
+        Discount,
+        Slugs,
+        AtCreate
+      );
 
-    const result = await db.query(sql, params);
+      const result = await db.query(sql, params);
 
-    params = [result.insertId, DeviceCfg, Content, AtCreate];
-    await db.query(
-      "INSERT INTO ProductDetails(ProdId, DeviceCfg, Content, AtCreate) VALUES(?, ?, ?, ?)",
-      params
-    );
+      await db.query(
+        "INSERT INTO ProductDetails(ProdId, DeviceCfg, Content, AtCreate) VALUES(?, ?, ?, ?)",
+        [result.insertId, DeviceCfg, Content, AtCreate]
+      );
 
-    if (Tags) {
-      const tagsArray = Tags.split(",").map((tag) => tag.trim());
-      const tagQueries = tagsArray.map((tagName) => {
-        return {
+      if (Tags) {
+        const tagsArray = Tags.split(",").map((tag) => tag.trim());
+        const tagQueries = tagsArray.map((tagName) => ({
           sql: "INSERT INTO Tags(ProdId, TagName) VALUES(?, ?)",
           params: [result.insertId, tagName],
-        };
-      });
-      await db.queryAll(tagQueries);
-    }
+        }));
+        await db.queryAll(tagQueries);
+      }
 
+      return res
+        .status(200)
+        .json({ success: true, message: "Thêm sản phẩm thành công" });
+    } else {
+      let sql = `UPDATE Product SET 
+                 CateId = ?, 
+                 BrandId = ?,
+                 ${
+                   BrandSeriesId && BrandSeriesId !== "0"
+                     ? "BrandSeriesId = ?, "
+                     : "BrandSeriesId = NULL, "
+                 }
+                 ${relaImagePath ? "Image = ?, " : ""}
+                 ProdName = ?, 
+                 Quantity = ?, 
+                 Price = ?, 
+                 Discount = ?, 
+                 Slugs = ?, 
+                 AtUpdate = ?
+                 WHERE Id = ?`;
+
+      let params = [CateId, BrandId];
+      if (BrandSeriesId && BrandSeriesId !== "0") params.push(BrandSeriesId);
+      if (relaImagePath) params.push(relaImagePath);
+      params.push(ProdName, Quantity, Price, Discount, Slugs, AtCreate, Id);
+
+      await db.query(sql, params);
+
+      await db.query(
+        "UPDATE ProductDetails SET DeviceCfg = ?, Content = ?, AtUpdate = ? WHERE ProdId = ?",
+        [DeviceCfg, Content, AtCreate, Id]
+      );
+
+      if (Tags) {
+        await db.query("DELETE FROM Tags WHERE ProdId = ?", [Id]);
+        const tagsArray = Tags.split(",").map((tag) => tag.trim());
+        const tagQueries = tagsArray.map((tagName) => ({
+          sql: "INSERT INTO Tags(ProdId, TagName) VALUES(?, ?)",
+          params: [Id, tagName],
+        }));
+        await db.queryAll(tagQueries);
+      }
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Cập nhật sản phẩm thành công" });
+    }
+  } catch (e) {
+    console.error(e);
     return res
-      .status(200)
-      .json({ success: true, message: "Thêm sản phẩm thành công" });
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ", data: e });
+  }
+});
+
+router.get("/product/update/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const productSql = `SELECT * FROM Product AS P 
+                  JOIN ProductDetails AS PD ON P.Id = PD.ProdId 
+                WHERE P.Id = ?`;
+    const [product, categories, brands, brandSeries, tags] = await db.queryAll([
+      { sql: productSql, params: [id] },
+      { sql: "SELECT * FROM Categories" },
+      { sql: "SELECT * FROM Brands" },
+      { sql: "SELECT * FROM BrandSeries" },
+      { sql: "SELECT * FROM Tags" },
+    ]);
+
+    const uniqueTags = Array.from(
+      new Set(tags.map((tag) => tag.TagName.toLowerCase()))
+    ).map((tagName) => {
+      return tags.find((tag) => tag.TagName.toLowerCase() === tagName);
+    });
+
+    return res.status(200).render("admin/product/create", {
+      layout: "admin",
+      product: product[0],
+      categories,
+      brands,
+      brandSeries,
+      tags: uniqueTags,
+    });
   } catch (e) {
     console.error(e);
     return res

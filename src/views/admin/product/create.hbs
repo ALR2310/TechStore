@@ -10,21 +10,26 @@
 </div>
 
 <div class="row mb-3">
+    <input type="hidden" id="product-id" value="{{product.Id}}">
+
     <div class="col-4">
-        <img id="product-image-preview" src="/imgs/default-product.png" alt="Product image" class="w-100 rounded">
+        <img id="product-image-preview" src="{{#if product}}/{{product.Image}}{{else}}/imgs/default-product.png{{/if}}"
+            alt="Product image" class="w-100 rounded">
     </div>
 
     <div class="col-8">
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm:</label>
-            <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm">
+            <input id="product-name" type="text" class="form-control" placeholder="Nhập tên sản phẩm"
+                value="{{product.ProdName}}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">URL sản phẩm:</label>
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon3">http://localhost:4850/san-pham/</span>
-                <input id="product-slug" type="text" class="form-control" placeholder="Url sản phẩm">
+                <input id="product-slug" type="text" class="form-control" placeholder="Url sản phẩm"
+                    value="{{product.Slugs}}">
             </div>
         </div>
 
@@ -32,7 +37,8 @@
             <div class="col">
                 <label class="form-label">Hình ảnh:</label>
                 <input id="product-image-file" type="file" class="form-control" accept=".png, .jpg, .jpeg">
-                <input id="product-image-url" type="url" class="form-control d-none" placeholder="URL hình ảnh">
+                <input id="product-image-url" type="url" class="form-control d-none" placeholder="URL hình ảnh"
+                    value="{{product.Image}}">
             </div>
 
             <div class="col">
@@ -55,7 +61,8 @@
                         <option value="0">Không có</option>
                         {{#if categories}}
                         {{#each categories}}
-                        <option value="{{this.Id}}">{{this.CateName}}</option>
+                        <option value="{{this.Id}}" {{#if (eq this.Id ../product.CateId)}}selected{{/if}}>
+                            {{this.CateName}}</option>
                         {{/each}}
                         {{/if}}
                     </select>
@@ -76,7 +83,8 @@
                         <option value="0">Không có</option>
                         {{#if brands}}
                         {{#each brands}}
-                        <option value="{{this.Id}}">{{this.BrandName}}</option>
+                        <option value="{{this.Id}}" {{#if (eq this.Id ../product.BrandId)}}selected{{/if}}>
+                            {{this.BrandName}}</option>
                         {{/each}}
                         {{/if}}
                     </select>
@@ -97,7 +105,8 @@
                         <option value="0">Không có</option>
                         {{#if brandSeries}}
                         {{#each brandSeries}}
-                        <option value="{{this.Id}}" data-brand="{{this.BrandId}}">{{this.SeriesName}}</option>
+                        <option value="{{this.Id}}" data-brand="{{this.BrandId}}" {{#if (eq this.Id
+                            ../product.BrandSeriesId)}}selected{{/if}}>{{this.SeriesName}}</option>
                         {{/each}}
                         {{/if}}
                     </select>
@@ -114,20 +123,22 @@
             </div>
             <div class="col col-3">
                 <label class="form-label">Thời gian</label>
-                <input id="product-datetime" type="datetime-local" class="form-control">
+                <input id="product-datetime" type="datetime-local" class="form-control"
+                    value="{{formatDate product.AtUpdate 2}}">
             </div>
         </div>
 
         <div class="row">
             <div class="col-2">
                 <label class="form-label">Số lượng:</label>
-                <input id="product-quantity" type="number" min="0" class="form-control" value="1"
-                    placeholder="Nhập số lượng">
+                <input id="product-quantity" type="number" min="0" class="form-control"
+                    value="{{#if product.Quantity}}{{product.Quantity}}{{else}}1{{/if}}" placeholder="Nhập số lượng">
             </div>
             <div class="col">
                 <label class="form-label">Giá bán (<span id="product-price-text"></span> đồng):</label>
                 <div class="input-group">
-                    <input id="product-price" type="text" min="0" class="form-control" placeholder="Nhập giá giá phẩm">
+                    <input id="product-price" type="text" min="0" class="form-control" value="{{product.Price}}"
+                        placeholder="Nhập giá giá sản phẩm">
                     <span class="input-group-text">VNĐ</span>
                 </div>
             </div>
@@ -135,15 +146,15 @@
                 <label class="form-label">Giảm giá:</label>
                 <div class="input-group">
                     <input id="product-discount" type="number" min="0" class="form-control"
-                        placeholder="Nhập số giảm giá" value="0">
+                        placeholder="Nhập số giảm giá" value="{{product.Discount}}">
                     <span class="input-group-text">%</span>
                 </div>
             </div>
             <div class="col-2">
                 <label class="form-label">Trạng thái:</label>
                 <select id="product-status" class="form-select">
-                    <option value="0">Hiện hoạt</option>
-                    <option value="1">Vô hiệu</option>
+                    <option value="0" {{#if (eq product.Status 'Active' )}}selected{{/if}}>Hiện hoạt</option>
+                    <option value="1" {{#if (eq product.Status 'Inactive' )}}selected{{/if}}>Vô hiệu</option>
                 </select>
             </div>
         </div>
@@ -151,6 +162,7 @@
 </div>
 
 <div class="row border-top">
+    <div id="content-product-desc" class="d-none">{{{product.Content}}}</div>
     <div class="col-7 mt-3">
         <label for="ckeditor_balloon" class="form-label">Mô tả sản phẩm:</label>
         <div id="ckeditor_balloon" class="border rounded form-focus" tabindex="0" style="height: 500px;"></div>
@@ -229,10 +241,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <textarea id="text_import-product-cfg" class="form-control h-100"></textarea>
+        <textarea id="text_import-product-cfg" class="form-control h-100">{{product.DeviceCfg}}</textarea>
     </div>
 </div>
 
-
 <script type="module">import Tags from "/libs/bootstrap-tags-1.7.4/tags.min.js"; Tags.init();</script>
-<script src="/js/admin/product/create.js"></script>
+<script src="/js/admin/product.js"></script>
+{{#if product}}
+<script>
+    productContentEditor.setData(`{{{ product.Content }}}`);
+    $('#text_import-product-cfg').trigger("input");
+</script>
+{{/if}}
