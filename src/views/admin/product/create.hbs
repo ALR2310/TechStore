@@ -124,7 +124,7 @@
             <div class="col col-3">
                 <label class="form-label">Thời gian</label>
                 <input id="product-datetime" type="datetime-local" class="form-control"
-                    value="{{formatDate product.AtUpdate 2}}">
+                    value="{{#if product}}{{formatDate product.AtUpdate 2}}{{/if}}">
             </div>
         </div>
 

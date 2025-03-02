@@ -7,8 +7,141 @@ const fs = require("fs");
 const scraper = require("../utils/scraper");
 const myUtils = require("../utils/myUtils");
 
-router.get("/", (req, res) => {
-  res.render("admin/index", { layout: "admin" });
+router.get("/", async (req, res) => {
+  const [userStats, orderStats, productStats, revenueStats] = await db.queryAll(
+    [
+      {
+        sql: `SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) AS active,
+                SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) AS inactive
+              FROM User;`,
+        params: ["Active", "Inactive"],
+      },
+      {
+        sql: `SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) AS processing,
+                SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) AS delivering
+              FROM Orders;`,
+        params: ["Processing", "Delivering"],
+      },
+      {
+        sql: `SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN Quantity = ? AND Status = ? THEN 1 ELSE 0 END) AS outOfStock,
+                SUM(CASE WHEN Quantity > 0 AND Quantity < ? AND Status = ? THEN 1 ELSE 0 END) AS lowStock
+              FROM Product;`,
+        params: [0, "Active", 10, "Active"],
+      },
+      {
+        sql: `SELECT 
+                SUM(CASE WHEN DATE(AtCreate) = DATE(?) THEN TotalPrice ELSE 0 END) AS today,
+                SUM(CASE WHEN AtCreate >= DATE(?, '-7 days') THEN TotalPrice ELSE 0 END) AS thisWeek,
+                SUM(CASE WHEN AtCreate >= DATE(?, 'start of month') THEN TotalPrice ELSE 0 END) AS thisMonth
+            FROM Orders;`,
+        params: ["now", "now", "now"],
+      },
+    ]
+  );
+
+  const [revenueByDay, revenueByWeek, revenueByMonth] = await db.queryAll([
+    {
+      sql: `SELECT 
+              DATE(AtCreate) AS OrderDate,
+              SUM(TotalPrice) AS DailyRevenue
+            FROM Orders
+            GROUP BY DATE(AtCreate)
+            ORDER BY OrderDate;`,
+    },
+    {
+      sql: `SELECT 
+              STRFTIME('%Y-%W', AtCreate) AS OrderWeek,
+              SUM(TotalPrice) AS WeeklyRevenue
+            FROM Orders
+            GROUP BY STRFTIME('%Y-%W', AtCreate)
+            ORDER BY OrderWeek;`,
+    },
+    {
+      sql: `SELECT 
+              STRFTIME('%Y-%m', AtCreate) AS OrderMonth,
+              SUM(TotalPrice) AS MonthlyRevenue
+            FROM Orders
+            GROUP BY STRFTIME('%Y-%m', AtCreate)
+            ORDER BY OrderMonth;`,
+    },
+  ]);
+
+  const [usersByDay, usersByWeek, usersByMonth] = await db.queryAll([
+    {
+      sql: `SELECT 
+              DATE(AtCreate) AS RegDate,
+              COUNT(*) AS DailyUsers
+            FROM User
+            GROUP BY DATE(AtCreate)
+            ORDER BY RegDate;`,
+    },
+    {
+      sql: `SELECT 
+              STRFTIME('%Y-%W', AtCreate) AS RegWeek,
+              COUNT(*) AS WeeklyUsers
+            FROM User
+            GROUP BY STRFTIME('%Y-%W', AtCreate)
+            ORDER BY RegWeek;`,
+    },
+    {
+      sql: `SELECT 
+              STRFTIME('%Y-%m', AtCreate) AS RegMonth,
+              COUNT(*) AS MonthlyUsers
+            FROM User
+            GROUP BY STRFTIME('%Y-%m', AtCreate)
+            ORDER BY RegMonth;`,
+    },
+  ]);
+
+  const [productViewed, productSelling] = await db.queryAll([
+    {
+      sql: `SELECT 
+                p.ProdName, p.Image, p.Slugs,
+                COUNT(pv.Id) AS ViewCount,
+                AVG(pr.Rating) AS AvgRating
+            FROM Product p
+            LEFT JOIN ProductViewed pv ON p.Id = pv.ProdId
+            LEFT JOIN ProductReviews pr ON p.Id = pr.ProdId
+            WHERE p.Status = 'Active'
+            GROUP BY p.Id, p.ProdName
+            ORDER BY ViewCount DESC, AvgRating DESC
+            LIMIT 20;`,
+    },
+    {
+      sql: `SELECT 
+                p.ProdName, p.Image, p.Slugs,
+                SUM(oi.Quantity) AS TotalSold
+            FROM Product p
+            JOIN OrderItems oi ON p.Id = oi.ProdId
+            WHERE p.Status = 'Active'
+            GROUP BY p.Id, p.ProdName
+            ORDER BY TotalSold DESC
+            LIMIT 20;`,
+    },
+  ]);
+
+  const data = {
+    userStats: userStats[0],
+    orderStats: orderStats[0],
+    productStats: productStats[0],
+    revenueStats: revenueStats[0],
+    revenueByDay,
+    revenueByWeek,
+    revenueByMonth,
+    usersByDay,
+    usersByWeek,
+    usersByMonth,
+    productViewed,
+    productSelling,
+  };
+
+  res.render("admin/index", { layout: "admin", ...data });
 });
 
 router.get("/product", async (req, res) => {
@@ -511,6 +644,7 @@ router.get("/order", async (req, res) => {
         JOIN OrderItems as OI ON O.Id = OI.OrdId 
         JOIN Product as P ON OI.ProdId = P.Id
         JOIN Address as A ON O.AdrId = A.Id
+      ORDER BY O.AtCreate DESC
     `;
     const orders = await db.query(sql);
 

@@ -1,1 +1,277 @@
-đây là home page
+<style>
+    .card-body .row:not(:last-child) {
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+<div>
+    <div class="row g-4">
+        <!-- Card Người dùng -->
+        <div class="col-md-3">
+            <div class="card text-bg-primary h-100">
+                <div class="card-header fw-bold"><i class="fas fa-users me-2"></i> Thống Kê Người Dùng</div>
+                <div class="card-body p-3">
+                    <p class="mb-1"><strong>Tổng người dùng:</strong> {{userStats.total}}</p>
+                    <p class="mb-1"><strong>Còn hoạt động:</strong> {{userStats.active}}</p>
+                    <p class="mb-0"><strong>Đã ngừng hoạt động:</strong> {{userStats.inactive}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Đơn hàng -->
+        <div class="col-md-3">
+            <div class="card text-bg-info h-100">
+                <div class="card-header fw-bold"><i class="fas fa-shopping-cart me-2"></i> Thống Kê Đơn Hàng</div>
+                <div class="card-body p-3">
+                    <p class="mb-1"><strong>Tổng đơn hàng:</strong> {{orderStats.total}}</p>
+                    <p class="mb-0"><strong>Đang chờ xử lý:</strong> {{orderStats.processing}}</p>
+                    <p class="mb-0"><strong>Đang giao:</strong> {{orderStats.delivering}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Sản phẩm -->
+        <div class="col-md-3">
+            <div class="card text-bg-dark h-100">
+                <div class="card-header fw-bold"><i class="fas fa-box me-2"></i> Thống Kê Sản Phẩm</div>
+                <div class="card-body p-3">
+                    <p class="mb-0"><strong>Tổng sản phẩm:</strong> {{productStats.total}}</p>
+                    <p class="mb-0"><strong>Sản phẩm hết hàng:</strong> {{productStats.outOfStock}}</p>
+                    <p class="mb-0"><strong>Tồn kho thấp:</strong> {{productStats.lowStock}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Doanh thu -->
+        <div class="col-md-3">
+            <div class="card text-bg-success h-100">
+                <div class="card-header fw-bold"><i class="fas fa-money-bill me-2"></i> Thống Kê Doanh Thu</div>
+                <div class="card-body p-3">
+                    <p class="mb-1"><strong>Hôm nay:</strong> {{formatNumToCurrency revenueStats.today}} ₫</p>
+                    <p class="mb-1"><strong>Tuần này:</strong> {{formatNumToCurrency revenueStats.thisWeek}} ₫</p>
+                    <p class="mb-0"><strong>Tháng này:</strong> {{formatNumToCurrency revenueStats.thisMonth}} ₫</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ô Select và Biểu đồ Doanh thu -->
+        <div class="col-md-3">
+            <select id="chart-revenue-type" class="form-select" aria-label="Default select example">
+                <option value="day">Doanh thu theo ngày</option>
+                <option value="week">Doanh thu theo tuần</option>
+                <option value="month">Doanh thu theo tháng</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header fw-bold"><i class="fas fa-chart-line me-2"></i> Biểu Đồ Doanh Thu</div>
+                <div class="card-body">
+                    <div id="revenueChart" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ô Select và Biểu đồ Người dùng đăng ký -->
+        <div class="col-12">
+            <select id="chart-users-type" class="form-select w-25" aria-label="Default select example">
+                <option value="day" selected>Số người đăng ký theo ngày</option>
+                <option value="week">Số người đăng ký theo tuần</option>
+                <option value="month">Số người đăng ký theo tháng</option>
+            </select>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header fw-bold"><i class="fas fa-user-plus me-2"></i> Biểu Đồ Người Dùng Đăng Ký</div>
+                <div class="card-body">
+                    <div id="usersChart" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        {{!-- Card top bán chạy --}}
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header fw-bold"><i class="fas fa-money-bill me-2"></i> Sản phẩm bán chạy nhất</div>
+                <div class="card-body p-3 overflow-auto" style="max-height: 431px;">
+                    {{#each productSelling}}
+                    <a href="/san-pham/{{this.Slugs}}" class="row text-decoration-none text-black">
+                        <img src="{{this.Image}}" class="col-3" alt="image">
+                        <strong class="col-9 text-line-2">{{this.ProdName}}</strong>
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{!-- Card top xem nhiều --}}
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-header fw-bold"><i class="fas fa-money-bill me-2"></i> Sản phẩm xem nhiều nhất</div>
+                <div class="card-body p-3 overflow-auto" style="max-height: 431px;">
+                    {{#each productViewed}}
+                    <a href="/san-pham/{{this.Slugs}}" class="row text-decoration-none text-black">
+                        <img src="{{this.Image}}" class="col-3" alt="image">
+                        <strong class="col-9 text-line-2">{{this.ProdName}}</strong>
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const revenueChart = echarts.init(document.getElementById('revenueChart'));
+    const revenueByDay = {{{ json revenueByDay }}};
+    const revenueByWeek = {{{ json revenueByWeek }}};
+    const revenueByMonth = {{{ json revenueByMonth }}};
+
+    function updateChart(type) {
+        let data, labels, xAxisName;
+        if (type === 'day') {
+            labels = revenueByDay.map(item => item.OrderDate);
+            data = revenueByDay.map(item => item.DailyRevenue || 0);
+            xAxisName = 'Ngày';
+        } else if (type === 'week') {
+            labels = revenueByWeek.map(item => item.OrderWeek);
+            data = revenueByWeek.map(item => item.WeeklyRevenue || 0);
+            xAxisName = 'Tuần';
+        } else if (type === 'month') {
+            labels = revenueByMonth.map(item => item.OrderMonth);
+            data = revenueByMonth.map(item => item.MonthlyRevenue || 0);
+            xAxisName = 'Tháng';
+        }
+
+        const totalItems = labels.length;
+        const defaultStart = totalItems > 20 ? Math.floor((totalItems - 20) / totalItems * 100) : 0;
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    const label = params[0].name;
+                    const value = params[0].value;
+                    let formattedLabel;
+                    if (type === 'day') {
+                        formattedLabel = dayjs(label).format('DD-MM-YYYY');
+                    } else {
+                        formattedLabel = label;
+                    }
+                    return `<b>${formattedLabel}</b>: <span class="text-success">${value.toLocaleString('vi-VN')} VNĐ</span>`;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: labels,
+                name: xAxisName
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Doanh thu (VNĐ)'
+            },
+            series: [{
+                data: data,
+                type: 'line',
+                smooth: true,
+                areaStyle: {},
+                lineStyle: {
+                    color: '#36b9cc',
+                    width: 3
+                },
+                itemStyle: { color: '#36b9cc' }
+            }],
+            dataZoom: [{
+                type: 'slider',
+                start: defaultStart,
+                end: 100,
+                handleIcon: 'M10,10H14V14H10V10Z',
+                handleSize: '80%',
+                handleStyle: { color: '#36b9cc' }
+            }],
+            grid: { left: '3%', right: '3%', bottom: '10%', containLabel: true }
+        };
+
+        revenueChart.setOption(option);
+    }
+
+    updateChart('day');
+
+    document.getElementById('chart-revenue-type').addEventListener('change', function () {
+        updateChart(this.value);
+    });
+
+    const usersChart = echarts.init(document.getElementById('usersChart'));
+    const usersByDay = {{{ json usersByDay }}};
+    const usersByWeek = {{{ json usersByWeek }}};
+    const usersByMonth = {{{ json usersByMonth }}};
+
+    function updateUsersChart(type) {
+        let data, labels, xAxisName;
+        if (type === 'day') {
+            labels = usersByDay.map(item => item.RegDate);
+            data = usersByDay.map(item => item.DailyUsers || 0);
+            xAxisName = 'Ngày';
+        } else if (type === 'week') {
+            labels = usersByWeek.map(item => item.RegWeek);
+            data = usersByWeek.map(item => item.WeeklyUsers || 0);
+            xAxisName = 'Tuần';
+        } else if (type === 'month') {
+            labels = usersByMonth.map(item => item.RegMonth);
+            data = usersByMonth.map(item => item.MonthlyUsers || 0);
+            xAxisName = 'Tháng';
+        }
+
+        const totalItems = labels.length;
+        const defaultStart = totalItems > 20 ? Math.floor((totalItems - 20) / totalItems * 100) : 0;
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    const label = params[0].name;
+                    const value = params[0].value;
+                    let formattedLabel = type === 'day' ? dayjs(label).format('DD-MM-YYYY') : label;
+                    return `<b>${formattedLabel}</b>: <span class="text-primary">${value} người</span>`;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: labels,
+                name: xAxisName
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Số người đăng ký'
+            },
+            series: [{
+                data: data,
+                type: 'line',
+                smooth: true,
+                areaStyle: {},
+                lineStyle: { color: '#4e73df', width: 3 },
+                itemStyle: { color: '#4e73df' }
+            }],
+            dataZoom: [{
+                type: 'slider',
+                start: defaultStart,
+                end: 100,
+                handleIcon: 'M10,10H14V14H10V10Z',
+                handleSize: '80%',
+                handleStyle: { color: '#4e73df' }
+            }],
+            grid: { left: '3%', right: '3%', bottom: '10%', containLabel: true }
+        };
+
+        usersChart.setOption(option);
+    }
+
+    updateUsersChart('day');
+    document.getElementById('chart-users-type').addEventListener('change', function () {
+        updateUsersChart(this.value);
+    });
+
+    window.addEventListener('resize', () => {
+        revenueChart.resize(); usersChart.resize();
+    });
+</script>

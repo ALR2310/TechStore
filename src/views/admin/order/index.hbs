@@ -53,6 +53,11 @@
                 {{#if (eq this.Status 'Cancelled')}}
                 <p class="text-danger">Đã huỷ</p>
                 {{/if}}
+
+                {{#if (eq this.Status 'Delivering')}}
+                <button class="btn btn-sm btn-success" onclick="updateOrderStatus('{{this.Id}}', 'Completed')">
+                    Giả định đơn hàng <br> giao thành công</button>
+                {{/if}}
             </div>
         </div>
     </div>

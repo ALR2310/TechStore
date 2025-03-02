@@ -82,6 +82,10 @@ const helpers = {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   },
+
+  json(data) {
+    return JSON.stringify(data);
+  },
 };
 
 module.exports = helpers;
