@@ -51,7 +51,7 @@ router.get("/:slugs", async (req, res) => {
     }
     if (brand) {
         const brandId = (await db.query('SELECT Id FROM Brands WHERE BrandName Like ?', [`%${brand}%`]))[0].Id;
-        brandParams = `p.BrandId = ${brandId[0].Id}`;
+        brandParams = `p.BrandId = ${brandId}`;
     }
     if (count) countParams = parseInt(count) + 12;
 

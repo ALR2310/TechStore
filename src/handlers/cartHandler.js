@@ -35,8 +35,8 @@ router.post('/create', checkUser, async (req, res) => {
     if (!productId) return res.status(400).json({ success: false, message: "Vui lòng nhập đủ thông tin", });
 
     try {
-        let sql = `SELECT * FROM Cart WHERE ProdId = ? AND Status = ?`;
-        const cartExists = await db.query(sql, [productId, "Active"]);
+        let sql = `SELECT * FROM Cart WHERE ProdId = ? AND Status = ? AND UserId = ?`;
+        const cartExists = await db.query(sql, [productId, "Active", req.user.Id]);
 
         if (cartExists.length > 0)
             return res.status(200).json({ success: false, message: 'Bạn đã thêm sản phẩm này vào giỏ hàng' });
@@ -56,8 +56,8 @@ router.post('/update', checkUser, async (req, res) => {
 
     try {
         const queries = cartItems.map(item => ({
-            sql: `UPDATE Cart SET Quantity = ? WHERE Id = ? AND Status = ?`,
-            params: [item.quantity, item.id, "Active"]
+            sql: `UPDATE Cart SET Quantity = ? WHERE Id = ? AND Status = ? AND UserId = ?`,
+            params: [item.quantity, item.id, "Active", req.user.Id]
         }));
 
         await db.queryAll(queries);
@@ -74,7 +74,7 @@ router.post('/delete', checkUser, async (req, res) => {
     if (!cartId) return res.status(400).json({ success: false, message: "Vui lòng nhập đầy đủ thông tin" });
 
     try {
-        await db.query(`UPDATE Cart SET Status = ? WHERE Id = ?`, ["Inactive", cartId]);
+        await db.query(`UPDATE Cart SET Status = ? WHERE Id = ? AND UserId = ?`, ["Inactive", cartId, req.user.Id]);
         return res.status(200).json({ success: true, message: 'Đã xoá sản phẩm khỏi giỏ hàng' });
     } catch (e) {
         console.error(e);
