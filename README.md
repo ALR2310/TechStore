@@ -2,7 +2,7 @@
   <br>
   <img src="https://github.com/ALR2310/SpendingManager/assets/87233160/e71d37fd-5c26-438b-9e8b-a46de90eaf39" width="200">
   <br>
-  Spending Manager
+  TechStore - Cửa Hàng Máy Tính
   <br>
 </h1>
 
@@ -13,8 +13,6 @@
   <a href="#sử-dụng">Sử dụng</a> •
   <a href="#giấy-phép">Giấy phép</a> •
 </p>
-
-![image](https://github.com/user-attachments/assets/f21f72cc-c2ed-4bc6-b182-b97a78255dcf)
 
 ## Tín dụng
 
