@@ -1,4 +1,7 @@
 {
+    "files.exclude": {
+        "**/node_modules": true
+    },
     "cSpell.words": [
         "ajax",
         "anan",
