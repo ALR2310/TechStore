@@ -4,12 +4,12 @@
         "outDir": "../build/server",
         "rootDir": ".",
         "module": "CommonJS",
+        "paths": {
+            "~": ["./"],
+            "~/*": ["./*"],
+            "@shared/*": ["../shared/*"]
+        }
     },
-    "include": [
-        ".",
-        "../shared"
-    ],
-    "exclude": [
-        "../client"
-    ]
+    "include": [".", "../shared"],
+    "exclude": ["../client"]
 }

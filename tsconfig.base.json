@@ -23,12 +23,6 @@
     "allowJs": true,
     "checkJs": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "~": ["."],
-      "~/*": ["./*"],
-      "@shared/*": ["shared/*"]
-    }
   },
   "exclude": ["node_modules", "dist", "build"]
 }

@@ -1,6 +1,4 @@
 {
-    "ext": "ts,js,mjs,cjs",
-    "ignore": [
-        "techstore.db"
-    ]
+  "watch": ["server"],
+  "ignore": ["techstore.db"]
 }

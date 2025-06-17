@@ -4,14 +4,14 @@ import { engine } from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import cors from 'cors';
-import passport from './configs/passport';
-import helpers from './configs/helpersHBS';
+import passport from '~/configs/passport';
+import helpers from '~/configs/helpersHBS';
 import path from 'path';
-import router from './routers/_index';
+import router from '~/routers/_index';
 
 const app = express();
-const host = process.env.HOST;
-const port = process.env.PORT;
+const host = process.env.HOST ?? 'localhost';
+const port = process.env.PORT_SERVER ?? 4850;
 
 //Middleware
 app.use(cors());

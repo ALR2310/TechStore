@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 dotenv.config();
 
@@ -19,10 +20,5 @@ export default defineConfig({
     },
   },
   server: { port: 8765 },
-  resolve: {
-    alias: {
-      '~': resolve(__dirname, 'src'),
-    },
-  },
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), tsconfigPaths()],
 });
