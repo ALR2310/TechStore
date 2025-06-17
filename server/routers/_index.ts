@@ -1,10 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
-import authenticate from '../middleware/authenticate';
+import { checkToken } from '~/middleware/authenticate';
 
 const router = express.Router();
 
-router.use(authenticate.checkToken);
+router.use(checkToken);
 router.use('/', require('./homeRouter').default);
 router.use('/auth', require('./authRouter').default);
 router.use('/admin', require('./adminRouter').default);

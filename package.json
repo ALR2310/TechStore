@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:server": "nodemon --exec tsx server/app.ts",
+    "start:server": "cd server && nodemon --exec tsx --env-file=../.env app.ts",
     "start:client": "cd client && vite --host",
     "build:server": "cd server && tsc --project tsconfig.build.json",
     "build:client": "cd client && vite build",
@@ -51,6 +51,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "nodemon": "^3.1.10",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1",

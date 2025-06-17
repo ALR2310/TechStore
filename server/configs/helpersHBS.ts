@@ -1,18 +1,18 @@
 const helpers = {
   // So sánh hai giá trị và trả về true nếu chúng bằng nhau
-  eq: function (a, b) {
+  eq: function (a: any, b: any) {
     return a === b;
   },
 
   // Định dạng một chuỗi số thành tiền tệ Việt Nam (VNĐ)
-  formatNumToCurrency: function (value) {
+  formatNumToCurrency: function (value: any) {
     if (typeof value !== "string") value = value.toString();
     value = value.replace(/\D/g, "");
     return new Intl.NumberFormat("vi-VN").format(value);
   },
 
   // So sánh một giá trị với một giá trị khác bằng một toán tử cụ thể (>, <, >=, <=, ==, !=)
-  compare: function (value, operator, comparison, options) {
+  compare: function (value: any, operator: string, comparison: any, options: any) {
     switch (operator) {
       case ">":
         return value > comparison ? options.fn(this) : options.inverse(this);
@@ -32,7 +32,7 @@ const helpers = {
   },
 
   // Thực hiện phép tính số học giữa hai giá trị (cộng, trừ, nhân, chia)
-  calculate: (value1, operator, value2) => {
+  calculate: (value1: any, operator: string, value2: any) => {
     value1 = parseFloat(value1);
     value2 = parseFloat(value2);
     switch (operator) {
@@ -50,7 +50,7 @@ const helpers = {
   },
 
   // Định dạng một chuỗi thời gian thành định dạng dd/mm/yyyy
-  formatDate(datetimeStr, type) {
+  formatDate(datetimeStr: string, type: number) {
     if (type == 1) {
       const date = new Date(datetimeStr);
       const dayNames = [
@@ -83,9 +83,9 @@ const helpers = {
     return `${day}/${month}/${year}`;
   },
 
-  json(data) {
+  json(data: any) {
     return JSON.stringify(data);
   },
 };
 
-module.exports = helpers;
+export default helpers;
