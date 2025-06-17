@@ -1,20 +1,15 @@
 import { Outlet } from 'react-router-dom';
+import AdminSidebar from '~/components/layouts/AdminSidebar';
 
 export default function AdminLayout() {
   return (
     <div>
-      {/* Header */}
-      <div>
-        <h1>Admin Dashboard</h1>
-      </div>
-
-      {/* Main Content */}
-      <Outlet />
-
-      {/* Footer */}
-      <div>
-        <p>© 2023 TechStore. All rights reserved.</p>
-      </div>
+      <AdminSidebar>
+        {/* Content */}
+        <main className={`min-h-[calc(100vh)]`}>
+          <Outlet />
+        </main>
+      </AdminSidebar>
     </div>
   );
 }

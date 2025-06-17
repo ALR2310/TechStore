@@ -9,6 +9,11 @@
         "javascript",
         "typescript"
     ],
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": "./.vscode/daisyui.md"
+        }
+    ],
     "cSpell.words": [
         "ajax",
         "anan",
