@@ -5,7 +5,7 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "outDir": "dist",
-        "rootDir": ".",
+        // "rootDir": ".",
         "noEmit": true,
         "paths": {
             "~": ["./"],

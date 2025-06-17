@@ -31,6 +31,9 @@ export default tseslint.config(
             '@typescript-eslint/no-unused-vars': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/interface-name-prefix': 'off',
+            "no-multiple-empty-lines": ["warn", { "max": 1, "maxEOF": 0, "maxBOF": 0 }],
+            "eol-last": ["warn", "always"],
+            "no-trailing-spaces": "warn",
         }
     },
 );

@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-dotenv.config();
+dotenv.config({ path: resolve(__dirname, '../.env') });
 
 export default defineConfig({
   build: {
@@ -19,6 +19,6 @@ export default defineConfig({
       },
     },
   },
-  server: { port: 8765 },
+  server: { port: Number(process.env.PORT_CLIENT) || 4950 },
   plugins: [react(), tailwindcss(), tsconfigPaths()],
 });
