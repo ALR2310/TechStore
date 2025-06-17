@@ -1,12 +1,18 @@
 {
   "name": "techstore",
   "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "user": "nodemon user/app.js",
-    "admin": "nodemon admin/app.js"
+    "start:server": "nodemon --exec tsx server/app.ts",
+    "start:client": "cd client && vite --host",
+    "build:server": "cd server && tsc --project tsconfig.build.json",
+    "build:client": "cd client && vite build",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "build": "concurrently \"npm run build:server\" \"npm run build:client\""
   },
+  "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "description": "",
   "dependencies": {
     "axios": "^1.10.0",
@@ -14,7 +20,6 @@
     "cheerio": "^1.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.1",
@@ -25,19 +30,26 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^3.0.0",
+    "@tailwindcss/vite": "^4.1.10",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/multer": "^1.4.13",
     "@types/node": "^24.0.2",
     "@types/passport": "^1.0.17",
+    "@types/passport-facebook": "^3.0.3",
+    "@types/passport-google-oauth20": "^2.0.16",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
+    "@vitejs/plugin-react": "^4.5.2",
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.5.0",
     "eslint": "^9.29.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-gitignore": "^0.1.0",
-    "eslint-plugin-prettier": "^5.4.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "nodemon": "^3.1.10",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }

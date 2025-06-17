@@ -1,17 +1,17 @@
-const multer = require('multer');
-const path = require('path');
+import multer from 'multer';
+import path from 'path';
 
 // Cấu hình lưu trữ
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
         cb(null, path.join(__dirname, '..', 'assets', 'uploads'));
     },
 
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+export default upload;

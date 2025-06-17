@@ -5,11 +5,11 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 // Passport đăng nhập bằng Google
 passport.use(
     new GoogleStrategy({
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientID: process.env.GOOGLE_CLIENT_ID ?? '',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
         callbackURL: '/auth/loginGoogle/callback',
         scope: ['email', 'profile']
-    }, (accessToken, refreshToken, profile, done) => {
+    }, (_accessToken, _refreshToken, profile, done) => {
         done(null, profile);
     })
 );
@@ -17,11 +17,11 @@ passport.use(
 // Passport đăng nhập bằng Facebook
 passport.use(
     new FacebookStrategy({
-        clientID: process.env.FACEBOOK_CLIENT_ID,
-        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        clientID: process.env.FACEBOOK_CLIENT_ID ?? '',
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? '',
         callbackURL: '/auth/loginFacebook/callback',
         profileFields: ['id', 'displayName', 'email', 'gender', 'birthday']
-    }, (accessToken, refreshToken, profile, done) => {
+    }, (_accessToken, _refreshToken, profile, done) => {
         done(null, profile);
     })
 );

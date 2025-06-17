@@ -1,4 +1,4 @@
-const db = require('../configs/dbConnect');
+const { db } = require("../configs/dbConnect");
 const path = require("path");
 
 const authenticate = {
