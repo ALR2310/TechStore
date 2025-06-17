@@ -1,6 +1,7 @@
 import sqlite3 from 'sqlite3';
+import path from 'path';
 
-const database = new sqlite3.Database('techstore.db');
+const database = new sqlite3.Database(path.resolve(__dirname, '..', '..', 'techstore.db'));
 
 interface Query {
   sql: string;
