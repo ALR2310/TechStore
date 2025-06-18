@@ -3,7 +3,7 @@ import DashboardStats from './DashboardStats';
 
 export default function Dashboard() {
   return (
-    <div className="p-4 space-y-6">
+    <div className="space-y-6">
       <DashboardStats />
 
       <DashboardCharts />

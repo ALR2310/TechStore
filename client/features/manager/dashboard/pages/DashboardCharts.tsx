@@ -52,7 +52,7 @@ export default function DashboardCharts() {
   };
 
   return (
-    <div className="p-4 space-y-6">
+    <>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={userOpt} style={{ height: 300 }} />
@@ -64,6 +64,6 @@ export default function DashboardCharts() {
       <div className="card bg-base-100 shadow p-4">
         <ReactECharts option={visitsOpt} style={{ height: 400 }} />
       </div>
-    </div>
+    </>
   );
 }

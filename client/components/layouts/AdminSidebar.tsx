@@ -1,4 +1,62 @@
+import { Link, useLocation } from 'react-router-dom';
+
 export default function AdminSidebar({ children }) {
+  const location = useLocation();
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const rootPath = pathSegments[0] || '';
+  const lastPath = pathSegments[1] || '';
+
+  const menuItems = [
+    {
+      name: 'Tổng quan',
+      path: '/admin',
+      icon: <i className="fa-regular fa-chart-line-up-down"></i>,
+      isActive: rootPath === 'admin' && lastPath === '',
+    },
+    {
+      name: 'Thống kê',
+      path: '/admin/statistic',
+      icon: <i className="fa-regular fa-chart-bar"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'statistic',
+    },
+    {
+      name: 'Người dùng',
+      path: '/admin/user',
+      icon: <i className="fa-regular fa-users-gear"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'user',
+    },
+    {
+      name: 'Sản phẩm',
+      path: '/admin/product',
+      icon: <i className="fa-regular fa-box"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'product',
+    },
+    {
+      name: 'Đơn hàng',
+      path: '/admin/order',
+      icon: <i className="fa-regular fa-receipt"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'order',
+    },
+    {
+      name: 'Đánh giá',
+      path: '/admin/review',
+      icon: <i className="fa-regular fa-star"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'review',
+    },
+    {
+      name: 'Cài đặt',
+      path: '/admin/settings',
+      icon: <i className="fa-regular fa-gear"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'settings',
+    },
+    {
+      name: 'Đăng xuất',
+      path: '/logout',
+      icon: <i className="fa-regular fa-right-from-bracket"></i>,
+      isActive: rootPath === 'admin' && lastPath === 'logout',
+    },
+  ];
+
   return (
     <div className="drawer lg:drawer-open">
       <input id="sidebar-toggle" type="checkbox" className="drawer-toggle" />
@@ -57,22 +115,35 @@ export default function AdminSidebar({ children }) {
         <div className="p-4">{children}</div>
       </div>
       <div className="drawer-side">
-        {/* Overlay khi bật Drawer */}
         <label htmlFor="sidebar-toggle" className="drawer-overlay"></label>
-        <ul className="menu bg-base-100 text-base-content w-64 p-4 space-y-2 h-full">
-          <li>
-            <a href="#dashboard">Dashboard</a>
-          </li>
-          <li>
-            <a href="#reports">Reports</a>
-          </li>
-          <li>
-            <a href="#settings">Settings</a>
-          </li>
-          <li>
-            <a href="#logout">Logout</a>
-          </li>
-        </ul>
+
+        <div className="flex flex-col bg-base-100 h-full">
+          <p className="text-2xl bg-base-100 font-semibold pt-4 px-4">TechStore</p>
+
+          <div className="flex flex-col justify-between h-full">
+            <ul className="menu text-base-content w-52 p-4 space-y-2">
+              {menuItems.slice(0, -2).map((item: (typeof menuItems)[0]) => (
+                <li key={item.path} className={`font-bold`}>
+                  <Link to={item.path} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="menu text-base-content w-52 p-4 space-y-2 border-t border-base-content/20">
+              {menuItems.slice(-2).map((item: (typeof menuItems)[0]) => (
+                <li key={item.path} className={`font-bold`}>
+                  <Link to={item.path} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
