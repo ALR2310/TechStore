@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './providers/ToastProvider';
 import AdminLayout from './layouts/AdminLayout';
+import Dashboard from './features/dashboard/pages/Dashboard';
 
 export default function App() {
   return (
@@ -8,7 +9,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<div>Admin Dashboard</div>} />
+            <Route index element={<Dashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

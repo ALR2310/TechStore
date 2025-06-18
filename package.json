@@ -8,7 +8,7 @@
     "build:server": "cd server && tsc --project tsconfig.build.json",
     "build:client": "cd client && vite build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "build": "concurrently \"npm run build:server\" \"npm run build:client\""
+    "build": "npm run build:client && npm run build:server"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,8 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.1",

@@ -9,10 +9,10 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 
 export default defineConfig({
   build: {
-    outDir: '../build/client',
+    outDir: '../build',
     minify: false,
     cssMinify: false,
-    emptyOutDir: false,
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'index.html'),

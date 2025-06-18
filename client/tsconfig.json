@@ -13,6 +13,6 @@
             "@shared/*": ["../shared/*"]
         }
     },
-    "include": ["./", "../shared"],
+    "include": ["./", "../shared", ".d.ts"],
     "exclude": ["../server"]
 }
