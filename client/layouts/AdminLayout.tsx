@@ -6,7 +6,7 @@ export default function AdminLayout() {
     <div>
       <AdminSidebar>
         {/* Content */}
-        <main className={`min-h-[calc(100vh)]`}>
+        <main className={`min-h-[calc(100vh-100px)] flex flex-col`}>
           <Outlet />
         </main>
       </AdminSidebar>
