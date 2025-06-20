@@ -5,6 +5,7 @@ import { checkToken } from '~/middleware/authenticate';
 const router = express.Router();
 
 router.use(checkToken);
+router.use('/api', require('./apiRouter').default);
 router.use('/', require('./homeRouter').default);
 router.use('/auth', require('./authRouter').default);
 router.use('/admin', require('./adminRouter').default);

@@ -2,7 +2,7 @@ import { db } from '../configs/dbConnect';
 import myUtils from '../utils/myUtils';
 
 class UserController {
-  async index(req, res) {
+  async index(req: any, res: any) {
     const { ordtype, q } = req.query;
 
     try {
@@ -89,7 +89,7 @@ class UserController {
     }
   }
 
-  async profileUpdate(req, res) {
+  async profileUpdate(req: any, res: any) {
     const { fullName, gender, phoneNumber, email, dateOfBirth } = req.body;
 
     if (!fullName || !gender || !phoneNumber || !email || !dateOfBirth)
@@ -111,7 +111,7 @@ class UserController {
     }
   }
 
-  async addressCreate(req, res) {
+  async addressCreate(req: any, res: any) {
     const { fullName, phoneNumber, AddressLine, AddressType } = req.body;
 
     if (!fullName || !phoneNumber || !AddressLine || !AddressType)
@@ -136,7 +136,7 @@ class UserController {
     }
   }
 
-  async addressUpdateDefault(req, res) {
+  async addressUpdateDefault(req: any, res: any) {
     const { Id } = req.body;
 
     if (!Id) return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
@@ -150,7 +150,7 @@ class UserController {
     }
   }
 
-  async addressDelete(req, res) {
+  async addressDelete(req: any, res: any) {
     const { Id } = req.body;
 
     if (!Id) return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
@@ -164,7 +164,7 @@ class UserController {
     }
   }
 
-  async orderCreate(req, res) {
+  async orderCreate(req: any, res: any) {
     const { addressId, totalPrice, cartItems } = req.body;
 
     const orderCode = await generateOrderCode(db);
@@ -202,7 +202,7 @@ class UserController {
   }
 }
 
-const generateOrderCode = async (db) => {
+const generateOrderCode = async (db: any) => {
   let code,
     isUnique = false;
 
