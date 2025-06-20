@@ -20,6 +20,7 @@ interface TableDataProps {
   columns: Column[];
   data?: any[];
   type?: 'default' | 'zebra';
+  columnAction?: boolean;
   onSortChange?: (key: string, direction: SortDirection) => void;
   onRowDelete?: (row: any) => void;
   pagination?: Paginate;
@@ -32,6 +33,7 @@ export default function DataTable({
   columns,
   data = [],
   type,
+  columnAction,
   onSortChange,
   onRowDelete,
   pagination,
@@ -105,19 +107,21 @@ export default function DataTable({
                   </th>
                 );
               })}
-            <th className="text-lg text-center dropdown dropdown-end">
-              <i className="fa-regular fa-gear cursor-pointer" tabIndex={0} role="button"></i>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-auto p-2 shadow">
-                {columnsState.map((col) => (
-                  <li key={col.key} onClick={() => toggleColumnVisibility(col.key)}>
-                    <a className="justify-between text-nowrap">
-                      {col.title}
-                      {col.visible && <i className="fa-solid fa-check" aria-hidden="true"></i>}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </th>
+            {columnAction && (
+              <th className="text-lg text-center dropdown dropdown-end">
+                <i className="fa-regular fa-gear cursor-pointer" tabIndex={0} role="button"></i>
+                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-auto p-2 shadow">
+                  {columnsState.map((col) => (
+                    <li key={col.key} onClick={() => toggleColumnVisibility(col.key)}>
+                      <a className="justify-between text-nowrap">
+                        {col.title}
+                        {col.visible && <i className="fa-solid fa-check" aria-hidden="true"></i>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -128,9 +132,11 @@ export default function DataTable({
                 .map((col, colIndex) => (
                   <td key={colIndex}>{col.render ? col.render(row[col.key], row) : row[col.key]}</td>
                 ))}
-              <td className="text-lg text-center inline-block text-primary/40">
-                <i className="fa-regular fa-circle-minus cursor-pointer" onClick={() => onRowDelete?.(row)}></i>
-              </td>
+              {columnAction && (
+                <td className="text-lg text-center inline-block text-primary/40">
+                  <i className="fa-regular fa-circle-minus cursor-pointer" onClick={() => onRowDelete?.(row)}></i>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
