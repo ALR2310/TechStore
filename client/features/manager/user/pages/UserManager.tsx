@@ -45,10 +45,18 @@ export default function UserManager() {
     <div className="flex-1 p-4 flex flex-col">
       <h1 className="text-2xl font-bold mb-4">Quản lý người dùng</h1>
 
-      <Filter className="bg-base-100 rounded-2xl mb-8" grid={2} />
+      <Filter
+        className="bg-base-100 rounded-2xl mb-8 border border-base-300"
+        filters={[
+          { key: 'name', label: 'Tên người dùng', type: 'text' },
+          { key: 'date', label: 'Ngày tạo', type: 'date' },
+          { key: 'dayRange', label: 'Khoản thời gian', type: 'dateRange' },
+          { key: 'role', label: 'Vai trò', type: 'select', options: [{ label: 'Admin', value: 'admin' }] },
+        ]}
+      />
 
       <DataTable
-        className="flex-1 bg-base-100 p-3 rounded-2xl"
+        className="flex-1 bg-base-100 p-3 rounded-2xl border border-base-300"
         columns={[
           { title: 'ID', key: 'id', sortable: true },
           {

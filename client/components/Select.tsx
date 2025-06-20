@@ -8,31 +8,22 @@ interface OptionProps {
 
 interface SelectProps {
   options: OptionProps[];
-  defaultValue?: string;
+  value?: string;
   placeholder?: string;
   search?: boolean;
   className?: string;
-  style?: React.CSSProperties;
   onChange?: (value: string) => void;
 }
 
-export default function Select({
-  options,
-  defaultValue,
-  placeholder,
-  search,
-  className,
-  style,
-  onChange,
-}: SelectProps) {
+export default function Select({ options, value, placeholder, search, className, onChange }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(defaultValue || '');
+  const [selectedOption, setSelectedOption] = useState(value || '');
   const [searchValue, setSearchValue] = useState('');
   const selectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setSelectedOption(defaultValue || '');
-  }, [defaultValue]);
+    setSelectedOption(value || '');
+  }, [value]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -71,7 +62,6 @@ export default function Select({
       onClick={toggleDropdown}
       ref={selectRef}
       tabIndex={0}
-      style={style}
     >
       {getSelectedLabel(selectedOption)}
       {isOpen && (
