@@ -21,6 +21,7 @@
     "cheerio": "^1.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
@@ -33,6 +34,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "react": "^19.1.0",
+    "react-day-picker": "^9.7.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
     "sqlite3": "^5.1.7"
