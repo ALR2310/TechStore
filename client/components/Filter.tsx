@@ -1,5 +1,4 @@
 import { gridColsMap } from '~/utils/cssMap';
-import Select from './Select';
 import DatePicker from './DatePicker';
 
 export interface FilterOption {
@@ -7,6 +6,8 @@ export interface FilterOption {
   label: string;
   type: 'text' | 'select' | 'date' | 'dateRange';
   options?: { label: string; value: any }[];
+  className?: string;
+  placeholder?: string;
 }
 
 interface FilterProps {
@@ -31,42 +32,46 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
             switch (field.type) {
               case 'text':
                 return (
-                  <div key={field.key} className="flex justify-between items-center w-full">
+                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
                     <span className="basis-[30%] max-w-[250px]">{field.label}</span>
-                    <label className="input basis-[70%]">
-                      <input
-                        type="text"
-                        className="grow"
-                        value={value ?? ''}
-                        placeholder={field.label}
-                        onChange={(e) => onChange?.(field.key, e.target.value)}
-                      />
-                    </label>
+                    <input
+                      type="text"
+                      className="input basis-[70%]"
+                      value={value ?? ''}
+                      placeholder={field.placeholder ?? field.label}
+                      onChange={(e) => onChange?.(field.key, e.target.value)}
+                    />
                   </div>
                 );
 
               case 'select':
                 return (
-                  <div key={field.key} className="flex justify-between items-center w-full">
+                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
                     <span className="basis-[30%] max-w-[250px]">{field.label}</span>
-                    <Select
-                      className="basis-[70%]"
-                      options={field.options ?? []}
+
+                    <select
+                      className="select basis-[70%]"
                       value={value}
-                      onChange={(v) => onChange?.(field.key, v)}
-                      placeholder={field.label}
-                    />
+                      onChange={(e) => onChange?.(field.key, e.target.value)}
+                    >
+                      <option value="">{field.placeholder ?? field.label}</option>
+                      {field?.options?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 );
 
               case 'date':
                 return (
-                  <div key={field.key} className="flex justify-between items-center w-full">
+                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
                     <span className="basis-[30%] max-w-[250px]">{field.label}</span>
                     <DatePicker
                       className="basis-[70%]"
                       value={value}
-                      placeholder={field.label}
+                      placeholder={field.placeholder ?? field.label}
                       onChange={(v) => onChange?.(field.key, v)}
                     />
                   </div>
@@ -74,18 +79,18 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
 
               case 'dateRange':
                 return (
-                  <div key={field.key} className="flex justify-between items-center w-full">
+                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
                     <span className="basis-[30%] max-w-[250px]">{field.label}</span>
                     <div className="basis-[70%] flex gap-4">
                       <DatePicker
                         className="w-full"
-                        placeholder="Ngày bắt đầu"
+                        placeholder={`${field.placeholder ?? 'Ngày bắt đầu'}`}
                         value={value?.start}
                         onChange={(v) => onChange?.(`${field.key}.start`, v)}
                       />
                       <DatePicker
                         className="w-full"
-                        placeholder="Ngày kết thúc"
+                        placeholder={`${field.placeholder ?? 'Ngày kết thúc'}`}
                         value={value?.end}
                         onChange={(v) => onChange?.(`${field.key}.end`, v)}
                       />

@@ -1,24 +1,33 @@
+import { getListUserPayload } from '@shared/types/user.type';
 import { db } from '~/configs/dbConnect';
-
-interface getListUserPayload {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortDir?: 'asc' | 'desc';
-  role?: string;
-  status?: string;
-  keyword?: string;
-}
 
 class UserService {
   async getListUser(payload: getListUserPayload) {
-    const { keyword, page = 1, limit = 10, role, status, sortBy = 'U.updatedAt', sortDir = 'desc' } = payload;
+    const {
+      keyword,
+      page = 1,
+      limit = 10,
+      role,
+      status,
+      dateOfBirth,
+      sortBy = 'updatedAt',
+      sortDir = 'desc',
+    } = payload;
 
     const offset = (page - 1) * limit;
     const safeSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
 
     let query = `
-        SELECT U.Id, U.Email, U.UserName, U.Role, U.Status, U.updatedAt, UI.FullName, UI.PhoneNumber, UI.DoB
+        SELECT 
+            U.Id as Id, 
+            U.Email as Email, 
+            U.UserName as UserName,
+            U.Role as Role, 
+            U.Status as Status, 
+            U.updatedAt as updatedAt, 
+            UI.FullName as FullName, 
+            UI.PhoneNumber as PhoneNumber, 
+            UI.DoB as DoB
         FROM User U
         LEFT JOIN UserInfo UI ON U.Id = UI.UserId
       `;
@@ -29,6 +38,11 @@ class UserService {
     if (status) {
       conditions.push('U.Status = ?');
       params.push(status);
+    }
+
+    if (dateOfBirth) {
+      conditions.push('UI.DoB = ?');
+      params.push(dateOfBirth);
     }
 
     if (role) {

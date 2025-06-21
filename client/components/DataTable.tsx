@@ -21,6 +21,7 @@ interface TableDataProps {
   data?: any[];
   type?: 'default' | 'zebra';
   columnAction?: boolean;
+  loading?: boolean;
   onSortChange?: (key: string, direction: SortDirection) => void;
   onRowDelete?: (row: any) => void;
   pagination?: Paginate;
@@ -34,6 +35,7 @@ export default function DataTable({
   data = [],
   type,
   columnAction,
+  loading = false,
   onSortChange,
   onRowDelete,
   pagination,
@@ -57,10 +59,7 @@ export default function DataTable({
 
       setSortColumn(next ? key : null);
       setSortDirection(next);
-
-      if (next) {
-        onSortChange?.(key, next);
-      }
+      onSortChange?.(key, next);
     },
     [sortColumn, sortDirection, onSortChange],
   );
@@ -139,6 +138,23 @@ export default function DataTable({
               )}
             </tr>
           ))}
+          {loading &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <tr key={index} className="hover:bg-base-300">
+                {columnsState
+                  .filter((col) => col.visible)
+                  .map((_, colIndex) => (
+                    <td key={colIndex}>
+                      <div className="skeleton h-4"></div>
+                    </td>
+                  ))}
+                {columnAction && (
+                  <td className="">
+                    <div className="skeleton h-4"></div>
+                  </td>
+                )}
+              </tr>
+            ))}
         </tbody>
       </table>
 
@@ -152,7 +168,7 @@ export default function DataTable({
                 </option>
               ))}
             </select>
-            <span className="text-nowrap">Results: {pagination.total}</span>
+            <span className="text-nowrap">Tổng: {pagination.total}</span>
           </div>
 
           <Pagination
