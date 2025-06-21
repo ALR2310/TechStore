@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:server": "cd server && nodemon --exec tsx --env-file=../.env app.ts",
+    "start:server-old": "cd server && nodemon --exec tsx --env-file=../.env app.ts",
+    "start:server": "cd server && tsx watch --env-file=../.env --clear-screen=false app.ts",
     "start:client": "cd client && vite --host",
     "build:server": "cd server && tsc --project tsconfig.build.json",
     "build:client": "cd client && vite build",

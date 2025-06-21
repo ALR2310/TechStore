@@ -441,7 +441,7 @@ $("#btn-product-save").on("click", async function () {
   formData.append("Price", formatNumber($("#product-price").val()));
   formData.append("Discount", $("#product-discount").val());
   formData.append("Slugs", $("#product-slug").val());
-  formData.append("AtCreate", $("#product-datetime").val());
+  formData.append("createdAt", $("#product-datetime").val());
   formData.append("DeviceCfg", exportProductCfg());
   formData.append("Content", productContentEditor.getData());
   formData.append("Tags", $("#product-tags").val());
@@ -527,9 +527,8 @@ async function createBlobFromSource(url = "", fileInput = null) {
   } else if (url) {
     let fullUrl = url;
     if (!url.startsWith("http")) {
-      fullUrl = `${window.location.origin}/${
-        url.startsWith("/") ? url.slice(1) : url
-      }`;
+      fullUrl = `${window.location.origin}/${url.startsWith("/") ? url.slice(1) : url
+        }`;
     }
 
     try {

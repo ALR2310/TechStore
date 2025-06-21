@@ -159,7 +159,7 @@ class ProductController {
           // Nếu danh sách rỗng và người dùng đã đăng nhập thì lấy từ database ra
           if (viewedProducts.length === 0 && req.user) {
             const sqlViewedProducts = `SELECT ProdId FROM ProductViewed WHERE UserId = ? AND Status = 'Active' 
-                        ORDER BY AtCreate DESC LIMIT 3`;
+                        ORDER BY createdAt DESC LIMIT 3`;
             const results: any = await db.query(sqlViewedProducts, [req.user.Id]);
 
             viewedProducts = results.map((row) => row.ProdId);
@@ -186,7 +186,7 @@ class ProductController {
               );
 
               if (checkResult.count > 0)
-                await db.query(`UPDATE ProductViewed SET AtCreate = ? WHERE ProdId = ? AND UserId = ?`, [
+                await db.query(`UPDATE ProductViewed SET createdAt = ? WHERE ProdId = ? AND UserId = ?`, [
                   'CURRENT_TIMESTAMP',
                   product[0].Id,
                   req.user.Id,
@@ -218,7 +218,7 @@ class ProductController {
                     ROUND(AVG(Rating), 1) AS AverageRating, COUNT(*) as Total FROM ProductReviews WHERE ProdId = ? AND Status = ?`;
 
           // query lấy ra đánh giá và bình luận của người dùng trên sản phẩm
-          const sqlReview = `SELECT * FROM ProductReviews WHERE ProdId = ? AND Status = ? ORDER BY AtCreate DESC`;
+          const sqlReview = `SELECT * FROM ProductReviews WHERE ProdId = ? AND Status = ? ORDER BY createdAt DESC`;
 
           // Thực hiện các truy vấn
           const [productSimilar, productViewed, productRating, productReview] = await db.queryAll([

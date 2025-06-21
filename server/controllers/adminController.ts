@@ -33,9 +33,9 @@ class AdminController {
       },
       {
         sql: `SELECT 
-                        SUM(CASE WHEN DATE(AtCreate) = DATE(?) THEN TotalPrice ELSE 0 END) AS today,
-                        SUM(CASE WHEN AtCreate >= DATE(?, '-7 days') THEN TotalPrice ELSE 0 END) AS thisWeek,
-                        SUM(CASE WHEN AtCreate >= DATE(?, 'start of month') THEN TotalPrice ELSE 0 END) AS thisMonth
+                        SUM(CASE WHEN DATE(createdAt) = DATE(?) THEN TotalPrice ELSE 0 END) AS today,
+                        SUM(CASE WHEN createdAt >= DATE(?, '-7 days') THEN TotalPrice ELSE 0 END) AS thisWeek,
+                        SUM(CASE WHEN createdAt >= DATE(?, 'start of month') THEN TotalPrice ELSE 0 END) AS thisMonth
                     FROM Orders;`,
         params: ['now', 'now', 'now'],
       },
@@ -44,26 +44,26 @@ class AdminController {
     const [revenueByDay, revenueByWeek, revenueByMonth] = await db.queryAll([
       {
         sql: `SELECT 
-                      DATE(AtCreate) AS OrderDate,
+                      DATE(createdAt) AS OrderDate,
                       SUM(TotalPrice) AS DailyRevenue
                     FROM Orders
-                    GROUP BY DATE(AtCreate)
+                    GROUP BY DATE(createdAt)
                     ORDER BY OrderDate;`,
       },
       {
         sql: `SELECT 
-                      STRFTIME('%Y-%W', AtCreate) AS OrderWeek,
+                      STRFTIME('%Y-%W', createdAt) AS OrderWeek,
                       SUM(TotalPrice) AS WeeklyRevenue
                     FROM Orders
-                    GROUP BY STRFTIME('%Y-%W', AtCreate)
+                    GROUP BY STRFTIME('%Y-%W', createdAt)
                     ORDER BY OrderWeek;`,
       },
       {
         sql: `SELECT 
-                      STRFTIME('%Y-%m', AtCreate) AS OrderMonth,
+                      STRFTIME('%Y-%m', createdAt) AS OrderMonth,
                       SUM(TotalPrice) AS MonthlyRevenue
                     FROM Orders
-                    GROUP BY STRFTIME('%Y-%m', AtCreate)
+                    GROUP BY STRFTIME('%Y-%m', createdAt)
                     ORDER BY OrderMonth;`,
       },
     ]);
@@ -71,26 +71,26 @@ class AdminController {
     const [usersByDay, usersByWeek, usersByMonth] = await db.queryAll([
       {
         sql: `SELECT 
-                      DATE(AtCreate) AS RegDate,
+                      DATE(createdAt) AS RegDate,
                       COUNT(*) AS DailyUsers
                     FROM User
-                    GROUP BY DATE(AtCreate)
+                    GROUP BY DATE(createdAt)
                     ORDER BY RegDate;`,
       },
       {
         sql: `SELECT 
-                      STRFTIME('%Y-%W', AtCreate) AS RegWeek,
+                      STRFTIME('%Y-%W', createdAt) AS RegWeek,
                       COUNT(*) AS WeeklyUsers
                     FROM User
-                    GROUP BY STRFTIME('%Y-%W', AtCreate)
+                    GROUP BY STRFTIME('%Y-%W', createdAt)
                     ORDER BY RegWeek;`,
       },
       {
         sql: `SELECT 
-                      STRFTIME('%Y-%m', AtCreate) AS RegMonth,
+                      STRFTIME('%Y-%m', createdAt) AS RegMonth,
                       COUNT(*) AS MonthlyUsers
                     FROM User
-                    GROUP BY STRFTIME('%Y-%m', AtCreate)
+                    GROUP BY STRFTIME('%Y-%m', createdAt)
                     ORDER BY RegMonth;`,
       },
     ]);
@@ -208,13 +208,13 @@ class AdminController {
       Price,
       Discount,
       Slugs,
-      AtCreate,
+      createdAt,
       DeviceCfg,
       Content,
       Tags,
     } = req.body;
 
-    if (!CateId || !ProdName || !Quantity || !Price || !Discount || !Slugs || !AtCreate) {
+    if (!CateId || !ProdName || !Quantity || !Price || !Discount || !Slugs || !createdAt) {
       return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
     }
 
@@ -234,20 +234,20 @@ class AdminController {
       if (!Id) {
         let sql = `INSERT INTO Product(CateId, BrandId${
           BrandSeriesId && BrandSeriesId !== '0' ? ', BrandSeriesId' : ''
-        }, Image, ProdName, Quantity, Price, Discount, Slugs, AtCreate) 
+        }, Image, ProdName, Quantity, Price, Discount, Slugs, createdAt) 
                  VALUES(?, ?, ${BrandSeriesId && BrandSeriesId !== '0' ? '?, ' : ''}?, ?, ?, ?, ?, ?, ?)`;
 
         let params = [CateId, BrandId];
         if (BrandSeriesId && BrandSeriesId !== '0') params.push(BrandSeriesId);
-        params.push(relaImagePath, ProdName, Quantity, Price, Discount, Slugs, AtCreate);
+        params.push(relaImagePath, ProdName, Quantity, Price, Discount, Slugs, createdAt);
 
         const result = (await db.query(sql, params)) as any;
 
-        await db.query('INSERT INTO ProductDetails(ProdId, DeviceCfg, Content, AtCreate) VALUES(?, ?, ?, ?)', [
+        await db.query('INSERT INTO ProductDetails(ProdId, DeviceCfg, Content, createdAt) VALUES(?, ?, ?, ?)', [
           result.insertId,
           DeviceCfg,
           Content,
-          AtCreate,
+          createdAt,
         ]);
 
         if (Tags) {
@@ -277,14 +277,14 @@ class AdminController {
         let params = [CateId, BrandId];
         if (BrandSeriesId && BrandSeriesId !== '0') params.push(BrandSeriesId);
         if (relaImagePath) params.push(relaImagePath);
-        params.push(ProdName, Quantity, Price, Discount, Slugs, AtCreate, Id);
+        params.push(ProdName, Quantity, Price, Discount, Slugs, createdAt, Id);
 
         await db.query(sql, params);
 
         await db.query('UPDATE ProductDetails SET DeviceCfg = ?, Content = ?, AtUpdate = ? WHERE ProdId = ?', [
           DeviceCfg,
           Content,
-          AtCreate,
+          createdAt,
           Id,
         ]);
 
@@ -527,7 +527,7 @@ class AdminController {
     try {
       const sql = `
           SELECT 
-            O.Id, O.TotalPrice, O.AtCreate, O.Status, O.Code,
+            O.Id, O.TotalPrice, O.createdAt, O.Status, O.Code,
             OI.Quantity,
             P.Image, P.ProdName, P.Slugs,
             A.FullName, A.PhoneNumber, A.AddressLine
@@ -535,7 +535,7 @@ class AdminController {
             JOIN OrderItems as OI ON O.Id = OI.OrdId 
             JOIN Product as P ON OI.ProdId = P.Id
             JOIN Address as A ON O.AdrId = A.Id
-          ORDER BY O.AtCreate DESC
+          ORDER BY O.createdAt DESC
         `;
       const orders = await db.query(sql);
 

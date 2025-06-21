@@ -23,7 +23,7 @@ class UserController {
                         ) pr ON p.Id = pr.ProdId
                     WHERE pv.UserId = ? AND pv.Status = ?
                     GROUP BY p.Id, pd.DeviceCfg
-                    ORDER BY pv.AtCreate DESC;`;
+                    ORDER BY pv.createdAt DESC;`;
 
       const sqlAddress = `SELECT * FROM Address WHERE UserId = ? AND Status = ? ORDER BY IsDefault DESC`;
 
@@ -54,7 +54,7 @@ class UserController {
         }
       }
 
-      ordersSql += ` ORDER BY AtCreate DESC`;
+      ordersSql += ` ORDER BY createdAt DESC`;
 
       // Thực hiện truy vấn lấy đơn hàng
       const orders: any = await db.query(ordersSql, ordersParams);

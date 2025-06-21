@@ -49,7 +49,7 @@
                         <option value="Inactive" {{#if (eq this.Status 'Inactive' )}}selected{{/if}}>Inactive</option>
                     </select>
                 </td>
-                <td>{{formatDate this.AtCreate}}</td>
+                <td>{{formatDate this.createdAt}}</td>
                 <td>
                     <button class="btn btn-sm btn-primary edit-btn" onclick="editUser({{this.Id}})">Sửa</button>
                     <button class="btn btn-sm btn-success save-btn" onclick="saveUser({{this.Id}})"
