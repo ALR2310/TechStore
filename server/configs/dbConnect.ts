@@ -8,11 +8,6 @@ interface Query {
   params?: any[];
 }
 
-interface RunResult {
-  insertId: number;
-  changes: number;
-}
-
 export const db = {
   /**
    * Thực hiện một truy vấn SQL
@@ -26,7 +21,7 @@ export const db = {
    * // Truy vấn có tham số
    * const result = await db.query('SELECT * FROM user WHERE username = ?', ['admin'])
    */
-  query: (sql: string, params: any[] = []): Promise<any[] | RunResult> => {
+  query: (sql: string, params: any[] = []): Promise<any> => {
     return new Promise((resolve, reject) => {
       const isSelect = sql.trim().toLowerCase().startsWith('select');
       if (isSelect)

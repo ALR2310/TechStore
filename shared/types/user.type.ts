@@ -8,3 +8,15 @@ export interface getListUserPayload {
   dateOfBirth?: string;
   keyword?: string;
 }
+
+export interface updateUserPayload {
+  id: string;
+  email?: string;
+  role?: string;
+  status?: string;
+  password?: string;
+  fullName?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: string;
+}

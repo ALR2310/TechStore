@@ -119,7 +119,6 @@ export default function UserManager() {
           setPage(newPage);
         }}
         onSortChange={(sortBy, sortDir) => {
-          console.log('Sort by:', sortBy, 'Direction:', sortDir);
           setSortBy(sortBy);
           setSortDir(sortDir === 'asc' ? 'asc' : 'desc');
         }}
