@@ -1,3 +1,4 @@
+import { addressService } from '~/services/addressService';
 import { cartService } from '~/services/cartService';
 import { orderService } from '~/services/orderService';
 import { reviewService } from '~/services/reviewService';
@@ -21,6 +22,21 @@ class ApiController {
 
     try {
       const user = await userService.getUser(id);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const [carts, orders, reviews] = await Promise.all([
+        cartService.getCartByUser(id),
+        orderService.getOrderByUser(id),
+        reviewService.getReviewByUser(id),
+      ]);
+
+      user.carts = carts;
+      user.orders = orders;
+      user.reviews = reviews;
+
       return res.status(200).json(user);
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -45,28 +61,20 @@ class ApiController {
     const { id } = req.params;
 
     try {
-      const [carts, orders, reviews] = await Promise.all([
-        cartService.getCartByUser(id),
-        orderService.getOrderByUser(id),
-        reviewService.getReviewByUser(id),
-      ]);
+      const userExists = await userService.getUser(id);
 
-      if (carts.length > 0 || orders.length > 0 || reviews.length > 0) {
-        return res.status(400).json({
-          message: 'Cannot delete user with existing carts, orders, or reviews',
-          data: {
-            carts,
-            orders,
-            reviews,
-          },
-        });
+      if (!userExists) {
+        return res.status(404).json({ error: 'User not found' });
       }
 
-      const userDeleted = await userService.deleteUser(id);
+      await addressService.deleteAddressOfUser(id);
+      await orderService.deleteOrderOfUser(id);
+      await cartService.deleteCartOfUser(id);
+      await userService.deleteUser(id);
 
       return res.status(204).json({
         message: 'User deleted successfully',
-        data: userDeleted,
+        data: userExists,
       });
     } catch (error) {
       console.error('Error deleting user:', error);

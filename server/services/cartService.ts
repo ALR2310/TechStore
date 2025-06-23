@@ -13,6 +13,17 @@ class CartService {
         `;
     return await db.query(query, [userId]);
   }
+
+  async deleteCartOfUser(userId: string) {
+    const exists = await this.getCartByUser(userId);
+    if (exists.length === 0) {
+      return { message: 'No cart found for this user.' };
+    }
+
+    const query = `DELETE FROM Cart WHERE UserId = ?`;
+    await db.query(query, [userId]);
+    return { message: 'Cart deleted successfully.' };
+  }
 }
 
 export const cartService = new CartService();

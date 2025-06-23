@@ -1,9 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
-import { getListUser } from '../api/UserApi';
+import { deleteUser, getListUser, getUser } from '../api/UserApi';
 import dayjs from 'dayjs';
+import { toast } from '~/hooks/useToast';
+import { confirm } from '~/hooks/useConfirm';
 
 export default function UserManager() {
   const [page, setPage] = useState(1);
@@ -24,6 +26,18 @@ export default function UserManager() {
         status: filters?.status,
         role: filters?.role,
       }),
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => deleteUser({ id: userId }),
+    onSuccess: () => {
+      usersQuery.refetch();
+      toast({ type: 'success', message: 'Xoá người dùng thành công!' });
+    },
+  });
+
+  const userDetailMutation = useMutation({
+    mutationFn: async (userId: string) => getUser({ id: userId }),
   });
 
   return (
@@ -112,8 +126,32 @@ export default function UserManager() {
           limit: 10,
           total: usersQuery.data?.pagination.total ?? 0,
         }}
-        onRowDelete={(row) => {
-          console.log('Delete user:', row);
+        onRowDelete={async (row) => {
+          const user = await userDetailMutation.mutateAsync(row.Id);
+
+          confirm({
+            title: 'Xoá người dùng',
+            content: (
+              <div className="font-semibold">
+                Bạn có chắc muốn xoá người dùng <span className="text-error">{user.FullName}</span> không?
+                <br />
+                Hành động này sẽ không thể hoàn tác và sẽ xoá tất cả dữ liệu liên quan đến người dùng này, bao gồm:
+                <ul className="list-disc ml-5 mt-2">
+                  <li>Giỏ hàng: (<span className="text-warning">{user.carts.length}</span>)</li>
+                  <li>Đơn hàng: (<span className="text-warning">{user.orders.length}</span>)</li>
+                  <li>Đánh giá: (<span className="text-warning">{user.reviews.length}</span>)</li>
+                </ul>
+              </div>
+            ),
+            btnCancel: { text: 'Huỷ' },
+            btnOk: {
+              color: 'error',
+              text: 'Xoá',
+              onClick: async () => {
+                deleteUserMutation.mutate(row.Id);
+              },
+            },
+          });
         }}
         onPageChange={(newPage) => {
           setPage(newPage);
