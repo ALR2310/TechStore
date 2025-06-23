@@ -1,5 +1,6 @@
 import { getListUserPayload, updateUserPayload } from '@shared/types/user.type';
 import bcrypt from 'bcryptjs';
+import dayjs from 'dayjs';
 import { db } from '~/configs/dbConnect';
 
 class UserService {
@@ -176,7 +177,7 @@ class UserService {
 
     if (dateOfBirth) {
       updateUserInfoConditions.push('DoB = ?');
-      userInfoParams.push(dateOfBirth);
+      userInfoParams.push(dayjs(dateOfBirth).format('YYYY-MM-DD HH:mm:ss'));
     }
 
     if (gender) {

@@ -27,6 +27,7 @@ interface TableDataProps {
   pagination?: Paginate;
   onPageChange?: (page: number) => void;
   onLimitChange?: (limit: number) => void;
+  onRowClick?: (row: any) => void;
 }
 
 export default function DataTable({
@@ -41,6 +42,7 @@ export default function DataTable({
   pagination,
   onPageChange,
   onLimitChange,
+  onRowClick,
 }: TableDataProps) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -125,7 +127,7 @@ export default function DataTable({
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-base-300">
+            <tr key={rowIndex} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
               {columnsState
                 .filter((col) => col.visible)
                 .map((col, colIndex) => (
@@ -133,7 +135,13 @@ export default function DataTable({
                 ))}
               {columnAction && (
                 <td className="text-lg text-center inline-block text-primary/40">
-                  <i className="fa-regular fa-circle-minus cursor-pointer" onClick={() => onRowDelete?.(row)}></i>
+                  <i
+                    className="fa-regular fa-circle-minus cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRowDelete?.(row);
+                    }}
+                  ></i>
                 </td>
               )}
             </tr>

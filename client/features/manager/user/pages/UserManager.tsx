@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { deleteUser, getListUser, getUser } from '../api/UserApi';
 import dayjs from 'dayjs';
 import { toast } from '~/hooks/useToast';
 import { confirm } from '~/hooks/useConfirm';
+import { UserUpdateModal } from './UserUpdateModal';
 
 export default function UserManager() {
   const [page, setPage] = useState(1);
@@ -13,6 +14,8 @@ export default function UserManager() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [filters, setFilters] = useState<Record<string, any>>();
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   const usersQuery = useQuery({
     queryKey: ['users', page, limit, sortBy, sortDir, filters?.keyword, filters?.status, filters?.role],
@@ -137,9 +140,15 @@ export default function UserManager() {
                 <br />
                 Hành động này sẽ không thể hoàn tác và sẽ xoá tất cả dữ liệu liên quan đến người dùng này, bao gồm:
                 <ul className="list-disc ml-5 mt-2">
-                  <li>Giỏ hàng: (<span className="text-warning">{user.carts.length}</span>)</li>
-                  <li>Đơn hàng: (<span className="text-warning">{user.orders.length}</span>)</li>
-                  <li>Đánh giá: (<span className="text-warning">{user.reviews.length}</span>)</li>
+                  <li>
+                    Giỏ hàng: (<span className="text-warning">{user.carts.length}</span>)
+                  </li>
+                  <li>
+                    Đơn hàng: (<span className="text-warning">{user.orders.length}</span>)
+                  </li>
+                  <li>
+                    Đánh giá: (<span className="text-warning">{user.reviews.length}</span>)
+                  </li>
                 </ul>
               </div>
             ),
@@ -163,7 +172,13 @@ export default function UserManager() {
         onLimitChange={(newLimit) => {
           setLimit(newLimit);
         }}
+        onRowClick={async (row) => {
+          setCurrentUserId(row.Id);
+          modalRef.current?.showModal();
+        }}
       />
+
+      {currentUserId && <UserUpdateModal modalRef={modalRef} userId={currentUserId} />}
     </div>
   );
 }
