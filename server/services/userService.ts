@@ -79,10 +79,10 @@ class UserService {
     return {
       data: users,
       pagination: {
-        page,
-        limit,
-        total: total[0].total,
-        totalPages: Math.ceil(total[0].total / limit),
+        page: Number(page),
+        limit: Number(limit),
+        total: Number(total[0].total),
+        totalPages: Math.ceil(Number(total[0].total) / Number(limit)),
       },
     };
   }

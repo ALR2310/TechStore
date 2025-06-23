@@ -1,6 +1,7 @@
 import { addressService } from '~/services/addressService';
 import { cartService } from '~/services/cartService';
 import { orderService } from '~/services/orderService';
+import { productService } from '~/services/productService';
 import { reviewService } from '~/services/reviewService';
 import { userService } from '~/services/userService';
 
@@ -78,6 +79,18 @@ class ApiController {
       });
     } catch (error) {
       console.error('Error deleting user:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getListProduct(req: any, res: any) {
+    const payload = req.query;
+
+    try {
+      const products = await productService.getListProduct(payload);
+      return res.status(200).json(products);
+    } catch (error) {
+      console.error('Error fetching product list:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }

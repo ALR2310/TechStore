@@ -45,6 +45,8 @@ export default function UserManager() {
 
   return (
     <div className="flex-1 p-4 flex flex-col">
+      <h1 className="text-2xl font-bold mb-4">Quản lý người dùng</h1>
+
       <Filter
         className="bg-base-100 rounded-2xl mb-8 border border-base-300"
         grid={3}
@@ -126,7 +128,7 @@ export default function UserManager() {
         pagination={{
           size: [10, 20, 50],
           page: page,
-          limit: 10,
+          limit: limit,
           total: usersQuery.data?.pagination.total ?? 0,
         }}
         onRowDelete={async (row) => {
