@@ -14,13 +14,12 @@ export default function ProductManager() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState<string>('updatedAt');
   const [filters, setFilters] = useState<Record<string, any>>();
-  const debouncedFilters = useDebounce(filters, 500);
+  const dbFilters = useDebounce(filters, 300);
 
   const productsQuery = useQuery({
-    queryKey: ['products', page, limit, sortBy, sortDir, debouncedFilters],
+    queryKey: ['products', page, limit, sortBy, sortDir, dbFilters],
     queryFn: () => getListProduct({ page, limit, sortBy, sortDir }),
   });
-  const isLoadingWithDelay = useMinimumLoading(productsQuery.isLoading, 300);
 
   const categoriesQuery = useQuery({
     queryKey: ['categories'],
@@ -31,8 +30,6 @@ export default function ProductManager() {
     queryKey: ['brands'],
     queryFn: async () => getListBrand({ page: 1, limit: 100 }),
   });
-
-  console.log(isLoadingWithDelay);
 
   return (
     <div className="flex-1 p-4 flex flex-col">
@@ -181,7 +178,7 @@ export default function ProductManager() {
           },
         ]}
         data={productsQuery.data?.data ?? []}
-        loading={isLoadingWithDelay}
+        loading={useMinimumLoading(productsQuery.isLoading, 300)}
         pagination={{
           size: [10, 20, 50],
           page: page,

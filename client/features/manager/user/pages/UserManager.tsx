@@ -7,6 +7,8 @@ import dayjs from 'dayjs';
 import { toast } from '~/hooks/useToast';
 import { confirm } from '~/hooks/useConfirm';
 import { UserUpdateModal } from './UserUpdateModal';
+import { useDebounce } from '~/hooks/useDebounce';
+import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 
 export default function UserManager() {
   const [page, setPage] = useState(1);
@@ -14,20 +16,21 @@ export default function UserManager() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [filters, setFilters] = useState<Record<string, any>>();
+  const dbFilters = useDebounce(filters, 300);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const usersQuery = useQuery({
-    queryKey: ['users', page, limit, sortBy, sortDir, filters?.keyword, filters?.status, filters?.role],
+    queryKey: ['users', page, limit, sortBy, sortDir, dbFilters],
     queryFn: () =>
       getListUser({
         page: page,
         limit: limit,
         sortBy: sortBy,
         sortDir: sortDir,
-        keyword: filters?.keyword,
-        status: filters?.status,
-        role: filters?.role,
+        keyword: dbFilters?.keyword,
+        status: dbFilters?.status,
+        role: dbFilters?.role,
       }),
   });
 
@@ -84,7 +87,7 @@ export default function UserManager() {
       <DataTable
         className="flex-1 bg-base-100 p-3 rounded-2xl border border-base-300"
         columnAction={true}
-        loading={usersQuery.isLoading}
+        loading={useMinimumLoading(usersQuery.isLoading, 300)}
         type="zebra"
         columns={[
           { title: 'ID', key: 'Id', sortable: true },

@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import Pagination, { PaginationProp } from './Pagination';
+import { motion, AnimatePresence } from 'motion/react';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -125,10 +126,17 @@ export default function DataTable({
             )}
           </tr>
         </thead>
-        <tbody>
-          {loading
-            ? Array.from({ length: 10 }).map((_, index) => (
-                <tr key={index} className="hover:bg-base-300">
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.tbody
+              key="skeleton"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {Array.from({ length: 10 }).map((_, index) => (
+                <tr key={`skeleton-${index}`} className="hover:bg-base-300">
                   {columnsState
                     .filter((col) => col.visible)
                     .map((_, colIndex) => (
@@ -137,14 +145,23 @@ export default function DataTable({
                       </td>
                     ))}
                   {columnAction && (
-                    <td className="">
+                    <td>
                       <div className="skeleton h-4"></div>
                     </td>
                   )}
                 </tr>
-              ))
-            : data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
+              ))}
+            </motion.tbody>
+          ) : (
+            <motion.tbody
+              key="data"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {data.map((row, rowIndex) => (
+                <tr key={`row-${rowIndex}`} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
                   {columnsState
                     .filter((col) => col.visible)
                     .map((col, colIndex) => (
@@ -163,7 +180,9 @@ export default function DataTable({
                   )}
                 </tr>
               ))}
-        </tbody>
+            </motion.tbody>
+          )}
+        </AnimatePresence>
       </table>
 
       {pagination && (
