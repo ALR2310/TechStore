@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
-import { getListProduct } from './api/productApi';
+import { getListProduct } from '../api/productApi';
 import { getListCategory } from '~/features/manager/category/api/categoryApi';
 import { getListBrand } from '../../brand/api/brandApi';
 import { useDebounce } from '~/hooks/useDebounce';
