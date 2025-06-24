@@ -9,6 +9,7 @@ router.put('/user/:id', apiController.updateUser);
 router.delete('/user/:id', apiController.deleteUser);
 
 router.get('/product', apiController.getListProduct);
+router.get('/product/:id', apiController.getProduct);
 
 router.get('/category', apiController.getListCategory);
 

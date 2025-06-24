@@ -114,6 +114,40 @@ class ProductService {
       throw new Error('Internal Server Error');
     }
   }
+
+  async getProduct(id: string) {
+    const query = `
+      SELECT
+        P.Id as Id,
+        C.Id as CateId,
+        C.CateName as Category,
+        B.Id as BrandId,
+        B.BrandName as Brand,
+        BS.SeriesName as Series,
+        P.Image as Image,
+        P.ProdName as Name,
+        P.Quantity as Quantity,
+        P.Price as Price,
+        P.Discount as Discount,
+        P.Status as Status,
+        ROUND(IFNULL(AVG(PR.Rating), 0), 1) AS AvgRating,
+        COUNT(PR.Id) AS TotalRating,
+        PD.DeviceCfg as DeviceCfg,
+        PD.Content as Content,
+        P.createdAt as createdAt,
+        P.updatedAt as updatedAt
+      FROM Product P
+      LEFT JOIN ProductDetails PD ON P.Id = PD.ProdId
+      LEFT JOIN Categories C ON P.CateId = C.Id
+      LEFT JOIN Brands B ON P.BrandId = B.Id
+      LEFT JOIN BrandSeries BS ON P.BrandSeriesId = BS.Id
+      LEFT JOIN ProductReviews PR ON P.Id = PR.ProdId AND PR.Status = 'Active'
+      WHERE P.Id = ?`;
+
+    const product = await db.query(query, [id]);
+
+    return product[0];
+  }
 }
 
 export const productService = new ProductService();

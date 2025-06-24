@@ -107,10 +107,6 @@ class UserService {
 
     const user = await db.query(query, [id]);
 
-    if (user.length === 0) {
-      throw new Error('User not found');
-    }
-
     return user[0];
   }
 
