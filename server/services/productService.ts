@@ -1,9 +1,23 @@
 import { getListProductParams } from '@shared/types/product.type';
+import { isNullOrEmpty } from '@shared/utils/general.utils';
 import { db } from '~/configs/dbConnect';
 
 class ProductService {
   async getListProduct(payload: getListProductParams) {
-    const { keyword, page = 1, limit = 10, sortBy = 'updatedAt', sortDir = 'desc' } = payload;
+    const {
+      keyword,
+      page = 1,
+      limit = 10,
+      sortBy = 'updatedAt',
+      sortDir = 'desc',
+      status,
+      category,
+      brand,
+      quantityFrom,
+      quantityTo,
+      priceFrom,
+      priceTo,
+    } = payload;
 
     const offset = (page - 1) * limit;
     const safeSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
@@ -11,7 +25,9 @@ class ProductService {
     let query = `
       SELECT
         P.Id as Id,
+        C.Id as CateId,
         C.CateName as Category,
+        B.Id as BrandId,
         B.BrandName as Brand,
         BS.SeriesName as Series,
         P.Image as Image,
@@ -33,10 +49,36 @@ class ProductService {
 
     if (keyword) {
       conditions.push(
-        `(P.ProdName LIKE ? OR C.CateName LIKE ? OR B.BrandName LIKE ? OR BS.SeriesName LIKE ? OR P.Price LIKE ? OR P.Discount LIKE ?)`
+        `(P.ProdName LIKE ? OR C.CateName LIKE ? OR B.BrandName LIKE ? OR BS.SeriesName LIKE ? OR P.Price LIKE ? OR P.Discount LIKE ?)`,
       );
       params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
     }
+
+    if (status) {
+      conditions.push('P.Status = ?');
+      params.push(status);
+    }
+
+    if (category) {
+      conditions.push('P.CateId = ?');
+      params.push(category);
+    }
+
+    if (brand) {
+      conditions.push('P.BrandId = ?');
+      params.push(brand);
+    }
+
+    if (!isNullOrEmpty(quantityFrom?.toString()) && !isNullOrEmpty(quantityTo?.toString())) {
+      conditions.push('P.Quantity BETWEEN ? AND ?');
+      params.push(quantityFrom, quantityTo);
+    }
+
+    if (!isNullOrEmpty(priceFrom?.toString()) && !isNullOrEmpty(priceTo?.toString())) {
+      conditions.push('P.Price BETWEEN ? AND ?');
+      params.push(priceFrom, priceTo);
+    }
+
     if (conditions.length > 0) {
       query += ' WHERE ' + conditions.join(' AND ');
     }

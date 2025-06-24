@@ -4,7 +4,7 @@ import DatePicker from './DatePicker';
 export interface FilterOption {
   key: string;
   label: string;
-  type: 'text' | 'select' | 'date' | 'dateRange' | 'numberRange';
+  type: 'text' | 'select' | 'date' | 'dateRange' | 'textRange';
   options?: { label: string; value: any }[];
   className?: string;
   placeholder?: string;
@@ -98,21 +98,21 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
                   </div>
                 );
 
-              case 'numberRange':
+              case 'textRange':
                 return (
                   <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
                     <span className="basis-[30%] max-w-[250px]">{field.label}</span>
 
                     <div className="basis-[70%] flex gap-4">
                       <input
-                        type="number"
+                        type="text"
                         className="input w-full"
                         value={value?.from ?? ''}
                         placeholder={`Từ ${field.placeholder ?? field.label}`}
                         onChange={(e) => onChange?.(`${field.key}.from`, e.target.value)}
                       />
                       <input
-                        type="number"
+                        type="text"
                         className="input w-full"
                         value={value?.to ?? ''}
                         placeholder={`Đến ${field.placeholder ?? field.label}`}

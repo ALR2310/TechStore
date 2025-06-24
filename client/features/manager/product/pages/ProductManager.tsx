@@ -16,9 +16,15 @@ export default function ProductManager() {
   const [filters, setFilters] = useState<Record<string, any>>();
   const dbFilters = useDebounce(filters, 300);
 
+  const quantityFrom = dbFilters?.quantity?.from;
+  const quantityTo = dbFilters?.quantity?.to;
+  const priceFrom = dbFilters?.price?.from;
+  const priceTo = dbFilters?.price?.to;
+
   const productsQuery = useQuery({
     queryKey: ['products', page, limit, sortBy, sortDir, dbFilters],
-    queryFn: () => getListProduct({ page, limit, sortBy, sortDir }),
+    queryFn: () =>
+      getListProduct({ page, limit, sortBy, sortDir, ...dbFilters, quantityFrom, quantityTo, priceFrom, priceTo }),
   });
 
   const categoriesQuery = useQuery({
@@ -69,22 +75,35 @@ export default function ProductManager() {
           {
             label: 'Số lượng',
             key: 'quantity',
-            type: 'numberRange',
+            type: 'textRange',
             placeholder: '',
           },
           {
             label: 'Giá bán',
             key: 'price',
-            type: 'numberRange',
+            type: 'textRange',
             placeholder: '',
           },
         ]}
         values={filters}
         onChange={(key, value) => {
-          setFilters((prev) => ({
-            ...prev,
-            [key]: value,
-          }));
+          setFilters((prev) => {
+            const [parentKey, childKey] = key.split('.');
+            if (childKey) {
+              return {
+                ...prev,
+                [parentKey]: {
+                  ...(prev?.[parentKey] || {}),
+                  [childKey]: value,
+                },
+              };
+            }
+
+            return {
+              ...prev,
+              [key]: value,
+            };
+          });
 
           setPage(1);
         }}
@@ -144,14 +163,14 @@ export default function ProductManager() {
           },
           {
             title: 'Giá giảm',
-            key: 'Price',
+            key: 'Discount',
             sortable: true,
             render: (value, row) => {
-              const discountedPrice = row.Discount > 0 ? value * (1 - row.Discount / 100) : value;
+              const discountedPrice = value > 0 ? row.Price * (1 - value / 100) : row.Price;
               return (
                 <div className="text-center font-semibold">
                   <p className="text-success text-nowrap">{discountedPrice.toLocaleString('vi-VN')} đ</p>
-                  <p className="text-primary">Giảm {row.Discount} %</p>
+                  <p className="text-primary">Giảm {value} %</p>
                 </div>
               );
             },
