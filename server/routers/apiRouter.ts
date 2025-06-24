@@ -10,4 +10,8 @@ router.delete('/user/:id', apiController.deleteUser);
 
 router.get('/product', apiController.getListProduct);
 
+router.get('/category', apiController.getListCategory);
+
+router.get('/brand', apiController.getListBrand);
+
 export default router;

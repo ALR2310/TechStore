@@ -1,11 +1,14 @@
 import { addressService } from '~/services/addressService';
+import { brandService } from '~/services/brandService';
 import { cartService } from '~/services/cartService';
+import { categoryService } from '~/services/categoryService';
 import { orderService } from '~/services/orderService';
 import { productService } from '~/services/productService';
 import { reviewService } from '~/services/reviewService';
 import { userService } from '~/services/userService';
 
 class ApiController {
+  //#region User
   async getListUser(req: any, res: any) {
     const payload = req.query;
 
@@ -82,7 +85,9 @@ class ApiController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+  //#endregion
 
+  //#region Product
   async getListProduct(req: any, res: any) {
     const payload = req.query;
 
@@ -94,6 +99,35 @@ class ApiController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+  //#endregion
+
+  //#region Category
+  async getListCategory(req: any, res: any) {
+    const payload = req.query;
+
+    try {
+      const categories = await categoryService.getListCategory(payload);
+      return res.status(200).json(categories);
+    } catch (error) {
+      console.error('Error fetching category list:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  //#endregion
+
+  //#region Brand
+  async getListBrand(req: any, res: any) {
+    const payload = req.query;
+
+    try {
+      const brands = await brandService.getListBrand(payload);
+      return res.status(200).json(brands);
+    } catch (error) {
+      console.error('Error fetching brand list:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  //#endregion
 }
 
 export const apiController = new ApiController();

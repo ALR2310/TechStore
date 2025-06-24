@@ -20,8 +20,8 @@ class ProductService {
         P.Price as Price,
         P.Discount as Discount,
         P.Status as Status,
-        P.createdAt as CreatedAt,
-        P.updatedAt as UpdatedAt
+        P.createdAt as createdAt,
+        P.updatedAt as updatedAt
       FROM Product P
       LEFT JOIN Categories C ON P.CateId = C.Id
       LEFT JOIN Brands B ON P.BrandId = B.Id
@@ -32,8 +32,10 @@ class ProductService {
     const params: any[] = [];
 
     if (keyword) {
-      conditions.push(`(P.ProdName LIKE ? OR C.CateName LIKE ? OR B.BrandName LIKE ? OR BS.SeriesName LIKE ?)`);
-      params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
+      conditions.push(
+        `(P.ProdName LIKE ? OR C.CateName LIKE ? OR B.BrandName LIKE ? OR BS.SeriesName LIKE ? OR P.Price LIKE ? OR P.Discount LIKE ?)`
+      );
+      params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
     }
     if (conditions.length > 0) {
       query += ' WHERE ' + conditions.join(' AND ');

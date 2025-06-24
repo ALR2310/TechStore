@@ -126,43 +126,43 @@ export default function DataTable({
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
-              {columnsState
-                .filter((col) => col.visible)
-                .map((col, colIndex) => (
-                  <td key={colIndex}>{col.render ? col.render(row[col.key], row) : row[col.key]}</td>
-                ))}
-              {columnAction && (
-                <td className="text-lg text-center inline-block text-primary/40">
-                  <i
-                    className="fa-regular fa-circle-minus cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRowDelete?.(row);
-                    }}
-                  ></i>
-                </td>
-              )}
-            </tr>
-          ))}
-          {loading &&
-            Array.from({ length: 10 }).map((_, index) => (
-              <tr key={index} className="hover:bg-base-300">
-                {columnsState
-                  .filter((col) => col.visible)
-                  .map((_, colIndex) => (
-                    <td key={colIndex}>
+          {loading
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <tr key={index} className="hover:bg-base-300">
+                  {columnsState
+                    .filter((col) => col.visible)
+                    .map((_, colIndex) => (
+                      <td key={colIndex}>
+                        <div className="skeleton h-4"></div>
+                      </td>
+                    ))}
+                  {columnAction && (
+                    <td className="">
                       <div className="skeleton h-4"></div>
                     </td>
-                  ))}
-                {columnAction && (
-                  <td className="">
-                    <div className="skeleton h-4"></div>
-                  </td>
-                )}
-              </tr>
-            ))}
+                  )}
+                </tr>
+              ))
+            : data.map((row, rowIndex) => (
+                <tr key={rowIndex} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
+                  {columnsState
+                    .filter((col) => col.visible)
+                    .map((col, colIndex) => (
+                      <td key={colIndex}>{col.render ? col.render(row[col.key], row) : row[col.key]}</td>
+                    ))}
+                  {columnAction && (
+                    <td className="text-lg text-center inline-block text-primary/40">
+                      <i
+                        className="fa-regular fa-circle-minus cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRowDelete?.(row);
+                        }}
+                      ></i>
+                    </td>
+                  )}
+                </tr>
+              ))}
         </tbody>
       </table>
 

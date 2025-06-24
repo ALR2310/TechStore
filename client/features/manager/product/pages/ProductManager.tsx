@@ -3,6 +3,10 @@ import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { getListProduct } from './api/productApi';
+import { getListCategory } from '~/features/manager/category/api/categoryApi';
+import { getListBrand } from '../../brand/api/brandApi';
+import { useDebounce } from '~/hooks/useDebounce';
+import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 
 export default function ProductManager() {
   const [page, setPage] = useState(1);
@@ -10,11 +14,25 @@ export default function ProductManager() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState<string>('updatedAt');
   const [filters, setFilters] = useState<Record<string, any>>();
+  const debouncedFilters = useDebounce(filters, 500);
 
   const productsQuery = useQuery({
-    queryKey: ['products', page, limit, sortBy, sortDir, filters],
+    queryKey: ['products', page, limit, sortBy, sortDir, debouncedFilters],
     queryFn: () => getListProduct({ page, limit, sortBy, sortDir }),
   });
+  const isLoadingWithDelay = useMinimumLoading(productsQuery.isLoading, 300);
+
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => getListCategory({ page: 1, limit: 100 }),
+  });
+
+  const brandsQuery = useQuery({
+    queryKey: ['brands'],
+    queryFn: async () => getListBrand({ page: 1, limit: 100 }),
+  });
+
+  console.log(isLoadingWithDelay);
 
   return (
     <div className="flex-1 p-4 flex flex-col">
@@ -22,12 +40,57 @@ export default function ProductManager() {
 
       <Filter
         className="bg-base-100 rounded-2xl mb-8 border border-base-300"
+        grid={3}
         filters={[
-          { key: 'name', label: 'Tên người dùng', type: 'text' },
-          { key: 'date', label: 'Ngày tạo', type: 'date' },
-          { key: 'dayRange', label: 'Khoản thời gian', type: 'dateRange' },
-          { key: 'role', label: 'Vai trò', type: 'select', options: [{ label: 'Admin', value: 'admin' }] },
+          {
+            label: 'Từ khoá',
+            key: 'keyword',
+            type: 'text',
+            placeholder: 'Nhập từ khoá tìm kiếm',
+          },
+          {
+            key: 'status',
+            label: 'Trạng thái',
+            type: 'select',
+            options: [
+              { label: 'Hoạt động', value: 'Active' },
+              { label: 'Vô hiệu', value: 'Inactive' },
+            ],
+          },
+          {
+            label: 'Danh mục',
+            key: 'category',
+            type: 'select',
+            options: categoriesQuery.data?.data.map((c: any) => ({ label: c.CateName, value: c.Id })) ?? [],
+          },
+          {
+            label: 'Thương hiệu',
+            key: 'brand',
+            type: 'select',
+            options: brandsQuery.data?.data.map((b: any) => ({ label: b.BrandName, value: b.Id })) ?? [],
+          },
+          {
+            label: 'Số lượng',
+            key: 'quantity',
+            type: 'numberRange',
+            placeholder: '',
+          },
+          {
+            label: 'Giá bán',
+            key: 'price',
+            type: 'numberRange',
+            placeholder: '',
+          },
         ]}
+        values={filters}
+        onChange={(key, value) => {
+          setFilters((prev) => ({
+            ...prev,
+            [key]: value,
+          }));
+
+          setPage(1);
+        }}
       />
 
       <DataTable
@@ -118,14 +181,19 @@ export default function ProductManager() {
           },
         ]}
         data={productsQuery.data?.data ?? []}
+        loading={isLoadingWithDelay}
         pagination={{
           size: [10, 20, 50],
           page: page,
           limit: limit,
           total: productsQuery.data?.pagination.total ?? 0,
         }}
-        onLimitChange={(newLimit) => {
-          setLimit(newLimit);
+        onLimitChange={(limit) => {
+          setLimit(limit);
+        }}
+        onSortChange={(sortBy, sortDir) => {
+          setSortBy(sortBy);
+          setSortDir(sortDir === 'asc' ? 'asc' : 'desc');
         }}
         onPageChange={(newPage) => {
           setPage(newPage);

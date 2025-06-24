@@ -1,8 +1,6 @@
-export interface getListUserPayload {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortDir?: 'asc' | 'desc';
+import { baseQueryParams } from './params.type';
+
+export interface getListUserPayload extends baseQueryParams {
   role?: string;
   status?: string;
   dateOfBirth?: string;
