@@ -31,6 +31,16 @@ class OrderService {
     
     return { message: 'Orders deleted successfully.' };
   }
+
+  async deleteOrderOfProduct(productId: string) {
+    const exists = await db.query(`SELECT * FROM OrderItems WHERE ProdId = ?`, [productId]);
+    if (exists.length === 0) {
+      return { message: 'No orders found for this product.' };
+    }
+
+    await db.query(`DELETE FROM OrderItems WHERE ProdId = ?`, [productId]);
+    return { message: 'Order items deleted successfully.' };
+  }
 }
 
 export const orderService = new OrderService();

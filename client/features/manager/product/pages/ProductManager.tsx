@@ -1,13 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
-import { getListProduct } from '../api/productApi';
+import { deleteProduct, getListProduct } from '../api/productApi';
 import { getListCategory } from '~/features/manager/category/api/categoryApi';
 import { getListBrand } from '../../brand/api/brandApi';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 import { Link } from 'react-router-dom';
+
+import { confirm } from '~/hooks/useConfirm';
+import { toast } from '~/hooks/useToast';
 
 export default function ProductManager() {
   const [page, setPage] = useState(1);
@@ -16,7 +19,6 @@ export default function ProductManager() {
   const [sortBy, setSortBy] = useState<string>('updatedAt');
   const [filters, setFilters] = useState<Record<string, any>>();
   const dbFilters = useDebounce(filters, 300);
-  const modalRef = useRef<HTMLDialogElement>(null);
 
   const quantityFrom = dbFilters?.quantity?.from;
   const quantityTo = dbFilters?.quantity?.to;
@@ -29,14 +31,25 @@ export default function ProductManager() {
       getListProduct({ page, limit, sortBy, sortDir, ...dbFilters, quantityFrom, quantityTo, priceFrom, priceTo }),
   });
 
-  const categoriesQuery = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => getListCategory({ page: 1, limit: 100 }),
+  const [categoriesQuery, brandsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ['categories'],
+        queryFn: async () => getListCategory({ limit: 100 }),
+      },
+      {
+        queryKey: ['brands'],
+        queryFn: async () => getListBrand({ limit: 100 }),
+      },
+    ],
   });
 
-  const brandsQuery = useQuery({
-    queryKey: ['brands'],
-    queryFn: async () => getListBrand({ page: 1, limit: 100 }),
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => deleteProduct(id),
+    onSuccess: () => {
+      productsQuery.refetch();
+      toast({ message: 'Xoá sản phẩm thành công', type: 'success' });
+    },
   });
 
   return (
@@ -194,13 +207,43 @@ export default function ProductManager() {
           },
           {
             title: '',
-            key: '',
-            render: () => (
+            key: 'updatedAt',
+            render: (_, row) => (
               <div className="space-y-2">
-                <button className="btn btn-primary btn-sm" onClick={() => modalRef.current?.showModal()}>
+                <Link to={`update/${row.Id}`} className="btn btn-primary btn-sm">
                   Sửa
+                </Link>
+                <button
+                  className="btn btn-error btn-sm"
+                  onClick={() => {
+                    confirm({
+                      title: 'Xác nhận xóa sản phẩm',
+                      backdropClose: true,
+                      content: (
+                        <div className="space-y-2 font-semibold">
+                          <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+                          <p>
+                            Tên sản phẩm: <span className="text-error">{row.Name}</span>
+                          </p>
+                          <p className="text-sm text-base-content/60">Mọi dữ liệu liên quan sẽ bị xoá</p>
+                          <p className="text-sm text-base-content/60">Hành động này không thể hoàn tác</p>
+                        </div>
+                      ),
+                      btnCancel: {
+                        text: 'Hủy',
+                      },
+                      btnOk: {
+                        color: 'error',
+                        text: 'Xoá',
+                        onClick: () => {
+                          deleteProductMutation.mutate(row.Id);
+                        },
+                      },
+                    });
+                  }}
+                >
+                  Xóa
                 </button>
-                <button className="btn btn-error btn-sm">Xóa</button>
               </div>
             ),
           },

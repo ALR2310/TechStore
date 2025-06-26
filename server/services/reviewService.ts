@@ -16,6 +16,17 @@ class ReviewService {
     await db.query(query, [userId]);
     return { message: 'Reviews deleted successfully.' };
   }
+
+  async deleteReviewOfProduct(productId: string) {
+    const exists = await db.query(`SELECT * FROM ProductReviews WHERE ProdId = ?`, [productId]);
+    if (exists.length === 0) {
+      return { message: 'No reviews found for this product.' };
+    }
+
+    const query = `DELETE FROM ProductReviews WHERE ProdId = ?`;
+    await db.query(query, [productId]);
+    return { message: 'Reviews deleted successfully.' };
+  }
 }
 
 export const reviewService = new ReviewService();

@@ -1,4 +1,4 @@
-import { getListProductParams } from '@shared/types/product.type';
+import { createProductPayload, getListProductParams, updateProductPayload } from '@shared/types/product.type';
 import { isNullOrEmpty } from '@shared/utils/general.utils';
 import { db } from '~/configs/dbConnect';
 
@@ -149,6 +149,205 @@ class ProductService {
     const product = await db.query(query, [id]);
 
     return product[0];
+  }
+
+  async createProduct(payload: createProductPayload) {
+    const { name, slug, category, brand, series, image, quantity, price, discount, status, content, deviceConfigs } =
+      payload;
+
+    if (category) {
+      const categoryExists = await db.query('SELECT Id FROM Categories WHERE Id = ?', [category]);
+      if (categoryExists.length === 0) {
+        throw new Error('Category does not exist');
+      }
+    }
+
+    if (brand) {
+      const brandExists = await db.query('SELECT Id FROM Brands WHERE Id = ?', [brand]);
+      if (brandExists.length === 0) {
+        throw new Error('Brand does not exist');
+      }
+    }
+
+    if (series) {
+      const seriesExists = await db.query('SELECT Id FROM BrandSeries WHERE Id = ?', [series]);
+      if (seriesExists.length === 0) {
+        throw new Error('Brand series does not exist');
+      }
+    }
+
+    if (name) {
+      const existingProduct = await db.query('SELECT Id FROM Product WHERE ProdName = ?', [name]);
+      if (existingProduct.length > 0) {
+        throw new Error('Product name already exists');
+      }
+    }
+
+    let query = `
+        INSERT INTO Product (CateId, BrandId, BrandSeriesId, Image, ProdName, Quantity, Price, Discount, Slugs, Status, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    let params = [
+      category,
+      brand,
+      series,
+      image,
+      name,
+      quantity,
+      price,
+      discount,
+      slug,
+      status,
+      "DATETIME('now')",
+      "DATETIME('now')",
+    ];
+
+    const result = await db.query(query, params);
+    const productId = result.insertId;
+
+    await db.query(
+      'INSERT INTO ProductDetails (ProdId, DeviceCfg, Content, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)',
+      [productId, deviceConfigs, content, "DATETIME('now')", "DATETIME('now')"],
+    );
+
+    return this.getProduct(productId);
+  }
+
+  async updateProduct(payload: updateProductPayload) {
+    const {
+      id,
+      name,
+      slug,
+      category,
+      brand,
+      series,
+      image,
+      quantity,
+      price,
+      discount,
+      status,
+      content,
+      deviceConfigs,
+    } = payload;
+
+    if (isNullOrEmpty(id)) {
+      throw new Error('Product ID is required');
+    } else {
+      const idExists = await db.query('SELECT Id FROM Product WHERE Id = ?', [id]);
+      if (idExists.length === 0) {
+        throw new Error('Product does not exist');
+      }
+    }
+
+    if (category) {
+      const categoryExists = await db.query('SELECT Id FROM Categories WHERE Id = ?', [category]);
+      if (categoryExists.length === 0) {
+        throw new Error('Category does not exist');
+      }
+    }
+
+    if (brand) {
+      const brandExists = await db.query('SELECT Id FROM Brands WHERE Id = ?', [brand]);
+      if (brandExists.length === 0) {
+        throw new Error('Brand does not exist');
+      }
+    }
+
+    if (series) {
+      const seriesExists = await db.query('SELECT Id FROM BrandSeries WHERE Id = ?', [series]);
+      if (seriesExists.length === 0) {
+        throw new Error('Brand series does not exist');
+      }
+    }
+
+    let query = `UPDATE Product SET`;
+
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (name) {
+      conditions.push('ProdName = ?');
+      params.push(name);
+    }
+    if (slug) {
+      conditions.push('Slugs = ?');
+      params.push(slug);
+    }
+    if (category) {
+      conditions.push('CateId = ?');
+      params.push(category);
+    }
+    if (brand) {
+      conditions.push('BrandId = ?');
+      params.push(brand);
+    }
+    if (series) {
+      conditions.push('BrandSeriesId = ?');
+      params.push(series);
+    }
+    if (image) {
+      conditions.push('Image = ?');
+      params.push(image);
+    }
+    if (!isNullOrEmpty(quantity?.toString())) {
+      conditions.push('Quantity = ?');
+      params.push(quantity);
+    }
+    if (!isNullOrEmpty(price?.toString())) {
+      conditions.push('Price = ?');
+      params.push(price);
+    }
+    if (!isNullOrEmpty(discount?.toString())) {
+      conditions.push('Discount = ?');
+      params.push(discount);
+    }
+    if (status) {
+      conditions.push('Status = ?');
+      params.push(status);
+    }
+    conditions.push('updatedAt = NOW()');
+    if (conditions.length > 0) {
+      query += ` ${conditions.join(', ')} WHERE Id = ?`;
+      params.push(id);
+      await db.query(query, params);
+    }
+
+    let detailQuery = `UPDATE ProductDetails SET`;
+    const detailConditions: string[] = [];
+    const detailParams: any[] = [];
+
+    if (deviceConfigs) {
+      detailConditions.push('DeviceCfg = ?');
+      detailParams.push(deviceConfigs);
+    }
+    if (content) {
+      detailConditions.push('Content = ?');
+      detailParams.push(content);
+    }
+    detailConditions.push('updatedAt = NOW()');
+    if (detailConditions.length > 0) {
+      detailQuery += ` ${detailConditions.join(', ')} WHERE ProdId = ?`;
+      detailParams.push(id);
+      await db.query(detailQuery, detailParams);
+    }
+
+    return this.getProduct(id);
+  }
+
+  async deleteProduct(id: string) {
+    if (isNullOrEmpty(id)) {
+      throw new Error('Product ID is required');
+    } else {
+      const idExists = await db.query('SELECT Id FROM Product WHERE Id = ?', [id]);
+      if (idExists.length === 0) {
+        throw new Error('Product does not exist');
+      }
+    }
+
+    const query = 'DELETE FROM Product WHERE Id = ?';
+    await db.query(query, [id]);
+    await db.query('DELETE FROM ProductDetails WHERE ProdId = ?', [id]);
+
+    return { message: 'Product deleted successfully' };
   }
 }
 

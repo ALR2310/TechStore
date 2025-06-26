@@ -1,11 +1,13 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
-import { getProduct } from '../api/productApi';
+import { createProduct, getProduct, updateProduct } from '../api/productApi';
 import CkEditor from '~/components/Ckeditor';
-import { useEffect, useState } from 'react';
-import { formatToSlug, parseSpecs } from '@shared/utils/general.utils';
+import { useEffect, useRef, useState } from 'react';
+import { formatToSlug, parseSpecs, stringifySpecs } from '@shared/utils/general.utils';
 import { getListCategory } from '../../category/api/categoryApi';
 import { getListBrand } from '../../brand/api/brandApi';
+import { toast } from '~/hooks/useToast';
+import { createProductPayload } from '@shared/types/product.type';
 
 export default function ProductCreateOrUpdate() {
   const { id } = useParams();
@@ -14,13 +16,15 @@ export default function ProductCreateOrUpdate() {
   const [cateId, setCateId] = useState('');
   const [brandId, setBrandId] = useState('');
   const [seriesId, setSeriesId] = useState('');
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<File | undefined>(undefined);
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
   const [content, setContent] = useState('');
   const [deviceConfigs, setDeviceConfigs] = useState<[string, string][]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const productQuery = useQuery({
     queryKey: ['product', id],
@@ -41,22 +45,75 @@ export default function ProductCreateOrUpdate() {
     ],
   });
 
+  const productMutation = useMutation({
+    mutationFn: async () => {
+      const payload: createProductPayload = {
+        name: prodName,
+        slug: prodSlug,
+        category: cateId,
+        brand: brandId,
+        series: seriesId,
+        image,
+        quantity,
+        price,
+        discount,
+        status,
+        content,
+        deviceConfigs: stringifySpecs(deviceConfigs),
+      };
+
+      if (id) return updateProduct({ id, ...payload });
+      return createProduct(payload);
+    },
+    onSuccess: () => {
+      toast({ type: 'success', message: 'Cập nhật sản phẩm thành công' });
+    },
+  });
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImage(file);
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+  };
+
   useEffect(() => {
-    setProductName(productQuery.data?.Name || '');
-    setProductSlug(productQuery.data?.Slugs || '');
-    setCateId(productQuery.data?.CateId || '');
-    setBrandId(productQuery.data?.BrandId || '');
-    setSeriesId(productQuery.data?.SeriesId || '');
-    setQuantity(productQuery.data?.Quantity || 0);
-    setPrice(productQuery.data?.Price || 0);
-    setDiscount(productQuery.data?.Discount || 0);
-    setStatus(productQuery.data?.Status || 'Active');
-    setContent(productQuery.data?.Content || '');
-    setDeviceConfigs(parseSpecs(productQuery.data?.DeviceCfg || ''));
+    if (!productQuery.isSuccess) return;
+    const data = productQuery.data;
+
+    setProductName(data?.Name || '');
+    setProductSlug(data?.Slugs || '');
+    setCateId(data?.CateId || '');
+    setBrandId(data?.BrandId || '');
+    setSeriesId(data?.SeriesId || '');
+    setQuantity(data?.Quantity || 0);
+    setPrice(data?.Price || 0);
+    setDiscount(data?.Discount || 0);
+    setStatus(data?.Status || 'Active');
+    setContent(data?.Content || '');
+    setDeviceConfigs(parseSpecs(data?.DeviceCfg || ''));
   }, [productQuery.data]);
 
   const selectedBrand = brandsQuery.data?.data.find((b: any) => b.Id === Number(brandId));
   const seriesOptions = selectedBrand?.Series ?? [];
+  const imageUrl =
+    previewUrl ||
+    (productQuery.data?.Image
+      ? `http://localhost:4850/${productQuery.data.Image}`
+      : 'http://localhost:4850/imgs/default-product.png');
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <div className="flex-1 p-4 flex flex-col">
@@ -67,17 +124,26 @@ export default function ProductCreateOrUpdate() {
           <Link to={'/admin/product'} className="btn btn-soft btn-accent">
             Quay lại
           </Link>
-          <button className="btn btn-success">Lưu lại</button>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              productMutation.mutate();
+            }}
+          >
+            Lưu lại
+          </button>
         </div>
       </div>
 
       <div className="flex gap-4">
         <div className="flex-1">
           <img
-            src={`http://localhost:4850/${productQuery.data?.Image}`}
+            src={imageUrl}
             alt={productQuery.data?.Name}
-            className="rounded-2xl"
+            className="rounded-2xl cursor-pointer hover:opacity-80 transition"
+            onClick={handleImageClick}
           />
+          <input type="file" accept="image/*" ref={fileInputRef} hidden onChange={handleFileChange} />
         </div>
 
         <div className="flex-[4]">
@@ -197,22 +263,30 @@ export default function ProductCreateOrUpdate() {
             <div className="max-h-[500px] overflow-auto">
               <table className="table table-pin-rows table-zebra">
                 <tbody>
-                  {deviceConfigs.map(([key, value], index) => (
-                    <tr key={index}>
-                      <td>{key}</td>
-                      <td>{value}</td>
+                  {deviceConfigs.length ? (
+                    deviceConfigs.map(([key, value], index) => (
+                      <tr key={index}>
+                        <td>{key}</td>
+                        <td>{value}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={2} className="text-center">
+                        Chưa có cấu hình
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <div className="flex-[1.5] bg-base-100 p-3 rounded-2xl border border-base-300 space-y-4">
+        <div className="flex-[1.5] bg-base-100 p-3 h-full rounded-2xl border border-base-300 space-y-4">
           <p className="font-semibold text-lg">Mô tả sản phẩm:</p>
           <div className="input-editor overflow-auto h-[94%] max-h-[500px]" tabIndex={0}>
-            {productQuery.isSuccess && <CkEditor content={productQuery.data?.Content || ''} />}
+            <CkEditor content={productQuery.data?.Content || ''} />
           </div>
         </div>
       </div>

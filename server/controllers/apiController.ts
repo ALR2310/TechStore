@@ -1,11 +1,15 @@
+import { renameSync } from 'fs';
+import path from 'path';
 import { addressService } from '~/services/addressService';
 import { brandService } from '~/services/brandService';
 import { cartService } from '~/services/cartService';
 import { categoryService } from '~/services/categoryService';
 import { orderService } from '~/services/orderService';
 import { productService } from '~/services/productService';
+import { purchaseService } from '~/services/purchaseService';
 import { reviewService } from '~/services/reviewService';
 import { userService } from '~/services/userService';
+import { viewedService } from '~/services/viewedService';
 
 class ApiController {
   //#region User
@@ -116,6 +120,84 @@ class ApiController {
     }
   }
 
+  async createProduct(req: any, res: any) {
+    const payload = req.body;
+
+    const absoImagePath = req.file ? req.file.path : null;
+    let relaImagePath = absoImagePath ? path.relative(path.join(__dirname, '..', 'assets'), absoImagePath) : null;
+
+    if (absoImagePath && req.body.slug) {
+      const extname = path.extname(req.file.originalname);
+      const newFileName = `${req.body.slug}${extname}`;
+      const newFilePath = path.join(path.dirname(absoImagePath), newFileName);
+
+      renameSync(absoImagePath, newFilePath);
+      relaImagePath = path.relative(path.join(__dirname, '..', 'assets'), newFilePath);
+    }
+
+    try {
+      const newProduct = await productService.createProduct({ ...payload, image: relaImagePath });
+      return res.status(201).json(newProduct);
+    } catch (error) {
+      console.error('Error creating product:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async updateProduct(req: any, res: any) {
+    const { id } = req.params;
+    const payload = { id, ...req.body };
+
+    const absoImagePath = req.file ? req.file.path : null;
+    let relaImagePath = absoImagePath ? path.relative(path.join(__dirname, '..', 'assets'), absoImagePath) : null;
+
+    if (absoImagePath && req.body.slug) {
+      const extname = path.extname(req.file.originalname);
+      const newFileName = `${req.body.slug}${extname}`;
+      const newFilePath = path.join(path.dirname(absoImagePath), newFileName);
+
+      renameSync(absoImagePath, newFilePath);
+      relaImagePath = path.relative(path.join(__dirname, '..', 'assets'), newFilePath);
+    }
+
+    try {
+      const updatedProduct = await productService.updateProduct({ ...payload, image: relaImagePath });
+      return res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async deleteProduct(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      const productExists = await productService.getProduct(id);
+
+      if (!productExists) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+
+      await Promise.all([
+        orderService.deleteOrderOfProduct(id),
+        cartService.deleteCartOfProduct(id),
+        purchaseService.deletePurchaseOfProduct(id),
+        reviewService.deleteReviewOfProduct(id),
+        viewedService.deleteViewedOfProduct(id),
+      ]);
+
+      await productService.deleteProduct(id);
+
+      return res.status(204).json({
+        message: 'Product deleted successfully',
+        data: productExists,
+      });
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
   //#endregion
 
   //#region Category

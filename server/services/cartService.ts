@@ -24,6 +24,17 @@ class CartService {
     await db.query(query, [userId]);
     return { message: 'Cart deleted successfully.' };
   }
+
+  async deleteCartOfProduct(productId: string) {
+    const exists = await db.query(`SELECT * FROM Cart WHERE ProdId = ?`, [productId]);
+    if (exists.length === 0) {
+      return { message: 'No cart found for this product.' };
+    }
+
+    const query = `DELETE FROM Cart WHERE ProdId = ?`;
+    await db.query(query, [productId]);
+    return { message: 'Cart deleted successfully.' };
+  }
 }
 
 export const cartService = new CartService();
