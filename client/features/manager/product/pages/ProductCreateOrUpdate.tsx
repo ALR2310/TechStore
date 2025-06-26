@@ -25,6 +25,10 @@ export default function ProductCreateOrUpdate() {
   const [deviceConfigs, setDeviceConfigs] = useState<[string, string][]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [editingCell, setEditingCell] = useState<{
+    row: number;
+    col: 0 | 1;
+  } | null>(null);
 
   const productQuery = useQuery({
     queryKey: ['product', id],
@@ -114,6 +118,16 @@ export default function ProductCreateOrUpdate() {
       }
     };
   }, [previewUrl]);
+
+  const handleEdit = (rowIndex: number, col: 0 | 1, newValue: string) => {
+    setDeviceConfigs((prev) => {
+      const updated = [...prev];
+      const current = updated[rowIndex];
+      updated[rowIndex] = col === 0 ? [newValue, current[1]] : [current[0], newValue];
+      return updated;
+    });
+    setEditingCell(null);
+  };
 
   return (
     <div className="flex-1 p-4 flex flex-col">
@@ -259,15 +273,42 @@ export default function ProductCreateOrUpdate() {
       <div className="flex gap-4 mt-4">
         <div className="flex-1 h-f">
           <div className="bg-base-100 p-3 rounded-2xl border border-base-300 space-y-4">
-            <p className="font-semibold text-lg">Bảng cấu hình:</p>
+            <div className="flex justify-between items-center">
+              <p className="font-semibold text-lg">Bảng cấu hình:</p>
+              <button className="btn btn-sm btn-primary" onClick={() => setDeviceConfigs([...deviceConfigs, ['', '']])}>
+                + Thêm cấu hình
+              </button>
+            </div>
+
             <div className="max-h-[500px] overflow-auto">
               <table className="table table-pin-rows table-zebra">
                 <tbody>
                   {deviceConfigs.length ? (
-                    deviceConfigs.map(([key, value], index) => (
-                      <tr key={index}>
-                        <td>{key}</td>
-                        <td>{value}</td>
+                    deviceConfigs.map(([key, value], rowIndex) => (
+                      <tr key={rowIndex}>
+                        {[key, value].map((cell, colIndex) => (
+                          <td
+                            key={colIndex}
+                            className="border"
+                            onClick={() => setEditingCell({ row: rowIndex, col: colIndex as 0 | 1 })}
+                          >
+                            {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
+                              <input
+                                className="input input-ghost outline-none w-full"
+                                autoFocus
+                                defaultValue={cell}
+                                onBlur={(e) => handleEdit(rowIndex, colIndex as 0 | 1, e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleEdit(rowIndex, colIndex as 0 | 1, (e.target as HTMLInputElement).value);
+                                  }
+                                }}
+                              />
+                            ) : (
+                              cell
+                            )}
+                          </td>
+                        ))}
                       </tr>
                     ))
                   ) : (
@@ -286,7 +327,7 @@ export default function ProductCreateOrUpdate() {
         <div className="flex-[1.5] bg-base-100 p-3 h-full rounded-2xl border border-base-300 space-y-4">
           <p className="font-semibold text-lg">Mô tả sản phẩm:</p>
           <div className="input-editor overflow-auto h-[94%] max-h-[500px]" tabIndex={0}>
-            <CkEditor content={productQuery.data?.Content || ''} />
+            <CkEditor content={productQuery.data?.Content || ''} onChange={(value) => setContent(value)} />
           </div>
         </div>
       </div>

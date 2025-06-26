@@ -53,6 +53,7 @@ import '~/libs/ckeditor5/ckeditor5.css';
 
 interface Props {
   content: string;
+  onChange?: (data: string) => void;
 }
 
 const editorConfig = {
@@ -295,7 +296,7 @@ const editorConfig = {
   translations: [translations],
 };
 
-export default function CkEditor({ content }: Props) {
+export default function CkEditor({ content, onChange }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstanceRef = useRef<any>(null);
 
@@ -307,6 +308,12 @@ export default function CkEditor({ content }: Props) {
       .then((editor: any) => {
         editorInstanceRef.current = editor;
         if (content) editor.setData(content);
+
+        editor.model.document.on('change:data', () => {
+          const data = editor.getData();
+          onChange?.(data);
+        });
+
         return () => {
           editor.destroy();
           editorInstanceRef.current = null;
