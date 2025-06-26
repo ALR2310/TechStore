@@ -10,6 +10,7 @@ interface ButtonProps {
 }
 interface ModalProps {
   title?: string;
+  titlePosition?: 'left' | 'center' | 'right';
   btnShow?: boolean;
   className?: string;
   children?: React.ReactNode;
@@ -40,6 +41,7 @@ const Modal = forwardRef<HTMLDialogElement, ModalProps>(
   (
     {
       title,
+      titlePosition = 'left',
       children,
       btnShow = true,
       className,
@@ -54,13 +56,13 @@ const Modal = forwardRef<HTMLDialogElement, ModalProps>(
   ) => {
     return (
       <dialog ref={ref} className={`modal ${className}`}>
-        <div className="modal-box p-4" style={{ width }}>
+        <div className="modal-box p-4" style={{ maxWidth: width }}>
           {iconClose && (
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
           )}
-          <h3 className="text-lg font-bold">{title}</h3>
+          <h3 className={`text-lg font-bold ${ConfirmClassMap.titlePosition[titlePosition]}`}>{title}</h3>
           <div className="py-4">{children}</div>
           {btnShow && (
             <div className="modal-action mt-0">{renderButtons({ allowBtnCloseModal, btnCancel, btnOk })}</div>

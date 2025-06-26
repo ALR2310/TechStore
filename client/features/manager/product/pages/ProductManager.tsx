@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { getListProduct } from '../api/productApi';
@@ -7,6 +7,7 @@ import { getListCategory } from '~/features/manager/category/api/categoryApi';
 import { getListBrand } from '../../brand/api/brandApi';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
+import { Link } from 'react-router-dom';
 
 export default function ProductManager() {
   const [page, setPage] = useState(1);
@@ -15,6 +16,7 @@ export default function ProductManager() {
   const [sortBy, setSortBy] = useState<string>('updatedAt');
   const [filters, setFilters] = useState<Record<string, any>>();
   const dbFilters = useDebounce(filters, 300);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   const quantityFrom = dbFilters?.quantity?.from;
   const quantityTo = dbFilters?.quantity?.to;
@@ -39,7 +41,12 @@ export default function ProductManager() {
 
   return (
     <div className="flex-1 p-4 flex flex-col">
-      <h1 className="text-2xl font-bold mb-4">Quản lý sản phẩm</h1>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold mb-4">Quản lý sản phẩm</h1>
+        <Link to={'create'} className="btn btn-soft btn-accent">
+          Thêm sản phẩm mới
+        </Link>
+      </div>
 
       <Filter
         className="bg-base-100 rounded-2xl mb-8 border border-base-300"
@@ -190,7 +197,9 @@ export default function ProductManager() {
             key: '',
             render: () => (
               <div className="space-y-2">
-                <button className="btn btn-primary btn-sm">Sửa</button>
+                <button className="btn btn-primary btn-sm" onClick={() => modalRef.current?.showModal()}>
+                  Sửa
+                </button>
                 <button className="btn btn-error btn-sm">Xóa</button>
               </div>
             ),

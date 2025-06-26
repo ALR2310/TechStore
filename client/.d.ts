@@ -8,7 +8,9 @@ declare module '*.jpg' {
   export default content;
 }
 
-interface ImportMetaEnv {}
+interface ImportMetaEnv {
+  readonly VITE_CKEDITOR5_LICENSE_KEY: string;
+}
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;

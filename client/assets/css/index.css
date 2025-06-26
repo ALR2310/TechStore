@@ -1,12 +1,12 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark, cupcake, garden, dracula;
 }
 
 @font-face {
-  font-family: "Courgette";
-  src: url("../fonts/Courgette/Courgette-Regular.ttf") format("truetype");
+  font-family: 'Courgette';
+  src: url('../fonts/Courgette/Courgette-Regular.ttf') format('truetype');
 }
 
 @layer utilities {
@@ -23,11 +23,7 @@
   .select:focus-within,
   .input:focus,
   .input:focus-within {
-    --input-color: color-mix(
-      in oklab,
-      var(--color-base-content) 40%,
-      transparent
-    );
+    --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
   }
 }
 
@@ -35,4 +31,26 @@
   @variant 2xl {
     max-width: 80rem;
   }
+}
+
+.input-editor {
+  --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  border: var(--border) solid #0000;
+  background-color: var(--color-base-100);
+  border-start-start-radius: var(--join-ss, var(--radius-field));
+  border-start-end-radius: var(--join-se, var(--radius-field));
+  border-end-start-radius: var(--join-es, var(--radius-field));
+  border-end-end-radius: var(--join-ee, var(--radius-field));
+  border-color: var(--input-color);
+  box-shadow: 0 1px color-mix(in oklab, var(--input-color) calc(var(--depth) * 10%), #0000) inset,
+    0 -1px oklch(100% 0 0 / calc(var(--depth) * 0.1)) inset;
+}
+
+.input-editor:focus,
+.input-editor:focus-within {
+  --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  outline: 2px solid var(--input-color);
+  outline-offset: 2px;
+  isolation: isolate;
+  z-index: 1;
 }
