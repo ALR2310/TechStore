@@ -38,6 +38,8 @@ export default function OrderManager() {
         limit,
         sortBy,
         sortDir,
+        status: dbFilters?.status,
+        keyword: dbFilters?.keyword,
         dateFrom: dbFilters?.time?.start,
         dateTo: dbFilters?.time?.end,
         priceFrom: dbFilters?.price?.from,
@@ -63,8 +65,10 @@ export default function OrderManager() {
             label: 'Trạng thái',
             type: 'select',
             options: [
-              { label: 'Hoạt động', value: 'Active' },
-              { label: 'Vô hiệu', value: 'Inactive' },
+              { label: orderStatusMap.text.Processing, value: 'Processing' },
+              { label: orderStatusMap.text.Delivering, value: 'Delivering' },
+              { label: orderStatusMap.text.Completed, value: 'Completed' },
+              { label: orderStatusMap.text.Cancelled, value: 'Cancelled' },
             ],
           },
           {
@@ -125,8 +129,8 @@ export default function OrderManager() {
             render: (value) => <span className={`${orderStatusMap.class[value]}`}>{orderStatusMap.text[value]}</span>,
           },
           {
-            title: 'Ngày tạo',
-            key: 'createdAt',
+            title: 'Ngày xử lý',
+            key: 'updatedAt',
             sortable: true,
             render: (value) => dayjs(value).format('DD/MM/YYYY HH:mm:ss'),
           },

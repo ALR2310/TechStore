@@ -11,6 +11,7 @@ class OrderService {
       limit = 10,
       sortBy = 'updatedAt',
       sortDir = 'desc',
+      status,
       dateFrom,
       dateTo,
       priceFrom,
@@ -32,6 +33,11 @@ class OrderService {
     if (keyword) {
       conditions.push(`(Code LIKE ? OR FullName LIKE ? OR PhoneNumber LIKE ?)`);
       params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
+    }
+
+    if (status) {
+      conditions.push(`(O.Status = ?)`);
+      params.push(status);
     }
 
     if (!isNullOrEmpty(dateFrom) && !isNullOrEmpty(dateTo)) {
