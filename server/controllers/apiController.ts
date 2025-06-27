@@ -227,6 +227,20 @@ class ApiController {
     }
   }
   //#endregion
+
+  //#region Order
+  async getListOrder(req: any, res: any) {
+    const payload = req.query;
+
+    try {
+      const orders = await orderService.getListOrder(payload);
+      return res.status(200).json(orders);
+    } catch (error) {
+      console.error('Error fetching order list:', error);
+      res.status(500).json(error);
+    }
+  }
+  //#endregion
 }
 
 export const apiController = new ApiController();

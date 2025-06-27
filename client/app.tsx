@@ -6,6 +6,7 @@ import UserManager from './features/manager/user/pages/UserManager';
 import ProductManager from './features/manager/product/pages/ProductManager';
 import { ConfirmProvider } from './providers/ConfirmProvider';
 import ProductCreateOrUpdate from './features/manager/product/pages/ProductCreateOrUpdate';
+import OrderManager from './features/manager/order/pages/OrderManager';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="create" element={<ProductCreateOrUpdate />} />
                 <Route path="update/:id" element={<ProductCreateOrUpdate />} />
               </Route>
+              <Route path="order" element={<OrderManager />} />
             </Route>
           </Routes>
         </BrowserRouter>

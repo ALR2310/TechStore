@@ -19,4 +19,6 @@ router.get('/category', apiController.getListCategory);
 
 router.get('/brand', apiController.getListBrand);
 
+router.get('/order', apiController.getListOrder);
+
 export default router;

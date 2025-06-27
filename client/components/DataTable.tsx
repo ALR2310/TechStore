@@ -54,13 +54,11 @@ export default function DataTable({
   const handleSort = useCallback(
     (key: string) => {
       let next: SortDirection;
-      if (sortColumn === key) {
-        next = sortDirection === 'asc' ? 'desc' : sortDirection === 'desc' ? null : 'asc';
-      } else {
-        next = 'asc';
-      }
 
-      setSortColumn(next ? key : null);
+      if (sortColumn === key) next = sortDirection === 'asc' ? 'desc' : 'asc';
+      else next = 'asc';
+
+      setSortColumn(key);
       setSortDirection(next);
       onSortChange?.(key, next);
     },
@@ -161,7 +159,11 @@ export default function DataTable({
               transition={{ duration: 0.2 }}
             >
               {data.map((row, rowIndex) => (
-                <tr key={`row-${rowIndex}`} className="hover:bg-base-300" onClick={() => onRowClick?.(row)}>
+                <tr
+                  key={`row-${rowIndex}`}
+                  className={`hover:bg-base-300 ${onRowClick ? 'cursor-pointer' : ''}`}
+                  onClick={() => onRowClick?.(row)}
+                >
                   {columnsState
                     .filter((col) => col.visible)
                     .map((col, colIndex) => (
