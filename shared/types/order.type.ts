@@ -7,3 +7,8 @@ export interface getListOrderParams extends baseQueryParams {
   priceFrom?: number;
   priceTo?: number;
 }
+
+export interface approveOrderParams {
+  id: string;
+  status: string;
+}

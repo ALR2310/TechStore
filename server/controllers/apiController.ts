@@ -240,6 +240,19 @@ class ApiController {
       res.status(500).json(error);
     }
   }
+
+  async approveOrder(req: any, res: any) {
+    const { id } = req.params;
+    const payload = { id, ...req.body };
+
+    try {
+      const updatedOrder = await orderService.approveOrder(payload);
+      return res.status(200).json(updatedOrder);
+    } catch (error: any) {
+      console.error('Error approving order:', error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
   //#endregion
 }
 

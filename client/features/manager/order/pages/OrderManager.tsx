@@ -1,13 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { useDebounce } from '~/hooks/useDebounce';
-import { getListOrder } from '../orderApi';
+import { approveOrder, getListOrder } from '../orderApi';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 import dayjs from 'dayjs';
 import Modal from '~/components/Modal';
 import { toast } from '~/hooks/useToast';
+import { approveOrderParams } from '@shared/types/order.type';
 
 const orderStatusMap = {
   class: {
@@ -17,7 +18,7 @@ const orderStatusMap = {
     Cancelled: 'text-error',
   },
   text: {
-    Processing: 'Đang xử lý',
+    Processing: 'Đang chờ xử lý',
     Delivering: 'Đang giao hàng',
     Completed: 'Giao thành công',
     Cancelled: 'Dã hủy',
@@ -51,9 +52,16 @@ export default function OrderManager() {
       }),
   });
 
-  useEffect(() => {
-    console.log(currentOrderData);
-  }, [currentOrderData]);
+  const approveOrderMutation = useMutation({
+    mutationFn: (payload: approveOrderParams) => approveOrder(payload),
+    onSuccess: () => {
+      ordersQuery.refetch();
+    },
+    onError: (error) => {
+      console.log(error);
+      toast({ message: `Lỗi khi duyệt đơn hàng`, type: 'error' });
+    },
+  });
 
   return (
     <div className="flex-1 p-4 flex flex-col">
@@ -123,6 +131,17 @@ export default function OrderManager() {
           { title: 'Mã đơn hàng', key: 'Code', sortable: true },
           { title: 'Khách hàng', key: 'FullName', sortable: true },
           {
+            title: 'Số điện thoại',
+            key: 'PhoneNumber',
+            sortable: true,
+          },
+          {
+            title: 'SL',
+            key: 'Items',
+            sortable: true,
+            render: (items) => <span className="text-primary font-semibold">{items.length}</span>,
+          },
+          {
             title: 'Tổng đơn',
             key: 'TotalPrice',
             sortable: true,
@@ -134,13 +153,21 @@ export default function OrderManager() {
             title: 'Trạng thái',
             key: 'Status',
             sortable: true,
-            render: (value) => <span className={`${orderStatusMap.class[value]}`}>{orderStatusMap.text[value]}</span>,
+            render: (value) => (
+              <span className={`font-semibold ${orderStatusMap.class[value]}`}>{orderStatusMap.text[value]}</span>
+            ),
+          },
+          {
+            title: 'Ngày tạo',
+            key: 'createdAt',
+            sortable: true,
+            render: (value) => dayjs(value).format('DD/MM/YYYY'),
           },
           {
             title: 'Ngày xử lý',
             key: 'updatedAt',
             sortable: true,
-            render: (value) => dayjs(value).format('DD/MM/YYYY HH:mm:ss'),
+            render: (value) => dayjs(value).format('DD/MM/YYYY'),
           },
         ]}
         loading={useMinimumLoading(ordersQuery.isLoading, 300)}
@@ -240,30 +267,54 @@ export default function OrderManager() {
               Tổng đơn: {currentOrderData.TotalPrice.toLocaleString('vi-VN')} đ
             </p>
 
-            <div className="flex justify-between">
+            <div className="flex justify-end w-full gap-4">
               <button className="btn btn-soft w-36" onClick={() => modalRef.current?.close()}>
                 Đóng
               </button>
-              <div className="flex justify-end w-full gap-4">
-                <button
-                  className="btn btn-error w-36"
-                  onClick={() => {
-                    modalRef.current?.close();
-                    toast({ message: 'Đã huỷ đơn hàng thành công', type: 'success' });
-                  }}
-                >
-                  Huỷ đơn hàng
-                </button>
+              {currentOrderData.Status === 'Processing' ? (
+                <>
+                  <button
+                    className="btn btn-error w-36"
+                    onClick={() => {
+                      approveOrderMutation.mutateAsync({
+                        id: currentOrderData.Id,
+                        status: 'Cancelled',
+                      });
+                      modalRef.current?.close();
+                      toast({ message: 'Đã huỷ đơn hàng thành công', type: 'success' });
+                    }}
+                  >
+                    Huỷ đơn hàng
+                  </button>
+                  <button
+                    className="btn btn-success w-36"
+                    onClick={() => {
+                      approveOrderMutation.mutateAsync({
+                        id: currentOrderData.Id,
+                        status: 'Delivering',
+                      });
+                      modalRef.current?.close();
+                      toast({ message: 'Duyệt đơn hàng thành công', type: 'success' });
+                    }}
+                  >
+                    Duyệt đơn hàng
+                  </button>
+                </>
+              ) : currentOrderData.Status === 'Delivering' ? (
                 <button
                   className="btn btn-success w-36"
                   onClick={() => {
+                    approveOrderMutation.mutateAsync({
+                      id: currentOrderData.Id,
+                      status: 'Completed',
+                    });
                     modalRef.current?.close();
-                    toast({ message: 'Duyệt đơn hàng thành công', type: 'success' });
+                    toast({ message: 'Xác nhận đã giao hàng thành công', type: 'success' });
                   }}
                 >
-                  Duyệt đơn hàng
+                  Xác nhận đã giao
                 </button>
-              </div>
+              ) : null}
             </div>
           </div>
         )}

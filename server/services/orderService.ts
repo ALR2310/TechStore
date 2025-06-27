@@ -1,4 +1,4 @@
-import { getListOrderParams } from '@shared/types/order.type';
+import { approveOrderParams, getListOrderParams } from '@shared/types/order.type';
 import { isNullOrEmpty } from '@shared/utils/general.utils';
 import dayjs from 'dayjs';
 import { db } from '~/configs/dbConnect';
@@ -31,7 +31,7 @@ class OrderService {
     const params: any[] = [];
 
     if (keyword) {
-      conditions.push(`(Code LIKE ? OR FullName LIKE ? OR PhoneNumber LIKE ?)`);
+      conditions.push(`(Code LIKE ? OR A.FullName LIKE ? OR A.PhoneNumber LIKE ?)`);
       params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
     }
 
@@ -41,12 +41,12 @@ class OrderService {
     }
 
     if (!isNullOrEmpty(dateFrom) && !isNullOrEmpty(dateTo)) {
-      conditions.push(`(createdAt BETWEEN ? AND ?)`);
+      conditions.push(`(O.updatedAt BETWEEN ? AND ?)`);
       params.push(dayjs(dateFrom).startOf('day').toISOString(), dayjs(dateTo).endOf('day').toISOString());
     }
 
     if (!isNullOrEmpty(priceFrom?.toString()) && !isNullOrEmpty(priceTo?.toString())) {
-      conditions.push(`(TotalPrice BETWEEN ? AND ?)`);
+      conditions.push(`(O.TotalPrice BETWEEN ? AND ?)`);
       params.push(priceFrom, priceTo);
     }
 
@@ -112,6 +112,24 @@ class OrderService {
     }
 
     return orders;
+  }
+
+  async approveOrder(payload: approveOrderParams) {
+    const { id, status } = payload;
+
+    const orderExists = await db.query(`SELECT * FROM Orders WHERE Id = ?`, [id]);
+    if (orderExists.length === 0) {
+      throw new Error('Order not found');
+    }
+
+    if (!['Processing', 'Delivering', 'Completed', 'Cancelled'].includes(status)) {
+      throw new Error('Invalid status');
+    }
+
+    const query = `UPDATE Orders SET Status = ?, updatedAt = ? WHERE Id = ?`;
+    await db.query(query, [status, dayjs().toISOString(), id]);
+
+    return { message: 'Order status updated successfully.' };
   }
 
   async deleteOrderOfUser(userId: string) {
