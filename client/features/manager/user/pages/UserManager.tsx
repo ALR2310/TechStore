@@ -99,7 +99,7 @@ export default function UserManager() {
             sortable: true,
           },
           { title: 'Số điện thoại', key: 'PhoneNumber', sortable: true },
-          { title: 'Ngày sinh', key: 'DoB', sortable: true },
+          { title: 'Ngày sinh', key: 'DoB', sortable: true, render: (value) => dayjs(value).format('DD/MM/YYYY') },
           {
             title: 'Vai trò',
             key: 'Role',

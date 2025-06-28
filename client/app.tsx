@@ -7,6 +7,9 @@ import ProductManager from './features/manager/product/pages/ProductManager';
 import { ConfirmProvider } from './providers/ConfirmProvider';
 import ProductCreateOrUpdate from './features/manager/product/pages/ProductCreateOrUpdate';
 import OrderManager from './features/manager/order/pages/OrderManager';
+import LoginPage from './features/auth/pages/LoginPage';
+import AuthLayout from './layouts/AuthLayout';
+import RegisterPage from './features/auth/pages/RegisterPage';
 
 export default function App() {
   return (
@@ -14,6 +17,10 @@ export default function App() {
       <ToastProvider>
         <BrowserRouter>
           <Routes>
+            <Route element={<AuthLayout />}>
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+            </Route>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="user" element={<UserManager />} />
