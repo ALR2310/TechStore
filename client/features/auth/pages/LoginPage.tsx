@@ -1,19 +1,37 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from '~/hooks/useToast';
 import { login } from '../authApi';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const logionMutation = useMutation({
-    mutationFn: () => login({}),
+    mutationFn: () => login({ username, password }),
+    onSuccess: (res) => {
+      toast({ type: 'success', message: 'Đăng nhập thành công' });
+      localStorage.setItem('user', JSON.stringify(res.data));
+      navigate('/admin');
+    },
   });
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!username || !password) {
+      toast({ type: 'error', message: 'Vui lòng nhập đầy đủ thông tin' });
+      return;
+    }
+    logionMutation.mutate();
+  };
+
   return (
-    <form className="relative z-10 flex flex-col justify-center items-center p-8 mb-20 shadow-xl rounded-box space-y-4 bg-base-200/90 w-[370px] backdrop-blur-sm">
+    <form
+      className="relative z-10 flex flex-col justify-center items-center p-8 mb-20 shadow-xl rounded-box space-y-4 bg-base-200/90 w-[370px] backdrop-blur-sm"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col items-center gap-2">
         <p className="text-3xl font-bold text-center text-primary">Đăng Nhập</p>
       </div>

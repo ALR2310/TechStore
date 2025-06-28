@@ -4,6 +4,8 @@ import upload from '~/middleware/upload';
 
 const router = express.Router();
 
+router.get('/auth/check', apiController.checkLogin);
+
 router.get('/user', apiController.getListUser);
 router.get('/user/:id', apiController.getUser);
 router.put('/user/:id', apiController.updateUser);

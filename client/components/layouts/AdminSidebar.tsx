@@ -1,10 +1,15 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { logout } from '~/features/auth/authApi';
 
 export default function AdminSidebar({ children }) {
   const location = useLocation();
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const rootPath = pathSegments[0] || '';
   const lastPath = pathSegments[1] || '';
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const menuItems = [
     {
@@ -54,8 +59,19 @@ export default function AdminSidebar({ children }) {
       path: '/logout',
       icon: <i className="fa-regular fa-right-from-bracket"></i>,
       isActive: rootPath === 'admin' && lastPath === 'logout',
+      onClick: () => logoutMutation.mutate(),
     },
   ];
+
+  const logoutMutation = useMutation({
+    mutationFn: () => logout(),
+    onSuccess: () => {
+      navigate('/login');
+    },
+    onError: () => {
+      navigate('/login');
+    },
+  });
 
   return (
     <div className="drawer lg:drawer-open">
@@ -86,28 +102,7 @@ export default function AdminSidebar({ children }) {
             </label>
           </div>
           <div className="flex gap-2">
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    loading="lazy"
-                    alt="Tailwind CSS Navbar component"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  />
-                </div>
-              </div>
-              <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-box w-40 z-1 mt-3 p-2 shadow">
-                <li>
-                  <a>Hồ sơ</a>
-                </li>
-                <li>
-                  <a>Cài đặt</a>
-                </li>
-                <li>
-                  <a>Đăng xuất</a>
-                </li>
-              </ul>
-            </div>
+            <p className="font-semibold">Xin chào, {user.fullName ? user.fullName : user.username}</p>
           </div>
         </div>
 
@@ -135,10 +130,10 @@ export default function AdminSidebar({ children }) {
             <ul className="menu text-base-content w-52 p-4 space-y-2 border-t border-base-content/20">
               {menuItems.slice(-2).map((item: (typeof menuItems)[0]) => (
                 <li key={item.path} className={`font-bold`}>
-                  <Link to={item.path} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>
+                  <a onClick={item.onClick} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>
                     {item.icon}
                     {item.name}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

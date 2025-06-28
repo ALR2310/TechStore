@@ -14,7 +14,12 @@ const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT_SERVER ?? 4850;
 
 //Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:4950',
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

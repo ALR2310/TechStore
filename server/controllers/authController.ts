@@ -45,7 +45,7 @@ class AuthController {
       return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
 
     try {
-      const User = (await db.query('SELECT * FROM User WHERE Username = ? OR Email = ? AND Status = ?', [
+      const User = (await db.query('SELECT * FROM User WHERE UserName = ? OR Email = ? AND Status = ?', [
         username,
         username,
         'Active',
@@ -63,6 +63,12 @@ class AuthController {
         await db.query('INSERT INTO authtoken (UserId, Token) VALUES (?, ?)', [User[0].Id, authToken]);
       }
 
+      // Lấy chi tiết người dùng
+      const userInfo = await db.query('SELECT * FROM UserInfo WHERE UserId = ?', [User[0].Id]);
+      if (userInfo.length > 0) {
+        User[0].FullName = userInfo[0].FullName;
+      }
+
       return res
         .cookie('authToken', authToken, {
           maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -70,7 +76,11 @@ class AuthController {
           secure: false,
         })
         .status(200)
-        .json({ success: true, message: 'Đăng nhập thành công' });
+        .json({
+          success: true,
+          message: 'Đăng nhập thành công',
+          data: { userId: User[0].Id, username: User[0].UserName, email: User[0].Email, fullName: User[0].FullName },
+        });
     } catch (e) {
       console.error(e);
       return res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: e });
