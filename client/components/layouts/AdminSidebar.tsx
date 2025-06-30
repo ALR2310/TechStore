@@ -147,7 +147,10 @@ export default function AdminSidebar({ children }) {
               {menuItems.slice(0, -2).map((item) => (
                 <li key={item.name} className="font-bold">
                   {item.subMenu ? (
-                    <details open={item.subMenu.some((sub) => sub.isActive)}>
+                    <details
+                      open={true}
+                      //open={item.subMenu.some((sub) => sub.isActive)}
+                    >
                       <summary className="p-3 rounded-xl flex items-center gap-2">
                         {item.icon}
                         {item.name}

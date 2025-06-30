@@ -10,6 +10,7 @@ import OrderManager from './features/manager/order/pages/OrderManager';
 import LoginPage from './features/auth/pages/LoginPage';
 import AuthLayout from './layouts/AuthLayout';
 import RegisterPage from './features/auth/pages/RegisterPage';
+import ReviewManager from './features/manager/review/pages/ReviewManager';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
                 <Route path="update/:id" element={<ProductCreateOrUpdate />} />
               </Route>
               <Route path="order" element={<OrderManager />} />
+              <Route path="review" element={<ReviewManager />} />
             </Route>
           </Routes>
         </BrowserRouter>

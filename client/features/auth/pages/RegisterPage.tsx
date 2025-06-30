@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from '~/hooks/useToast';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -7,8 +8,18 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const handleSubmit = () => {
+    toast({ type: 'info', message: 'Chức năng đăng ký chưa được phát triển' });
+  };
+
   return (
-    <form className="relative z-10 flex flex-col justify-center items-center p-8 mb-20 shadow-xl rounded-box space-y-4 bg-base-200/90 w-[370px] backdrop-blur-sm">
+    <form
+      className="relative z-10 flex flex-col justify-center items-center p-8 mb-20 shadow-xl rounded-box space-y-4 bg-base-200/90 w-[370px] backdrop-blur-sm"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleSubmit();
+      }}
+    >
       <div className="flex flex-col items-center gap-2">
         <p className="text-3xl font-bold text-center text-primary">Đăng Ký</p>
       </div>
