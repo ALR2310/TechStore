@@ -21,19 +21,17 @@ class ReviewService {
 
     let query = `
       SELECT 
-        PR.Id as Id, PR.UserName AS ReviewerName, PR.Rating AS Rating, PR.Comment AS Comment, PR.Status AS Status, PR.createdAt AS createdAt, PR.updatedAt AS updatedAt,
-        P.ProdName AS ProductName, P.Image AS ProductImage, P.Slugs AS ProductSlugs, P.Price AS ProductPrice,
-        UI.FullName AS UserFullName
+        PR.Id as Id, PR.UserName AS UserName, PR.Rating AS Rating, PR.Comment AS Comment, PR.Status AS Status, PR.createdAt AS createdAt, PR.updatedAt AS updatedAt,
+        P.ProdName AS ProductName, P.Image AS ProductImage, P.Slugs AS ProductSlugs, P.Price AS ProductPrice
       FROM ProductReviews PR
-      LEFT JOIN Product P ON PR.ProdId = P.Id
-      LEFT JOIN UserInfo UI ON PR.UserId = UI.UserId`;
+      LEFT JOIN Product P ON PR.ProdId = P.Id`;
 
     const conditions: string[] = [];
     const params: any[] = [];
 
     if (keyword) {
-      conditions.push(`(PR.Comment LIKE ? OR UI.FullName LIKE ? OR P.ProdName LIKE ?)`);
-      params.push(`%${keyword}%`, `%${keyword}%`, `%${keyword}%`);
+      conditions.push(`(PR.Comment LIKE ? OR P.ProdName LIKE ?)`);
+      params.push(`%${keyword}%`, `%${keyword}%`);
     }
 
     if (status) {

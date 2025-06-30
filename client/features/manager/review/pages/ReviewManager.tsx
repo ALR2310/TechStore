@@ -125,8 +125,22 @@ export default function ReviewManager() {
               <img src={`http://localhost:4850/${value}`} alt="Product" className="w-20 h-20 object-cover" />
             ),
           },
-          { title: 'Tên đánh giá', key: 'ReviewerName', sortable: true },
-          { title: 'Tên người dùng', key: 'UserFullName', sortable: true },
+          {
+            title: 'Sản phẩm',
+            key: 'ProductName',
+            sortable: true,
+            render: (value, row) => (
+              <a
+                href={`/product/${row.ProductSlugs}`}
+                className="text-primary hover:underline font-semibold text-lg"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {value}
+              </a>
+            ),
+          },
+          { title: 'Tên đánh giá', key: 'UserName', sortable: true },
           { title: 'Đánh giá', key: 'Rating', sortable: true },
           {
             title: 'Bình luận',
@@ -136,6 +150,7 @@ export default function ReviewManager() {
           {
             title: 'Trạng thái',
             key: 'Status',
+            sortable: true,
             render: (value) => {
               return <span className={`font-semibold ${statusMap.color[value]}`}>{statusMap.text[value]}</span>;
             },
