@@ -32,9 +32,27 @@ export default function AdminSidebar({ children }) {
     },
     {
       name: 'Sản phẩm',
-      path: '/admin/product',
       icon: <i className="fa-regular fa-box"></i>,
-      isActive: rootPath === 'admin' && lastPath === 'product',
+      subMenu: [
+        {
+          name: 'Danh sách',
+          path: '/admin/product',
+          icon: <i className="fa-regular fa-box"></i>,
+          isActive: rootPath === 'admin' && lastPath === 'product',
+        },
+        {
+          name: 'Danh mục',
+          path: '/admin/category',
+          icon: <i className="fa-regular fa-layer-group"></i>,
+          isActive: rootPath === 'admin' && lastPath === 'category',
+        },
+        {
+          name: 'Thương hiệu',
+          path: '/admin/brand',
+          icon: <i className="fa-regular fa-tags"></i>,
+          isActive: rootPath === 'admin' && lastPath === 'brand',
+        },
+      ],
     },
     {
       name: 'Đơn hàng',
@@ -126,12 +144,38 @@ export default function AdminSidebar({ children }) {
 
           <div className="flex flex-col justify-between h-full">
             <ul className="menu text-base-content w-52 p-4 space-y-2">
-              {menuItems.slice(0, -2).map((item: (typeof menuItems)[0]) => (
-                <li key={item.path} className={`font-bold`}>
-                  <Link to={item.path} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>
-                    {item.icon}
-                    {item.name}
-                  </Link>
+              {menuItems.slice(0, -2).map((item) => (
+                <li key={item.name} className="font-bold">
+                  {item.subMenu ? (
+                    <details open={item.subMenu.some((sub) => sub.isActive)}>
+                      <summary className="p-3 rounded-xl flex items-center gap-2">
+                        {item.icon}
+                        {item.name}
+                      </summary>
+                      <ul>
+                        {item.subMenu.map((sub) => (
+                          <li key={sub.path}>
+                            <Link
+                              to={sub.path}
+                              className={`p-3 rounded-xl flex items-center gap-2${sub.isActive ? ' menu-focus' : ''}`}
+                            >
+                              {sub.icon}
+                              {sub.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  ) : (
+                    <Link
+                      to={item.path!}
+                      className={`p-3 rounded-xl flex items-center gap-2${item.isActive ? ' menu-focus' : ''}`}
+                      onClick={item.onClick}
+                    >
+                      {item.icon}
+                      {item.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
