@@ -32,11 +32,11 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
             switch (field.type) {
               case 'text':
                 return (
-                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
-                    <span className="basis-[30%] max-w-[250px]">{field.label}</span>
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
                     <input
                       type="text"
-                      className="input basis-[70%]"
+                      className="input flex-1"
                       value={value ?? ''}
                       placeholder={field.placeholder ?? field.label}
                       onChange={(e) => onChange?.(field.key, e.target.value)}
@@ -46,11 +46,11 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
 
               case 'select':
                 return (
-                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
-                    <span className="basis-[30%] max-w-[250px]">{field.label}</span>
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
 
                     <select
-                      className="select basis-[70%]"
+                      className="select flex-1"
                       value={value}
                       onChange={(e) => onChange?.(field.key, e.target.value)}
                     >
@@ -66,10 +66,10 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
 
               case 'date':
                 return (
-                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
-                    <span className="basis-[30%] max-w-[250px]">{field.label}</span>
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
                     <DatePicker
-                      className="basis-[70%]"
+                      className="flex-1"
                       value={value}
                       placeholder={field.placeholder ?? field.label}
                       onChange={(v) => onChange?.(field.key, v)}
@@ -79,9 +79,9 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
 
               case 'dateRange':
                 return (
-                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
-                    <span className="basis-[30%] max-w-[250px]">{field.label}</span>
-                    <div className="basis-[70%] flex gap-4">
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
+                    <div className="flex-1 flex gap-4">
                       <DatePicker
                         className="w-full"
                         placeholder={`${field.placeholder ?? 'Ngày bắt đầu'}`}
@@ -100,10 +100,10 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
 
               case 'textRange':
                 return (
-                  <div key={field.key} className={`flex justify-between items-center w-full ${field.className}`}>
-                    <span className="basis-[30%] max-w-[250px]">{field.label}</span>
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
 
-                    <div className="basis-[70%] flex gap-4">
+                    <div className="flex-1 flex gap-4">
                       <input
                         type="text"
                         className="input w-full"
