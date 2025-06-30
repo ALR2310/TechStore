@@ -4,7 +4,7 @@ import DatePicker from './DatePicker';
 export interface FilterOption {
   key: string;
   label: string;
-  type: 'text' | 'select' | 'date' | 'dateRange' | 'textRange';
+  type: 'text' | 'select' | 'date' | 'dateRange' | 'textRange' | 'selectRange';
   options?: { label: string; value: any }[];
   className?: string;
   placeholder?: string;
@@ -118,6 +118,40 @@ export default function Filter({ className, grid = 2, filters, values, onChange 
                         placeholder={`Đến ${field.placeholder ?? field.label}`}
                         onChange={(e) => onChange?.(`${field.key}.to`, e.target.value)}
                       />
+                    </div>
+                  </div>
+                );
+
+              case 'selectRange':
+                return (
+                  <div key={field.key} className={`flex justify-between items-center gap-4 w-full ${field.className}`}>
+                    <span className="w-[110px]">{field.label}</span>
+
+                    <div className="flex-1 flex gap-4">
+                      <select
+                        className="select w-full"
+                        value={value?.from ?? ''}
+                        onChange={(e) => onChange?.(`${field.key}.from`, e.target.value)}
+                      >
+                        <option value="">{`Từ ${field.placeholder ?? field.label}`}</option>
+                        {field?.options?.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        className="select w-full"
+                        value={value?.to ?? ''}
+                        onChange={(e) => onChange?.(`${field.key}.to`, e.target.value)}
+                      >
+                        <option value="">{`Đến ${field.placeholder ?? field.label}`}</option>
+                        {field?.options?.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 );

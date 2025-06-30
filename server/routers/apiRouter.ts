@@ -24,4 +24,6 @@ router.get('/brand', apiController.getListBrand);
 router.get('/order', apiController.getListOrder);
 router.put('/order/:id', apiController.approveOrder);
 
+router.get('/review', apiController.getListReview);
+
 export default router;

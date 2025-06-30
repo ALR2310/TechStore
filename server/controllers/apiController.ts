@@ -271,6 +271,20 @@ class ApiController {
     }
   }
   //#endregion
+
+  //#region Review
+  async getListReview(req: any, res: any) {
+    const payload = req.query;
+
+    try {
+      const reviews = await reviewService.getListReview(payload);
+      return res.status(200).json(reviews);
+    } catch (error: any) {
+      console.error('Error fetching review list:', error);
+      res.status(500).send({ error: error.message });
+    }
+  }
+  //#endregion
 }
 
 export const apiController = new ApiController();
