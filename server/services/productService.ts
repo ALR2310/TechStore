@@ -304,7 +304,7 @@ class ProductService {
       conditions.push('Status = ?');
       params.push(status);
     }
-    conditions.push('updatedAt = NOW()');
+    conditions.push("updatedAt = DATETIME('now')");
     if (conditions.length > 0) {
       query += ` ${conditions.join(', ')} WHERE Id = ?`;
       params.push(id);
@@ -323,7 +323,7 @@ class ProductService {
       detailConditions.push('Content = ?');
       detailParams.push(content);
     }
-    detailConditions.push('updatedAt = NOW()');
+    detailConditions.push("updatedAt = DATETIME('now')");
     if (detailConditions.length > 0) {
       detailQuery += ` ${detailConditions.join(', ')} WHERE ProdId = ?`;
       detailParams.push(id);

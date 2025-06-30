@@ -102,7 +102,16 @@ export default function AdminSidebar({ children }) {
             </label>
           </div>
           <div className="flex gap-2">
-            <p className="font-semibold">Xin chào, {user.fullName ? user.fullName : user.username}</p>
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} className="font-semibold">
+                Xin chào, {user.fullName ? user.fullName : user.username}
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                <li>
+                  <a onClick={() => logoutMutation.mutate()}>Đăng xuất</a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 

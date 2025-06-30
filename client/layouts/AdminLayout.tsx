@@ -32,8 +32,6 @@ export default function AdminLayout() {
     }
   }, [checkLoginQuery]);
 
-  console.log(checkLoginQuery.data);
-
   return (
     checkLoginQuery.isSuccess && (
       <div>
