@@ -3,7 +3,7 @@ import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { useDebounce } from '~/hooks/useDebounce';
-import { getListReview, updateStatusReview } from '../reviewApi';
+import { deleteReview, getListReview, updateStatusReview } from '../reviewApi';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 import dayjs from 'dayjs';
 import { toast } from '~/hooks/useToast';
@@ -45,6 +45,14 @@ export default function ReviewManager() {
     onSuccess: () => {
       reviewQuery.refetch();
       toast({ type: 'success', message: 'Cập nhật trạng thái đánh giá thành công' });
+    },
+  });
+
+  const deleteReviewMutation = useMutation({
+    mutationFn: (id: string) => deleteReview(id),
+    onSuccess: () => {
+      reviewQuery.refetch();
+      toast({ type: 'success', message: 'Xoá đánh giá thành công' });
     },
   });
 
@@ -221,6 +229,7 @@ export default function ReviewManager() {
         onPageChange={(newPage) => {
           setPage(newPage);
         }}
+        onRowDelete={(row) => deleteReviewMutation.mutate(row.Id)}
       />
     </div>
   );

@@ -10,3 +10,8 @@ export const updateStatusReview = async (id: string, status: string) => {
   const res = await http.post(`/review/status`, { id, status });
   return res.data;
 };
+
+export const deleteReview = async (id: string) => {
+  const res = await http.delete(`/review/${id}`);
+  return res.data;
+};

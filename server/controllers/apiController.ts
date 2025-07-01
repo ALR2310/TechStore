@@ -299,6 +299,20 @@ class ApiController {
       res.status(500).send({ error: error.message });
     }
   }
+
+  async deleteReview(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      await reviewService.deleteReview(id);
+      return res.status(204).json({
+        message: 'Review deleted successfully',
+      });
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
   //#endregion
 }
 
