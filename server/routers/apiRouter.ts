@@ -25,5 +25,6 @@ router.get('/order', apiController.getListOrder);
 router.put('/order/:id', apiController.approveOrder);
 
 router.get('/review', apiController.getListReview);
+router.post('/review/status', apiController.updateStatusReview);
 
 export default router;

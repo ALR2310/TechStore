@@ -284,6 +284,21 @@ class ApiController {
       res.status(500).send({ error: error.message });
     }
   }
+
+  async updateStatusReview(req: any, res: any) {
+    const { id, status } = req.body;
+
+    if (!id || !status) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    try {
+      const updatedReview = await reviewService.updateStatusReview(id, status);
+      return res.status(200).json(updatedReview);
+    } catch (error: any) {
+      console.error('Error updating review status:', error);
+      res.status(500).send({ error: error.message });
+    }
+  }
   //#endregion
 }
 

@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import DataTable from '~/components/DataTable';
 import Filter from '~/components/Filter';
 import { useDebounce } from '~/hooks/useDebounce';
-import { getListReview } from '../reviewApi';
+import { getListReview, updateStatusReview } from '../reviewApi';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 import dayjs from 'dayjs';
+import { toast } from '~/hooks/useToast';
 
 const statusMap = {
   text: {
@@ -37,6 +38,14 @@ export default function ReviewManager() {
     queryKey: ['reviews', page, limit, sortBy, sortDir, dbFilters],
     queryFn: () =>
       getListReview({ page, limit, sortBy, sortDir, status, keyword, ratingFrom, ratingTo, product, user }),
+  });
+
+  const updateStatusReviewMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) => updateStatusReview(id, status),
+    onSuccess: () => {
+      reviewQuery.refetch();
+      toast({ type: 'success', message: 'Cập nhật trạng thái đánh giá thành công' });
+    },
   });
 
   return (
@@ -123,7 +132,14 @@ export default function ReviewManager() {
             key: 'ProductImage',
             group: true,
             render: (value) => (
-              <img src={`http://localhost:4850/${value}`} alt="Product" className="w-20 h-20 object-cover" />
+              <div className="w-20 h-20">
+                <img
+                  src={`http://localhost:4850/${value}`}
+                  alt="Product"
+                  loading="lazy"
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              </div>
             ),
           },
           {
@@ -142,7 +158,8 @@ export default function ReviewManager() {
               </a>
             ),
           },
-          { title: 'Tên đánh giá', key: 'UserName', sortable: true },
+          { title: 'Tên hiển thị', key: 'ReviewerName', sortable: true },
+          { title: 'Tên người dùng', key: 'UserFullName', sortable: true },
           { title: 'Đánh giá', key: 'Rating', sortable: true },
           {
             title: 'Bình luận',
@@ -162,6 +179,28 @@ export default function ReviewManager() {
             key: 'createdAt',
             sortable: true,
             render: (value) => dayjs(value).format('DD/MM/YYYY'),
+          },
+          {
+            title: '',
+            key: '',
+            render: (_, row) =>
+              row.Status === 'Inactive' ? (
+                <button
+                  className="btn btn-sm btn-soft btn-accent text-nowrap mr-2"
+                  onClick={() => updateStatusReviewMutation.mutate({ id: row.Id, status: 'Active' })}
+                  disabled={updateStatusReviewMutation.isPending}
+                >
+                  Khôi phục
+                </button>
+              ) : (
+                <button
+                  className="btn btn-sm btn-soft btn-error text-nowrap"
+                  onClick={() => updateStatusReviewMutation.mutate({ id: row.Id, status: 'Inactive' })}
+                  disabled={updateStatusReviewMutation.isPending}
+                >
+                  Vô hiệu
+                </button>
+              ),
           },
         ]}
         data={reviewQuery.data?.data ?? []}

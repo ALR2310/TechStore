@@ -21,10 +21,12 @@ class ReviewService {
 
     let query = `
       SELECT 
-        PR.Id as Id, PR.UserName AS UserName, PR.Rating AS Rating, PR.Comment AS Comment, PR.Status AS Status, PR.createdAt AS createdAt, PR.updatedAt AS updatedAt,
-        P.ProdName AS ProductName, P.Image AS ProductImage, P.Slugs AS ProductSlugs, P.Price AS ProductPrice
+        PR.Id as Id, PR.UserName AS ReviewerName, PR.Rating AS Rating, PR.Comment AS Comment, PR.Status AS Status, PR.createdAt AS createdAt, PR.updatedAt AS updatedAt,
+        P.ProdName AS ProductName, P.Image AS ProductImage, P.Slugs AS ProductSlugs, P.Price AS ProductPrice,
+        UI.UserId AS UserId, UI.FullName AS UserFullName
       FROM ProductReviews PR
-      LEFT JOIN Product P ON PR.ProdId = P.Id`;
+      LEFT JOIN Product P ON PR.ProdId = P.Id
+      LEFT JOIN UserInfo UI ON PR.UserId = UI.UserId`;
 
     const conditions: string[] = [];
     const params: any[] = [];
@@ -58,7 +60,7 @@ class ReviewService {
       query += ` WHERE ${conditions.join(' AND ')}`;
     }
 
-    query += ` ORDER BY PR.${sortBy} ${safeSortDir} LIMIT ? OFFSET ?`;
+    query += ` ORDER BY ${sortBy} ${safeSortDir} LIMIT ? OFFSET ?`;
 
     let baseCountQuery = `SELECT COUNT(*) AS total FROM ProductReviews PR
       LEFT JOIN Product P ON PR.ProdId = P.Id LEFT JOIN UserInfo UI ON PR.UserId = UI.UserId`;
@@ -83,6 +85,28 @@ class ReviewService {
   async getReviewByUser(userId: string) {
     const query = `SELECT * FROM ProductReviews WHERE UserId = ? ORDER BY updatedAt DESC`;
     return await db.query(query, [userId]);
+  }
+
+  async updateStatusReview(reviewId: string, status: string) {
+    const exists = await db.query(`SELECT * FROM ProductReviews WHERE Id = ?`, [reviewId]);
+    if (exists.length === 0) {
+      throw new Error('Review not found.');
+    }
+
+    const query = `UPDATE ProductReviews SET Status = ? WHERE Id = ?`;
+    await db.query(query, [status, reviewId]);
+    return { message: 'Review status updated successfully.' };
+  }
+
+  async deleteReview(reviewId: string) {
+    const exists = await db.query(`SELECT * FROM ProductReviews WHERE Id = ?`, [reviewId]);
+    if (exists.length === 0) {
+      throw new Error('Review not found.');
+    }
+
+    const query = `DELETE FROM ProductReviews WHERE Id = ?`;
+    await db.query(query, [reviewId]);
+    return { message: 'Review deleted successfully.' };
   }
 
   async deleteReviewOfUser(userId: string) {
