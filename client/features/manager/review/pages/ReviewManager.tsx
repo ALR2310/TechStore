@@ -7,6 +7,7 @@ import { deleteReview, getListReview, updateStatusReview } from '../reviewApi';
 import { useMinimumLoading } from '~/hooks/useMinimumLoading';
 import dayjs from 'dayjs';
 import { toast } from '~/hooks/useToast';
+import { getListUser } from '../../user/api/UserApi';
 
 const statusMap = {
   text: {
@@ -38,6 +39,11 @@ export default function ReviewManager() {
     queryKey: ['reviews', page, limit, sortBy, sortDir, dbFilters],
     queryFn: () =>
       getListReview({ page, limit, sortBy, sortDir, status, keyword, ratingFrom, ratingTo, product, user }),
+  });
+
+  const usersQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: () => getListUser({ limit: 1000 }),
   });
 
   const updateStatusReviewMutation = useMutation({
@@ -76,9 +82,8 @@ export default function ReviewManager() {
             label: 'Trạng thái',
             type: 'select',
             options: [
-              { label: 'Đã duyệt', value: 'Approved' },
-              { label: 'Chưa duyệt', value: 'Pending' },
-              { label: 'Bị từ chối', value: 'Rejected' },
+              { label: 'Hoạt động', value: 'Active' },
+              { label: 'Vô hiệu', value: 'Inactive' },
             ],
           },
           {
@@ -103,8 +108,12 @@ export default function ReviewManager() {
           {
             key: 'user',
             label: 'Người dùng',
-            type: 'text',
-            placeholder: 'Nhập tên người dùng',
+            type: 'select',
+            options:
+              usersQuery.data?.data.map((user) => ({
+                label: user.FullName,
+                value: user.Id,
+              })) ?? [],
           },
         ]}
         values={filters}

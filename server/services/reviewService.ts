@@ -1,4 +1,5 @@
 import { getListReviewPayload } from '@shared/types/review.type';
+import { isNullOrEmpty } from '@shared/utils/general.utils';
 import { db } from '~/configs/dbConnect';
 
 class ReviewService {
@@ -41,14 +42,14 @@ class ReviewService {
       params.push(status);
     }
 
-    if (ratingFrom || ratingTo) {
+    if (!isNullOrEmpty(ratingFrom.toString()) || !isNullOrEmpty(ratingTo.toString())) {
       conditions.push(`(PR.Rating BETWEEN ? AND ?)`);
       params.push(ratingFrom, ratingTo);
     }
 
     if (product) {
-      conditions.push(`(P.Id = ?)`);
-      params.push(product);
+      conditions.push(`(P.Slugs LIKE ?)`);
+      params.push(`%${product}%`);
     }
 
     if (user) {
