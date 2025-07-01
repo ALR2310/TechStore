@@ -242,6 +242,31 @@ class ApiController {
     }
   }
 
+  async createCategory(req: any, res: any) {
+    const payload = req.body;
+
+    try {
+      const newCategory = await categoryService.createCategory(payload);
+      return res.status(201).json(newCategory);
+    } catch (error: any) {
+      console.error('Error creating category:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async updateCategory(req: any, res: any) {
+    const { id } = req.params;
+    const payload = { id, ...req.body };
+
+    try {
+      const updatedCategory = await categoryService.updateCategory(payload);
+      return res.status(200).json(updatedCategory);
+    } catch (error: any) {
+      console.error('Error updating category:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async deleteCategory(req: any, res: any) {
     const { id } = req.params;
 
