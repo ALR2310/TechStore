@@ -9,6 +9,7 @@ type Column = {
   key: string;
   sortable?: boolean;
   visible?: boolean;
+  group?: boolean;
   render?: (value: any, row: any) => React.ReactNode;
 };
 
@@ -69,6 +70,43 @@ export default function DataTable({
     setColumnsState((prev) => prev.map((col) => (col.key === key ? { ...col, visible: !col.visible } : col)));
   };
 
+  function processGroupedData(data: any[], groupKeys: string[]): any[] {
+    const result: any[] = [];
+    let lastGroupValues: Record<string, any> = {};
+    let spanCounters: Record<string, number> = {};
+
+    data.forEach((row) => {
+      const rowCopy = { ...row, _rowSpan: {}, _skip: {} };
+
+      groupKeys.forEach((key) => {
+        const currentValue = row[key];
+        const lastValue = lastGroupValues[key];
+
+        if (currentValue !== lastValue) {
+          spanCounters[key] = 1;
+          rowCopy._rowSpan[key] = 1;
+          rowCopy._skip[key] = false;
+          lastGroupValues[key] = currentValue;
+        } else {
+          let previousRow = result[result.length - spanCounters[key]];
+          if (previousRow) {
+            previousRow._rowSpan[key]++;
+          }
+          rowCopy._skip[key] = true;
+          rowCopy._rowSpan[key] = 0;
+          spanCounters[key]++;
+        }
+      });
+
+      result.push(rowCopy);
+    });
+
+    return result;
+  }
+
+  const groupKeys = columnsState.filter((col) => col.group).map((col) => col.key);
+  const groupedData = processGroupedData(data, groupKeys);
+
   return (
     <div className={`overflow-x-auto flex flex-col justify-between ${className}`}>
       <table className={`table table-pin-rows ${type === 'zebra' ? 'table-zebra' : ''}`}>
@@ -114,7 +152,7 @@ export default function DataTable({
                   {columnsState.map((col) => (
                     <li key={col.key} onClick={() => toggleColumnVisibility(col.key)}>
                       <a className="justify-between text-nowrap">
-                        {col.title}
+                        {col.title || col.key}
                         {col.visible && <i className="fa-solid fa-check" aria-hidden="true"></i>}
                       </a>
                     </li>
@@ -158,7 +196,7 @@ export default function DataTable({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {data.map((row, rowIndex) => (
+              {groupedData.map((row, rowIndex) => (
                 <tr
                   key={`row-${rowIndex}`}
                   className={`hover:bg-base-300 ${onRowClick ? 'cursor-pointer' : ''}`}
@@ -166,9 +204,23 @@ export default function DataTable({
                 >
                   {columnsState
                     .filter((col) => col.visible)
-                    .map((col, colIndex) => (
-                      <td key={colIndex}>{col.render ? col.render(row[col.key], row) : row[col.key]}</td>
-                    ))}
+                    .map((col, colIndex) => {
+                      const isGrouped = col.group;
+                      const skip = isGrouped && row._skip?.[col.key];
+                      const rowSpan = isGrouped ? row._rowSpan?.[col.key] : undefined;
+
+                      if (skip) return null;
+
+                      return (
+                        <td
+                          key={colIndex}
+                          rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                          className={isGrouped ? 'align-top' : ''}
+                        >
+                          {col.render ? col.render(row[col.key], row) : row[col.key]}
+                        </td>
+                      );
+                    })}
                   {columnAction && (
                     <td className="text-lg text-center inline-block text-primary/40">
                       <i

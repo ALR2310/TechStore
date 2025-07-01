@@ -116,11 +116,12 @@ export default function ReviewManager() {
       <DataTable
         className="flex-1 bg-base-100 p-3 rounded-2xl border border-base-300"
         type="zebra"
+        columnAction={true}
         columns={[
-          { title: 'Id', key: 'Id', sortable: true },
           {
             title: '',
             key: 'ProductImage',
+            group: true,
             render: (value) => (
               <img src={`http://localhost:4850/${value}`} alt="Product" className="w-20 h-20 object-cover" />
             ),
@@ -129,6 +130,7 @@ export default function ReviewManager() {
             title: 'Sản phẩm',
             key: 'ProductName',
             sortable: true,
+            group: true,
             render: (value, row) => (
               <a
                 href={`/product/${row.ProductSlugs}`}
