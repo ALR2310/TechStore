@@ -9,17 +9,13 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   const checkLoginQuery = useQuery({
-    queryKey: ['checkLogin'],
+    queryKey: ['checkLogin1'],
     queryFn: () => checkLogin(),
     retry: false,
   });
 
   useEffect(() => {
     if (checkLoginQuery.isError) {
-      toast({
-        type: 'error',
-        message: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại',
-      });
       navigate('/login');
     }
 

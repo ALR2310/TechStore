@@ -91,6 +91,7 @@ export default function UserManager() {
         type="zebra"
         columns={[
           { title: 'ID', key: 'Id', sortable: true },
+          { title: 'Tên đăng nhập', key: 'UserName', sortable: true },
           { title: 'Tên người dùng', key: 'FullName', sortable: true },
           {
             title: 'Email',

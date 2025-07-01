@@ -79,7 +79,13 @@ class AuthController {
         .json({
           success: true,
           message: 'Đăng nhập thành công',
-          data: { userId: User[0].Id, username: User[0].UserName, email: User[0].Email, fullName: User[0].FullName },
+          data: {
+            userId: User[0].Id,
+            username: User[0].UserName,
+            email: User[0].Email,
+            fullName: User[0].FullName,
+            Role: User[0].Role,
+          },
         });
     } catch (e) {
       console.error(e);

@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '~/features/auth/authApi';
 
@@ -10,6 +11,12 @@ export default function AdminSidebar({ children }) {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  useEffect(() => {
+    if (!user.Role) {
+      logoutMutation.mutate();
+    }
+  }, [user]);
 
   const menuItems = [
     {
