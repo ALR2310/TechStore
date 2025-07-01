@@ -18,6 +18,8 @@ router.put('/product/:id', upload.single('image'), apiController.updateProduct);
 router.delete('/product/:id', apiController.deleteProduct);
 
 router.get('/category', apiController.getListCategory);
+router.get('/category/:id', apiController.getCategory);
+router.delete('/category/:id', apiController.deleteCategory);
 
 router.get('/brand', apiController.getListBrand);
 

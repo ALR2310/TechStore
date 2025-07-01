@@ -207,7 +207,7 @@ export default function ProductManager() {
           },
           {
             title: '',
-            key: 'updatedAt',
+            key: '',
             render: (_, row) => (
               <div className="space-y-2">
                 <Link to={`update/${row.Id}`} className="btn btn-primary btn-sm">

@@ -5,6 +5,7 @@ export function UniqueId() {
 }
 
 export function isNullOrEmpty(value: string | null | undefined): boolean {
+  value = value?.toString()?.trim();
   return value === null || value === undefined || value.trim() === '';
 }
 

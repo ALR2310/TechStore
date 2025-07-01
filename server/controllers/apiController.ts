@@ -229,6 +229,46 @@ class ApiController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+  async getCategory(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      const category = await categoryService.getCategory(id);
+      return res.status(200).json(category);
+    } catch (error: any) {
+      console.error('Error fetching category:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async deleteCategory(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      const category = await categoryService.getCategory(id);
+
+      for (const product of category.products) {
+        await Promise.all([
+          orderService.deleteOrderOfProduct(product.Id),
+          cartService.deleteCartOfProduct(product.Id),
+          purchaseService.deletePurchaseOfProduct(product.Id),
+          reviewService.deleteReviewOfProduct(product.Id),
+          viewedService.deleteViewedOfProduct(product.Id),
+        ]);
+        await productService.deleteProduct(product.Id);
+      }
+      await categoryService.deleteCategory(id);
+
+      return res.status(204).json({
+        message: 'Category deleted successfully',
+        data: category,
+      });
+    } catch (error: any) {
+      console.error('Error deleting category:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
   //#endregion
 
   //#region Brand
