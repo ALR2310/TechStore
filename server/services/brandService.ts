@@ -2,8 +2,8 @@ import { baseQueryParams } from '@shared/types/params.type';
 import { db } from '~/configs/dbConnect';
 
 class BrandService {
-  async getListBrand(payload: baseQueryParams) {
-    const { keyword, page = 1, limit = 10, sortBy = 'updatedAt', sortDir = 'desc' } = payload;
+  async getListBrand(payload: baseQueryParams & { status?: string }) {
+    const { keyword, page = 1, limit = 10, sortBy = 'updatedAt', sortDir = 'desc', status } = payload;
 
     const offset = (page - 1) * limit;
     const safeSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
@@ -14,8 +14,13 @@ class BrandService {
     const params: any[] = [];
 
     if (keyword) {
-      conditions.push(`BrandName LIKE`);
+      conditions.push(`BrandName LIKE ?`);
       params.push(`%${keyword}%`);
+    }
+
+    if (status) {
+      conditions.push(`Status = ?`);
+      params.push(status);
     }
 
     if (conditions.length > 0) {

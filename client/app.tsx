@@ -12,6 +12,7 @@ import AuthLayout from './layouts/AuthLayout';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import ReviewManager from './features/manager/review/pages/ReviewManager';
 import CategoryManager from './features/manager/category/pages/CategoryManager';
+import BrandManager from './features/manager/brand/pages/BrandManager';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="order" element={<OrderManager />} />
               <Route path="review" element={<ReviewManager />} />
               <Route path="category" element={<CategoryManager />} />
+              <Route path="brand" element={<BrandManager />} />
             </Route>
           </Routes>
         </BrowserRouter>
