@@ -10,7 +10,7 @@ type Column = {
   sortable?: boolean;
   visible?: boolean;
   group?: boolean;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: any, rowData: any, index: number) => React.ReactNode;
 };
 
 interface Paginate extends PaginationProp {
@@ -25,7 +25,7 @@ interface TableDataProps {
   columnAction?: boolean;
   loading?: boolean;
   onSortChange?: (key: string, direction: SortDirection) => void;
-  onRowDelete?: (row: any) => void;
+  onRowDelete?: (rowData: any, index: number) => void;
   pagination?: Paginate;
   onPageChange?: (page: number) => void;
   onLimitChange?: (limit: number) => void;
@@ -134,7 +134,7 @@ function renderBody(
   columnsState: Column[],
   columnAction: boolean,
   onRowClick?: (row: any) => void,
-  onRowDelete?: (row: any) => void,
+  onRowDelete?: (rowData: any, index: number) => void,
 ) {
   return data.map((row, rowIndex) => (
     <tr
@@ -153,7 +153,7 @@ function renderBody(
 
           return (
             <td key={colIndex} rowSpan={rowSpan > 1 ? rowSpan : undefined} className={isGrouped ? 'align-top' : ''}>
-              {col.render ? col.render(row[col.key], row) : row[col.key]}
+              {col.render ? col.render(row[col.key], row, rowIndex) : row[col.key]}
             </td>
           );
         })}
@@ -164,7 +164,7 @@ function renderBody(
             className="fa-regular fa-circle-minus cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              onRowDelete?.(row);
+              onRowDelete?.(row, rowIndex);
             }}
           ></i>
         </td>

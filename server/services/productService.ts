@@ -151,6 +151,18 @@ class ProductService {
     return product[0];
   }
 
+  async getProductsByBrand(brandId: string) {
+    const query = `SELECT Id, ProdName FROM Product WHERE BrandId = ?`;
+    const products = await db.query(query, [brandId]);
+    return products;
+  }
+
+  async getProductsBySeries(seriesId: string) {
+    const query = `SELECT Id, ProdName FROM Product WHERE BrandSeriesId = ?`;
+    const products = await db.query(query, [seriesId]);
+    return products;
+  }
+
   async createProduct(payload: createProductPayload) {
     const { name, slug, category, brand, series, image, quantity, price, discount, status, content, deviceConfigs } =
       payload;

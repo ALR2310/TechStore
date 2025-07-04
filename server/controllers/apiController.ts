@@ -137,6 +137,28 @@ class ApiController {
     }
   }
 
+  async getProductsByBrand(req: any, res: any) {
+    const { id } = req.params;
+    try {
+      const products = await productService.getProductsByBrand(id);
+      return res.status(200).json(products);
+    } catch (error: any) {
+      console.error('Error fetching products by brand:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getProductsBySeries(req: any, res: any) {
+    const { id } = req.params;
+    try {
+      const products = await productService.getProductsBySeries(id);
+      return res.status(200).json(products);
+    } catch (error: any) {
+      console.error('Error fetching products by series:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async createProduct(req: any, res: any) {
     const payload = req.body;
 
@@ -306,6 +328,78 @@ class ApiController {
     } catch (error) {
       console.error('Error fetching brand list:', error);
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getBrand(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      const brand = await brandService.getBrand(id);
+      return res.status(200).json(brand);
+    } catch (error: any) {
+      console.error('Error fetching brand:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async createBrand(req: any, res: any) {
+    const payload = req.body;
+
+    try {
+      const newBrand = await brandService.createBrand(payload);
+      return res.status(201).json(newBrand);
+    } catch (error: any) {
+      console.error('Error creating brand:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async updateBrand(req: any, res: any) {
+    const { id } = req.params;
+    const payload = { id, ...req.body };
+
+    try {
+      const updatedBrand = await brandService.updateBrand(payload);
+      return res.status(200).json(updatedBrand);
+    } catch (error: any) {
+      console.error('Error updating brand:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async deleteBrand(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+      const brand = await brandService.getBrand(id);
+
+      if (!brand) {
+        return res.status(404).json({ error: 'Brand not found' });
+      }
+
+      const products = await productService.getProductsByBrand(id);
+
+      for (const product of products) {
+        await Promise.all([
+          orderService.deleteOrderOfProduct(product.Id),
+          cartService.deleteCartOfProduct(product.Id),
+          purchaseService.deletePurchaseOfProduct(product.Id),
+          reviewService.deleteReviewOfProduct(product.Id),
+          viewedService.deleteViewedOfProduct(product.Id),
+        ]);
+        await productService.deleteProduct(product.Id);
+      }
+
+      await brandService.deleteBrand(id);
+
+      return res.status(204).json({
+        message: 'Brand deleted successfully',
+        data: brand,
+      });
+    } catch (error: any) {
+      console.error('Error deleting brand:', error);
+      res.status(500).json({ error: error.message });
     }
   }
   //#endregion

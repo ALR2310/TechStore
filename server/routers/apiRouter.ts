@@ -13,6 +13,8 @@ router.delete('/user/:id', apiController.deleteUser);
 
 router.get('/product', apiController.getListProduct);
 router.get('/product/:id', apiController.getProduct);
+router.get('/product/brand/:id', apiController.getProductsByBrand);
+router.get('/product/series/:id', apiController.getProductsBySeries);
 router.post('/product', upload.single('image'), apiController.createProduct);
 router.put('/product/:id', upload.single('image'), apiController.updateProduct);
 router.delete('/product/:id', apiController.deleteProduct);
@@ -24,6 +26,10 @@ router.put('/category/:id', apiController.updateCategory);
 router.delete('/category/:id', apiController.deleteCategory);
 
 router.get('/brand', apiController.getListBrand);
+router.get('/brand/:id', apiController.getBrand);
+router.post('/brand', apiController.createBrand);
+router.put('/brand/:id', apiController.updateBrand);
+router.delete('/brand/:id', apiController.deleteBrand);
 
 router.get('/order', apiController.getListOrder);
 router.put('/order/:id', apiController.approveOrder);

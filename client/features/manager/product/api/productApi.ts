@@ -11,6 +11,11 @@ export const getProduct = async (id: string) => {
   return res.data;
 };
 
+export const getProductsBySeries = async (seriesId: string) => {
+  const res = await http.get(`/product/series/${seriesId}`);
+  return res.data;
+};
+
 export const createProduct = async (payload: createProductPayload) => {
   const formData = new FormData();
 

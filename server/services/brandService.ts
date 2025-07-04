@@ -1,4 +1,7 @@
+import { createBrandPayload, updateBrandPayload } from '@shared/types/brand.type';
 import { baseQueryParams } from '@shared/types/params.type';
+import { isNullOrEmpty } from '@shared/utils/general.utils';
+import dayjs from 'dayjs';
 import { db } from '~/configs/dbConnect';
 
 class BrandService {
@@ -53,6 +56,73 @@ class BrandService {
         totalPages: Math.ceil(Number(total[0].total) / Number(limit)),
       },
     };
+  }
+
+  async getBrand(id: string) {
+    const query = `SELECT * FROM Brands WHERE Id = ?`;
+    const brand = await db.query(query, [id]);
+
+    if (brand.length === 0) {
+      throw new Error('Brand not found');
+    }
+
+    const seriesQuery = `SELECT Id, SeriesName, Status FROM BrandSeries WHERE BrandId = ?`;
+    const series = await db.query(seriesQuery, [id]);
+
+    return {
+      ...brand[0],
+      Series: series,
+    };
+  }
+
+  async createBrand(payload: createBrandPayload) {
+    const { name, status, series } = payload;
+
+    const dateNow = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const query = `INSERT INTO Brands (BrandName, Status, createdAt, updatedAt) VALUES (?, ?, ?, ?)`;
+    const result = await db.query(query, [name, status, dateNow, dateNow]);
+
+    if (series && series.length > 0) {
+      const brandId = result.insertId;
+      const seriesQueries = series.map((item) => {
+        return db.query(`INSERT INTO BrandSeries (BrandId, SeriesName) VALUES (?, ?)`, [brandId, item.name]);
+      });
+      await Promise.all(seriesQueries);
+    }
+  }
+
+  async updateBrand(payload: updateBrandPayload) {
+    const { name, status, series, idsDelete } = payload;
+
+    const dateNow = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const query = `UPDATE Brands SET BrandName = ?, Status = ?, updatedAt = ? WHERE Id = ?`;
+    await db.query(query, [name, status, dateNow, payload.id]);
+
+    if (series && series.length > 0) {
+      for (const item of series) {
+        if (!isNullOrEmpty(item.name)) {
+          if (item.id) {
+            await db.query(`UPDATE BrandSeries SET SeriesName = ? WHERE Id = ?`, [item.name, item.id]);
+          } else {
+            await db.query(`INSERT INTO BrandSeries (BrandId, SeriesName) VALUES (?, ?)`, [payload.id, item.name]);
+          }
+        }
+      }
+    }
+
+    if (idsDelete && idsDelete.length > 0) {
+      for (const id of idsDelete) {
+        await db.query(`DELETE FROM BrandSeries WHERE Id = ?`, [id]);
+      }
+    }
+  }
+
+  async deleteBrand(id: string) {
+    const query = `DELETE FROM Brands WHERE Id = ?`;
+    await db.query(query, [id]);
+
+    const seriesQuery = `DELETE FROM BrandSeries WHERE BrandId = ?`;
+    await db.query(seriesQuery, [id]);
   }
 }
 
