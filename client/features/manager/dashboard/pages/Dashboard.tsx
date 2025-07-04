@@ -98,7 +98,11 @@ export default function Dashboard() {
     <div className="space-y-6">
       <DashboardStats stats={stats} />
 
-      <DashboardCharts />
+      <DashboardCharts
+        userData={userStatsQuery.data?.userCount ?? []}
+        revenueData={orderStatsQuery.data?.orderRevenue ?? []}
+        viewedData={viewedStatsQuery.data?.viewCount ?? []}
+      />
     </div>
   );
 }
