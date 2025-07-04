@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/auth/check', apiController.checkLogin);
 
+router.get('/user/statistic', apiController.getUserStatistic);
 router.get('/user', apiController.getListUser);
 router.get('/user/:id', apiController.getUser);
 router.put('/user/:id', apiController.updateUser);
@@ -31,11 +32,14 @@ router.post('/brand', apiController.createBrand);
 router.put('/brand/:id', apiController.updateBrand);
 router.delete('/brand/:id', apiController.deleteBrand);
 
+router.get('/order/statistic', apiController.getOrderStatistic);
 router.get('/order', apiController.getListOrder);
 router.put('/order/:id', apiController.approveOrder);
 
 router.get('/review', apiController.getListReview);
 router.post('/review/status', apiController.updateStatusReview);
 router.delete('/review/:id', apiController.deleteReview);
+
+router.get('/viewed/statistic', apiController.getViewedStatistic);
 
 export default router;

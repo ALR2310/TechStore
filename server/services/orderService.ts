@@ -1,7 +1,15 @@
 import { approveOrderParams, getListOrderParams } from '@shared/types/order.type';
+import { getStatisticPayload } from '@shared/types/params.type';
 import { isNullOrEmpty } from '@shared/utils/general.utils';
 import dayjs from 'dayjs';
 import { db } from '~/configs/dbConnect';
+import { buildDateFilter } from '~/utils/query.build';
+
+const formatMap = {
+  day: '%Y-%m-%d',
+  month: '%Y-%m',
+  year: '%Y',
+};
 
 class OrderService {
   async getListOrder(payload: getListOrderParams) {
@@ -152,6 +160,58 @@ class OrderService {
 
     await db.query(`DELETE FROM OrderItems WHERE ProdId = ?`, [productId]);
     return { message: 'Order items deleted successfully.' };
+  }
+
+  async getStatistic(payload: getStatisticPayload) {
+    const { by = 'day', startDate, endDate } = payload;
+
+    const dateQuery = buildDateFilter(startDate, endDate);
+
+    const orderCountQuery = `
+      SELECT 
+        strftime('${formatMap[by]}', createdAt) as label,
+        COUNT(*) as count
+      FROM Orders
+      ${dateQuery.query}
+      GROUP BY label
+      ORDER BY label ASC;
+    `;
+
+    const orderRevenueQuery = `
+      SELECT 
+        strftime('${formatMap[by]}', createdAt) as label,
+        SUM(TotalPrice) as revenue
+      FROM Orders
+      ${dateQuery.query}
+      GROUP BY label
+      ORDER BY label ASC;
+    `;
+
+    const orderByStatusQuery = `
+      SELECT 
+        Status,
+        COUNT(*) as count
+      FROM Orders
+      ${dateQuery.query}
+      GROUP BY Status;
+    `;
+
+    const [orderCount, orderRevenue, totalOrder, orderByStatus] = await Promise.all([
+      db.query(orderCountQuery, dateQuery.params),
+      db.query(orderRevenueQuery, dateQuery.params),
+      db.query(`SELECT COUNT(*) as total FROM Orders`),
+      db.query(orderByStatusQuery, dateQuery.params),
+    ]);
+
+    return {
+      totalOrder: totalOrder[0]?.total || 0,
+      orderByStatus: orderByStatus.reduce((acc: Record<string, number>, row: any) => {
+        acc[row.Status] = Number(row.count);
+        return acc;
+      }, {}),
+      orderCount: orderCount.map((r: any) => ({ label: r.label, count: Number(r.count) })),
+      orderRevenue: orderRevenue.map((r: any) => ({ label: r.label, revenue: Number(r.revenue ?? 0) })),
+    };
   }
 }
 

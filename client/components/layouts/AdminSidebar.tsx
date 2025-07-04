@@ -150,7 +150,7 @@ export default function AdminSidebar({ children }) {
           <p className="text-2xl bg-base-100 font-semibold pt-4 px-4">TechStore</p>
 
           <div className="flex flex-col justify-between h-full">
-            <ul className="menu text-base-content w-52 p-4 space-y-2">
+            <ul className="menu bg-base-100 text-base-content w-52 p-4 space-y-2">
               {menuItems.slice(0, -2).map((item) => (
                 <li key={item.name} className="font-bold">
                   {item.subMenu ? (
@@ -190,7 +190,7 @@ export default function AdminSidebar({ children }) {
               ))}
             </ul>
 
-            <ul className="menu text-base-content w-52 p-4 space-y-2 border-t border-base-content/20">
+            <ul className="menu bg-base-100 text-base-content w-52 p-4 space-y-2 border-t border-base-content/20">
               {menuItems.slice(-2).map((item: (typeof menuItems)[0]) => (
                 <li key={item.path} className={`font-bold`}>
                   <a onClick={item.onClick} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>

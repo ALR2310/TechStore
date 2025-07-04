@@ -1,7 +1,15 @@
+import { getStatisticPayload } from '@shared/types/params.type';
 import { getListUserPayload, updateUserPayload } from '@shared/types/user.type';
 import bcrypt from 'bcryptjs';
 import dayjs from 'dayjs';
 import { db } from '~/configs/dbConnect';
+import { buildDateFilter } from '~/utils/query.build';
+
+const formatMap = {
+  day: '%Y-%m-%d',
+  month: '%Y-%m',
+  year: '%Y',
+};
 
 class UserService {
   async getListUser(payload: getListUserPayload) {
@@ -206,6 +214,34 @@ class UserService {
     await db.query('DELETE FROM User WHERE Id = ?', [id]);
 
     return user[0];
+  }
+
+  async getStatistic(payload: getStatisticPayload) {
+    const { by = 'day', startDate, endDate } = payload;
+
+    const dateQuery = buildDateFilter(startDate, endDate);
+
+    const createdQuery = `
+      SELECT 
+        strftime('${formatMap[by]}', createdAt) as label,
+        COUNT(*) as count
+      FROM User
+      ${dateQuery.query}
+      GROUP BY label
+      ORDER BY label ASC;
+    `;
+
+    const [userCount, totalUser, userActive] = await Promise.all([
+      db.query(createdQuery, dateQuery.params),
+      db.query(`SELECT COUNT(*) as total FROM User`),
+      db.query(`SELECT COUNT(*) as active FROM User WHERE Status = 'Active'`),
+    ]);
+
+    return {
+      totalUser: totalUser[0].total,
+      userActive: userActive[0].active,
+      userCount: userCount,
+    };
   }
 }
 

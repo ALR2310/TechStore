@@ -106,6 +106,18 @@ class ApiController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+  async getUserStatistic(req: any, res: any) {
+    const params = req.query;
+
+    try {
+      const statistic = await userService.getStatistic(params);
+      return res.status(200).json(statistic);
+    } catch (error: any) {
+      console.error('Error fetching statistic:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
   //#endregion
 
   //#region Product
@@ -429,6 +441,18 @@ class ApiController {
       return res.status(500).json({ error: error.message });
     }
   }
+
+  async getOrderStatistic(req: any, res: any) {
+    const params = req.query;
+
+    try {
+      const statistic = await orderService.getStatistic(params);
+      return res.status(200).json(statistic);
+    } catch (error: any) {
+      console.error('Error fetching statistic:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
   //#endregion
 
   //#region Review
@@ -470,6 +494,20 @@ class ApiController {
     } catch (error) {
       console.error('Error deleting review:', error);
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  //#endregion
+
+  //#region Viewed
+  async getViewedStatistic(req: any, res: any) {
+    const params = req.query;
+
+    try {
+      const statistic = await viewedService.getStatistic(params);
+      return res.status(200).json(statistic);
+    } catch (error: any) {
+      console.error('Error fetching statistic:', error);
+      res.status(500).json({ error: error.message });
     }
   }
   //#endregion

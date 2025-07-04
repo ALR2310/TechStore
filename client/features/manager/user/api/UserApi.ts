@@ -1,3 +1,4 @@
+import { getStatisticPayload } from '@shared/types/params.type';
 import { getListUserPayload, updateUserPayload } from '@shared/types/user.type';
 import { http } from '~/libs/axios.http';
 
@@ -18,5 +19,10 @@ export const updateUser = async (payload: updateUserPayload) => {
 
 export const deleteUser = async (payload: { id: string }) => {
   const res = await http.delete(`/user/${payload.id}`);
+  return res.data;
+};
+
+export const getUserStatistic = async (payload: getStatisticPayload) => {
+  const res = await http.get('/user/statistic', { params: payload });
   return res.data;
 };

@@ -114,10 +114,6 @@ export default function BrandManager() {
     });
   };
 
-  useEffect(() => {
-    console.log(listSeriesDelete);
-  }, [listSeriesDelete]);
-
   return (
     <div className="flex-1 p-4 flex flex-col">
       <div className="flex justify-between">

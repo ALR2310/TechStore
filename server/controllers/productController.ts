@@ -1,6 +1,7 @@
 import path from 'path';
 import { db } from '../configs/dbConnect';
 import myUtils from '../utils/myUtils';
+import dayjs from 'dayjs';
 
 class ProductController {
   async index(req: any, res: any) {
@@ -186,15 +187,16 @@ class ProductController {
               );
 
               if (checkResult.count > 0)
-                await db.query(`UPDATE ProductViewed SET createdAt = ? WHERE ProdId = ? AND UserId = ?`, [
+                await db.query(`UPDATE ProductViewed SET updatedAt = ? WHERE ProdId = ? AND UserId = ?`, [
                   'CURRENT_TIMESTAMP',
                   product[0].Id,
                   req.user.Id,
                 ]);
               else
-                await db.query(`INSERT INTO ProductViewed (ProdId, UserId) VALUES (?, ?)`, [
+                await db.query(`INSERT INTO ProductViewed (ProdId, UserId, updatedAt) VALUES (?, ?, ?)`, [
                   product[0].Id,
                   req.user.Id,
+                  dayjs().format('YYYY-MM-DD HH:mm:ss'),
                 ]);
             }
           }
