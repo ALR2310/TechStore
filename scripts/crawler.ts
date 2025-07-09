@@ -213,32 +213,41 @@ async function handleInsertProduct(productInfo: Product) {
     dateNow,
   ];
 
-  const result = await db.query(query, params);
-  await db.query(
-    `
-    INSERT INTO ProductDetails (ProdId, DeviceCfg, Content, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?)`,
-    [result.insertId, stringifySpecs(specs), desc, dateNow, dateNow],
-  );
-  console.log(chalk.green(`Thêm sản phẩm: ${productInfo.title} hoàn thành`));
+  try {
+    const result = await db.query(query, params);
+    await db.query(
+      `
+      INSERT INTO ProductDetails (ProdId, DeviceCfg, Content, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?)`,
+      [result.insertId, stringifySpecs(specs), desc, dateNow, dateNow],
+    );
+    console.log(chalk.green(`Thêm sản phẩm: ${productInfo.title} hoàn thành`));
+  } catch (e: any) {
+    console.log(chalk.red('Lỗi khi thêm sản phẩm:' + productInfo.title + '(skip)'));
+  }
 }
 
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'laptop-asus-hoc-tap-va-lam-viec',
-    'laptop-acer-hoc-tap-va-lam-viec',
-    'laptop-msi-hoc-tap-va-lam-viec',
-    'laptop-lenovo-hoc-tap-va-lam-viec',
-    'laptop-dell-hoc-tap-va-lam-viec',
-    'laptop-hp-pavilion',
-    'laptop-lg-gram',
-    'laptop-gaming-asus',
-    'laptop-gaming-acer',
-    'laptop-msi-gaming',
-    'laptop-gaming-lenovo',
-    'laptop-gaming-dell',
-    'laptop-gaming-hp',
+    'pc-gvn',
+    'pc-gvn-i3',
+    'pc-gvn-i5',
+    'pc-gvn-i7',
+    'pc-gvn-i9',
+    // 'laptop-asus-hoc-tap-va-lam-viec',
+    // 'laptop-acer-hoc-tap-va-lam-viec',
+    // 'laptop-msi-hoc-tap-va-lam-viec',
+    // 'laptop-lenovo-hoc-tap-va-lam-viec',
+    // 'laptop-dell-hoc-tap-va-lam-viec',
+    // 'laptop-hp-pavilion',
+    // 'laptop-lg-gram',
+    // 'laptop-gaming-asus',
+    // 'laptop-gaming-acer',
+    // 'laptop-msi-gaming',
+    // 'laptop-gaming-lenovo',
+    // 'laptop-gaming-dell',
+    // 'laptop-gaming-hp',
   ];
   let hashMore = true;
   let proxyIndex = 0;
