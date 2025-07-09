@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 import { db } from '../../server/configs/dbConnect';
+import { hash } from 'bcryptjs';
+import { faker } from '@faker-js/faker';
 
 const reviewSamples = {
   1: [
@@ -79,6 +81,9 @@ const reviewSamples = {
   ],
 };
 
+const GENDERS = ['Nam', 'Nữ'];
+const ADDRESS_TYPES = ['Nhà riêng', 'Văn phòng'];
+
 function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -87,9 +92,9 @@ function shuffle<T>(arr: T[]): T[] {
   return arr.sort(() => 0.5 - Math.random());
 }
 
-function randomPastDateWithinOneYear(): string {
+function getRandomPastDate(): string {
   const now = new Date();
-  const pastDate = new Date(now.getTime() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000));
+  const pastDate = new Date(now.getTime() - Math.floor(Math.random() * 730 * 24 * 60 * 60 * 1000));
   return pastDate.toISOString().slice(0, 19).replace('T', ' ');
 }
 
@@ -108,7 +113,7 @@ export async function fakeReviews() {
     for (const user of reviewers) {
       const rating = Math.floor(Math.random() * 5) + 1; // 1 to 5
       const comment = randomFrom(reviewSamples[rating]);
-      const createdAt = randomPastDateWithinOneYear();
+      const createdAt = getRandomPastDate();
 
       const existing = await db.query(`SELECT 1 FROM ProductReviews WHERE ProdId = ? AND UserId = ?`, [
         product.Id,
@@ -141,7 +146,7 @@ export async function fakeViewed() {
     const viewers: any = shuffle(users).slice(0, Math.floor(Math.random() * 16) + 5);
 
     for (const user of viewers) {
-      const createdAt = randomPastDateWithinOneYear();
+      const createdAt = getRandomPastDate();
 
       const existing = await db.query(`SELECT 1 FROM ProductViewed WHERE ProdId = ? AND UserId = ?`, [
         product.Id,
@@ -161,4 +166,49 @@ export async function fakeViewed() {
   }
 
   console.log(chalk.green('✅ Dữ liệu lượt xem đã được tạo.'));
+}
+
+export async function fakeUsers(count = 5) {
+  for (let i = 0; i < count; i++) {
+    const fullName = faker.person.fullName();
+    const email = faker.internet.email().toLowerCase();
+    const userName = faker.internet.username().toLowerCase();
+    const password = await hash('123456', 10);
+    const gender = randomFrom(GENDERS);
+    const dob = faker.date
+      .past({ years: 30, refDate: new Date('2005-01-01') })
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+
+    const createdAt = getRandomPastDate();
+
+    // Insert User
+    const result = await db.query(
+      `INSERT INTO User (Email, UserName, Password, Role, Status, createdAt, updatedAt)
+       VALUES (?, ?, ?, 'User', 'Active', ?, ?) RETURNING Id`,
+      [email, userName, password, createdAt, createdAt],
+    );
+    const userId = result.insertId;
+
+    // Insert UserInfo
+    await db.query(
+      `INSERT INTO UserInfo (UserId, FullName, Gender, DoB, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [userId, fullName, gender, dob, createdAt, createdAt],
+    );
+
+    const addressType = randomFrom(ADDRESS_TYPES);
+    const addressLine = faker.location.streetAddress({ useFullAddress: true });
+    const phoneNumber = faker.phone.number().replace('-', '');
+    const isDefault = 1;
+
+    await db.query(
+      `INSERT INTO Address (UserId, FullName, PhoneNumber, AddressLine, AddressType, IsDefault, Status, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, 'Active', ?, ?)`,
+      [userId, fullName, phoneNumber, addressLine, addressType, isDefault, createdAt, createdAt],
+    );
+  }
+
+  console.log(chalk.green(`👤 Đã tạo ${count} user.`));
 }
