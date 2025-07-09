@@ -129,3 +129,36 @@ export async function fakeReviews() {
   }
   console.log(chalk.green('✅ Dữ liệu đánh giá đã được tạo.'));
 }
+
+export async function fakeViewed() {
+  const users = await db.query(
+    `SELECT U.Id, UI.FullName FROM User U LEFT JOIN UserInfo UI ON U.Id = UI.UserId WHERE U.Status = 'Active'`,
+  );
+  const products = await db.query('SELECT Id, ProdName FROM Product ORDER BY RANDOM() LIMIT 50');
+
+  for (const product of products) {
+    console.log(chalk.blue(`📦 Đang thêm lượt xem cho: ${product.ProdName}`));
+    const viewers: any = shuffle(users).slice(0, Math.floor(Math.random() * 16) + 5);
+
+    for (const user of viewers) {
+      const createdAt = randomPastDateWithinOneYear();
+
+      const existing = await db.query(`SELECT 1 FROM ProductViewed WHERE ProdId = ? AND UserId = ?`, [
+        product.Id,
+        user.Id,
+      ]);
+      if (existing.length > 0) {
+        console.log(chalk.yellow(`Lượt xem của người dùng ${user.FullName} đã tồn tại(skip)}`));
+        continue;
+      }
+
+      await db.query(
+        `INSERT INTO ProductViewed (ProdId, UserId, Status, createdAt, updatedAt)
+         VALUES (?, ?, 'Active', ?, ?)`,
+        [product.Id, user.Id, createdAt, createdAt],
+      );
+    }
+  }
+
+  console.log(chalk.green('✅ Dữ liệu lượt xem đã được tạo.'));
+}
