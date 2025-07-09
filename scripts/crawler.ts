@@ -159,7 +159,8 @@ async function downloadImage(url: string, fileName: string): Promise<string | nu
 function handleGetCategoryId(categoryName: string) {
   if (categoryName.toLowerCase().includes('laptop gaming'.toLowerCase())) {
     return 1;
-  } else return 2;
+  } else if (categoryName.toLowerCase().includes('pc'.toLowerCase())) return 3;
+  else return 2;
 }
 
 async function handleGetBrandId(brandName: string) {
@@ -235,19 +236,19 @@ async function handleCrawler() {
     'pc-gvn-i5',
     'pc-gvn-i7',
     'pc-gvn-i9',
-    // 'laptop-asus-hoc-tap-va-lam-viec',
-    // 'laptop-acer-hoc-tap-va-lam-viec',
-    // 'laptop-msi-hoc-tap-va-lam-viec',
-    // 'laptop-lenovo-hoc-tap-va-lam-viec',
-    // 'laptop-dell-hoc-tap-va-lam-viec',
-    // 'laptop-hp-pavilion',
-    // 'laptop-lg-gram',
-    // 'laptop-gaming-asus',
-    // 'laptop-gaming-acer',
-    // 'laptop-msi-gaming',
-    // 'laptop-gaming-lenovo',
-    // 'laptop-gaming-dell',
-    // 'laptop-gaming-hp',
+    'laptop-asus-hoc-tap-va-lam-viec',
+    'laptop-acer-hoc-tap-va-lam-viec',
+    'laptop-msi-hoc-tap-va-lam-viec',
+    'laptop-lenovo-hoc-tap-va-lam-viec',
+    'laptop-dell-hoc-tap-va-lam-viec',
+    'laptop-hp-pavilion',
+    'laptop-lg-gram',
+    'laptop-gaming-asus',
+    'laptop-gaming-acer',
+    'laptop-msi-gaming',
+    'laptop-gaming-lenovo',
+    'laptop-gaming-dell',
+    'laptop-gaming-hp',
   ];
   let hashMore = true;
   let proxyIndex = 0;
