@@ -43,7 +43,7 @@
         {{#each this.OrderItems}}
         <div class="d-flex p-2">
             <div class="rounded border p-1" style="flex: 1.2;">
-                <img src="{{this.Image}}" class="w-100">
+                <img src="{{safeUrl this.Image}}" class="w-100">
             </div>
             <div class="d-flex ms-3" style="flex: 10;">
                 <p class="fw-bold mt-2 w-75">{{this.ProdName}}</p>
@@ -133,7 +133,7 @@
                         {{#each this.OrderItems}}
                         <div class="d-flex p-2">
                             <div class="rounded border p-1" style="flex: 1.2;">
-                                <img src="{{this.Image}}" class="w-100">
+                                <img src="{{safeUrl this.Image}}" class="w-100">
                             </div>
                             <div class="d-flex ms-3" style="flex: 10;">
                                 <p class="fw-bold mt-2 w-75">{{this.ProdName}}</p>

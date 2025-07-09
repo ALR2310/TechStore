@@ -6,25 +6,25 @@ const helpers = {
 
   // Định dạng một chuỗi số thành tiền tệ Việt Nam (VNĐ)
   formatNumToCurrency: function (value: any) {
-    if (typeof value !== "string") value = value.toString();
-    value = value.replace(/\D/g, "");
-    return new Intl.NumberFormat("vi-VN").format(value);
+    if (typeof value !== 'string') value = value.toString();
+    value = value.replace(/\D/g, '');
+    return new Intl.NumberFormat('vi-VN').format(value);
   },
 
   // So sánh một giá trị với một giá trị khác bằng một toán tử cụ thể (>, <, >=, <=, ==, !=)
   compare: function (value: any, operator: string, comparison: any, options: any) {
     switch (operator) {
-      case ">":
+      case '>':
         return value > comparison ? options.fn(this) : options.inverse(this);
-      case "<":
+      case '<':
         return value < comparison ? options.fn(this) : options.inverse(this);
-      case ">=":
+      case '>=':
         return value >= comparison ? options.fn(this) : options.inverse(this);
-      case "<=":
+      case '<=':
         return value <= comparison ? options.fn(this) : options.inverse(this);
-      case "==":
+      case '==':
         return value == comparison ? options.fn(this) : options.inverse(this);
-      case "!=":
+      case '!=':
         return value != comparison ? options.fn(this) : options.inverse(this);
       default:
         return options.inverse(this);
@@ -36,13 +36,13 @@ const helpers = {
     value1 = parseFloat(value1);
     value2 = parseFloat(value2);
     switch (operator) {
-      case "+":
+      case '+':
         return value1 + value2;
-      case "-":
+      case '-':
         return value1 - value2;
-      case "*":
+      case '*':
         return value1 * value2;
-      case "/":
+      case '/':
         return value1 / value2;
       default:
         return null;
@@ -53,21 +53,13 @@ const helpers = {
   formatDate(datetimeStr: string, type: number) {
     if (type == 1) {
       const date = new Date(datetimeStr);
-      const dayNames = [
-        "Chủ Nhật",
-        "Thứ Hai",
-        "Thứ Ba",
-        "Thứ Tư",
-        "Thứ Năm",
-        "Thứ Sáu",
-        "Thứ Bảy",
-      ];
+      const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
       const day = dayNames[date.getDay()];
 
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const dayOfMonth = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const dayOfMonth = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
 
       return `${hours}:${minutes} ${day} - ${dayOfMonth}/${month}/${year}`;
@@ -77,14 +69,23 @@ const helpers = {
     }
 
     const date = new Date(datetimeStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   },
 
   json(data: any) {
     return JSON.stringify(data);
+  },
+
+  // Kiểm tra url hình ảnh
+  safeUrl(url: string) {
+    if (typeof url !== 'string') return url;
+    const isUrl = /^(https?:\/\/|ftp:\/\/|mailto:)/i.test(url);
+    if (isUrl) return url;
+    if (url.startsWith('/')) return url;
+    return '/' + url;
   },
 };
 

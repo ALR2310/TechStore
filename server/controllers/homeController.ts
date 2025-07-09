@@ -87,10 +87,10 @@ class HomeController {
 
     switch (sort) {
       case 'newest':
-        sortParams = 'p.AtUpdate DESC';
+        sortParams = 'p.updatedAt DESC';
         break;
       case 'oldest':
-        sortParams = 'p.AtUpdate ASC';
+        sortParams = 'p.updatedAt ASC';
         break;
       case 'asc':
         sortParams = 'FinalPrice ASC';
@@ -99,7 +99,7 @@ class HomeController {
         sortParams = 'FinalPrice DESC';
         break;
       default:
-        sortParams = 'p.AtUpdate DESC';
+        sortParams = 'p.updatedAt DESC';
         break;
     }
     switch (price) {
@@ -160,7 +160,7 @@ class HomeController {
 
     try {
       const sql = `SELECT p.*, CAST(p.Price - (p.Price * (p.Discount / 100)) AS INTEGER) AS FinalPrice 
-            FROM Product p WHERE ProdName LIKE ? AND p.Status = "Active" ORDER BY p.AtUpdate DESC LIMIT 6`;
+            FROM Product p WHERE ProdName LIKE ? AND p.Status = "Active" ORDER BY p.updatedAt DESC LIMIT 6`;
       const product = await db.query(sql, [`%${value}%`]);
       return res.status(200).json({
         success: true,

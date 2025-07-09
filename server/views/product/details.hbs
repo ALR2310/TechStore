@@ -1,6 +1,6 @@
 <div class="row bg-white rounded">
     <div class="col-4">
-        <img src="/{{product.Image}}" alt="Logo" class="w-100">
+        <img src="{{safeUrl product.Image}}" alt="Logo" class="w-100">
     </div>
 
     <div class="col-8 p-4 border-start">
@@ -129,7 +129,7 @@
                         <div class="row g-0">
                             <div class="col-4">
                                 <a href="{{this.Slugs}}" class="d-block w-100">
-                                    <img src="/{{this.Image}}" class="p-2 w-100" alt="Logo" style="height: 125px;">
+                                    <img src="{{safeUrl this.Image}}" class="p-2 w-100" alt="Logo" style="height: 125px;">
                                 </a>
                             </div>
                             <div class="col-8">
@@ -172,7 +172,7 @@
                         <div class="row g-0">
                             <div class="col-4">
                                 <a href="{{this.Slugs}}" class="d-block w-100">
-                                    <img src="/{{this.Image}}" class="p-2 w-100" alt="Logo" style="height: 125px;">
+                                    <img src="{{safeUrl this.Image}}" class="p-2 w-100" alt="Logo" style="height: 125px;">
                                 </a>
                             </div>
                             <div class="col-8">
@@ -301,7 +301,7 @@
             <div class="row">
                 <div class="col-4 p-0 bg-danger rounded-start">
                     <div class="p-3">
-                        <img src="/{{product.Image}}" alt="Logo" class="w-100 rounded">
+                        <img src="{{safeUrl product.Image}}" alt="Logo" class="w-100 rounded">
                         <strong class="d-block text-center text-white mt-3">{{product.ProdName}}</strong>
                     </div>
                 </div>

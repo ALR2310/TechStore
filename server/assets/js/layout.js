@@ -144,7 +144,7 @@ $('#txt_search').on('focus', function () {
                 res.data.forEach(product => {
                     const productElement = `
                         <a href="/san-pham/${product.Slugs}" class="d-flex text-decoration-none">
-                            <img src="${product.Image}" class="me-3" style="width: 50px;">
+                            <img src="${safeUrl(product.Image)}" class="me-3" style="width: 50px;">
                             <div>
                                 <p class="text-black text-line-1" style="font-size: 14px;">${product.ProdName}</p>
                                 <div class="d-flex align-items-center" style="font-size: 14px;">

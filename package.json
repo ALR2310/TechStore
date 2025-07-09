@@ -9,7 +9,8 @@
     "build:server": "cd server && tsc --project tsconfig.build.json",
     "build:client": "cd client && vite build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "build": "npm run build:client && npm run build:server"
+    "build": "npm run build:client && npm run build:server",
+    "crawler": "tsx scripts/crawler.ts"
   },
   "keywords": [],
   "author": "",
@@ -58,6 +59,7 @@
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
     "@vitejs/plugin-react": "^4.5.2",
+    "chalk": "^5.4.1",
     "concurrently": "^9.1.2",
     "daisyui": "^5.0.43",
     "dotenv": "^16.5.0",

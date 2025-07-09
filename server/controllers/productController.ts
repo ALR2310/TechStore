@@ -12,10 +12,10 @@ class ProductController {
 
     switch (sort) {
       case 'newest':
-        sortParams = 'p.AtUpdate DESC';
+        sortParams = 'p.updatedAt DESC';
         break;
       case 'oldest':
-        sortParams = 'p.AtUpdate ASC';
+        sortParams = 'p.updatedAt ASC';
         break;
       case 'asc':
         sortParams = 'FinalPrice ASC';
@@ -24,7 +24,7 @@ class ProductController {
         sortParams = 'FinalPrice DESC';
         break;
       default:
-        sortParams = 'p.AtUpdate DESC';
+        sortParams = 'p.updatedAt DESC';
         break;
     }
     switch (price) {

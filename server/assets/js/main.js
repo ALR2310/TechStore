@@ -102,3 +102,11 @@ function showToast(content, type, title) {
 
     toast.addEventListener('hidden.bs.toast', function () { toast.remove(); });
 }
+
+function safeUrl(url) {
+    if (typeof url !== 'string') return url;
+    const isUrl = /^(https?:\/\/|ftp:\/\/|mailto:)/i.test(url);
+    if (isUrl) return url;
+    if (url.startsWith('/')) return url;
+    return '/' + url;
+}
