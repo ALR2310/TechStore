@@ -43,7 +43,3 @@ $ npm install
 # Chạy ứng dụng
 $ npm start
 ```
-
-## Giấy phép
-
-Được phân phối theo Giấy phép MIT. Xem `LICENSE.txt` để biết thêm thông tin.
