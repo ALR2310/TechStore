@@ -10,7 +10,8 @@
     "build:client": "cd client && vite build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
     "build": "npm run build:client && npm run build:server",
-    "crawler": "tsx scripts/crawler.ts"
+    "crawler": "tsx scripts/crawler.ts",
+    "seed": "tsx scripts/fakeData/index.ts"
   },
   "keywords": [],
   "author": "",
