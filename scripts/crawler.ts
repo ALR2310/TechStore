@@ -6,6 +6,8 @@ import chalk from 'chalk';
 import { db } from '../server/configs/dbConnect';
 import dayjs from 'dayjs';
 import { stringifySpecs } from '../shared/utils/general.utils';
+import path from 'path';
+import * as fs from 'fs';
 
 type Product = {
   body_html: string;
@@ -129,6 +131,31 @@ async function retryRequest<T>(
   throw new Error(`Thất bại khi gọi API sau ${maxRetries} lần`);
 }
 
+async function downloadImage(url: string, fileName: string): Promise<string | null> {
+  try {
+    const dir = path.resolve(path.join(__dirname, '..', 'server', 'assets', 'uploads'));
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    const urlExt = path.extname(new URL(url).pathname);
+    const fileNameWithExt = path.extname(fileName) ? fileName : fileName + urlExt;
+
+    const filePath = path.join(dir, fileNameWithExt);
+    const response = await axios.get(url, { responseType: 'stream' });
+
+    await new Promise<void>((resolve, reject) => {
+      const writer = fs.createWriteStream(filePath);
+      response.data.pipe(writer);
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+
+    return path.join('uploads', fileNameWithExt);
+  } catch (err: any) {
+    console.error(`Tải ảnh thất bại từ ${url}:`, err.message || err);
+    return null;
+  }
+}
+
 function handleGetCategoryId(categoryName: string) {
   if (categoryName.toLowerCase().includes('laptop gaming'.toLowerCase())) {
     return 1;
@@ -138,7 +165,7 @@ function handleGetCategoryId(categoryName: string) {
 async function handleGetBrandId(brandName: string) {
   const brand = await db.query(`SELECT Id FROM Brands WHERE BrandName = ? COLLATE NOCASE`, [brandName]);
   if (brand.length > 0) return brand[0].Id as number;
-  return 0;
+  return null;
 }
 
 async function handleInsertProduct(productInfo: Product) {
@@ -152,6 +179,7 @@ async function handleInsertProduct(productInfo: Product) {
     return;
   }
 
+  const image = await downloadImage(productInfo.image.src, productInfo.handle);
   const desc = extractDescription(productInfo.body_html);
   const specs = extractSpecs(productInfo.body_html);
   const categoryId = handleGetCategoryId(productInfo.title);
@@ -174,7 +202,7 @@ async function handleInsertProduct(productInfo: Product) {
   const params = [
     categoryId,
     brandId,
-    productInfo.image.src,
+    image,
     productInfo.title,
     quantity,
     productInfo.variants[0].price,
@@ -197,7 +225,21 @@ async function handleInsertProduct(productInfo: Product) {
 
 async function handleCrawler() {
   let page = 1;
-  let collection = 'laptop-gaming-asus';
+  const collections = [
+    'laptop-asus-hoc-tap-va-lam-viec',
+    'laptop-acer-hoc-tap-va-lam-viec',
+    'laptop-msi-hoc-tap-va-lam-viec',
+    'laptop-lenovo-hoc-tap-va-lam-viec',
+    'laptop-dell-hoc-tap-va-lam-viec',
+    'laptop-hp-pavilion',
+    'laptop-lg-gram',
+    'laptop-gaming-asus',
+    'laptop-gaming-acer',
+    'laptop-msi-gaming',
+    'laptop-gaming-lenovo',
+    'laptop-gaming-dell',
+    'laptop-gaming-hp',
+  ];
   let hashMore = true;
   let proxyIndex = 0;
 
@@ -205,40 +247,55 @@ async function handleCrawler() {
   const useProxy = proxies.length > 0;
 
   while (hashMore) {
-    // Get random proxy
-    const proxyUrl = useProxy ? proxies[proxyIndex % proxies.length] : undefined;
-    proxyIndex++;
+    for (const collection of collections) {
+      // Get random proxy
+      const proxyUrl = useProxy ? proxies[proxyIndex % proxies.length] : undefined;
+      proxyIndex++;
 
-    // Delay random from 2,1s to 0,1s
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000 + 100));
+      // Delay random from 2,1s to 0,1s
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000 + 100));
 
-    // Get axios with proxy
-    const axiosInstance = proxyUrl ? getAxiosWithProxy(proxyUrl) : axios;
+      // Get axios with proxy
+      const axiosInstance = proxyUrl ? getAxiosWithProxy(proxyUrl) : axios;
 
-    // Get list product
-    const productsUrl = `https://gearvn.com/collections/${collection}/products.json?include=metafields[product]&page=${page}&limit=50`;
-    const response: any = await retryRequest([async () => axiosInstance, async () => axios], productsUrl);
-    if (!response) {
-      console.log(chalk.red('Lỗi khi lấy danh sách sản phẩm'));
-      continue;
-    }
-
-    const products = response.products as Product[];
-
-    for (const product of products) {
-      if (product.variants[0].price) {
-        await handleInsertProduct(product);
+      // Get list product
+      const productsUrl = `https://gearvn.com/collections/${collection}/products.json?include=metafields[product]&page=${page}&limit=50`;
+      const response: any = await retryRequest([async () => axiosInstance, async () => axios], productsUrl);
+      if (!response) {
+        console.log(chalk.red('Lỗi khi lấy danh sách sản phẩm'));
+        continue;
       }
+
+      const products = response.products as Product[];
+
+      for (const product of products) {
+        if (product.variants[0].price) {
+          await handleInsertProduct(product);
+        }
+      }
+
+      console.log(chalk.bgGreenBright(`Đã lấy xong cho collection: ${collection}`));
     }
 
     console.log(chalk.bgGreenBright(`Đã lấy xong cho trang ${page}`));
+    // page++;
     break;
   }
 }
 
+// async function deleteProducts() {
+//   const products = await db.query(`SELECT Id FROM Product WHERE Image LIKE 'https%'`);
+//   const ids = products.map((p: any) => p.Id);
+
+//   const placeholders = ids.map(() => '?').join(',');
+//   await db.query(`DELETE FROM Product WHERE Id IN (${placeholders})`, ids);
+//   await db.query(`DELETE FROM ProductDetails WHERE ProdId IN (${placeholders})`, ids);
+// }
+
 (async () => {
   try {
     await handleCrawler();
+    // await deleteProducts();
   } catch (e: any) {
     console.log(e.message);
   }
