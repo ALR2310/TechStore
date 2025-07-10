@@ -13,6 +13,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 import ReviewManager from './features/manager/review/pages/ReviewManager';
 import CategoryManager from './features/manager/category/pages/CategoryManager';
 import BrandManager from './features/manager/brand/pages/BrandManager';
+import StatisticManager from './features/manager/statistic/pages/StatisticManager';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             </Route>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
+              <Route path="statistic" element={<StatisticManager />} />
               <Route path="user" element={<UserManager />} />
               <Route path="product">
                 <Route index element={<ProductManager />} />
