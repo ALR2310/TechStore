@@ -50,7 +50,7 @@ class ViewedService {
 
     const [viewCount, totalView, viewByProduct] = await Promise.all([
       db.query(viewCountQuery, dateQuery.params),
-      db.query(totalViewQuery, dateQuery.params),
+      db.query(totalViewQuery),
       db.query(viewByProductQuery, dateQuery.params),
     ]);
 
@@ -58,7 +58,7 @@ class ViewedService {
       totalView: Number(totalView[0]?.total || 0),
       viewCount: viewCount.map((r: any) => ({
         label: r.label,
-        count: Number(r.count),
+        value: Number(r.count),
       })),
       viewByProduct: viewByProduct.map((r: any) => ({
         productId: r.ProdId,

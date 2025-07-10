@@ -38,24 +38,23 @@ export default function Dashboard() {
     const now = dayjs();
     const currentLabel = now.format('YYYY-MM');
     const previousLabel = now.subtract(1, 'month').format('YYYY-MM');
-    const getCountFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.count ?? 0;
-    const getRevenueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.revenue ?? 0;
+    const getValueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.value ?? 0;
 
     // User
-    const currentUsers = getCountFrom(userStats?.userCount, currentLabel);
-    const prevUsers = getCountFrom(userStats?.userCount, previousLabel);
+    const currentUsers = getValueFrom(userStats?.userCount, currentLabel);
+    const prevUsers = getValueFrom(userStats?.userCount, previousLabel);
 
     // Revenue
-    const currentRevenue = getRevenueFrom(orderStats?.orderRevenue, currentLabel);
-    const prevRevenue = getRevenueFrom(orderStats?.orderRevenue, previousLabel);
+    const currentRevenue = getValueFrom(orderStats?.orderRevenue, currentLabel);
+    const prevRevenue = getValueFrom(orderStats?.orderRevenue, previousLabel);
 
     // Views
-    const currentViews = getCountFrom(viewedStats?.viewCount, currentLabel);
-    const prevViews = getCountFrom(viewedStats?.viewCount, previousLabel);
+    const currentViews = getValueFrom(viewedStats?.viewCount, currentLabel);
+    const prevViews = getValueFrom(viewedStats?.viewCount, previousLabel);
 
     // Orders
-    const currentOrders = getCountFrom(orderStats?.orderCount, currentLabel);
-    const prevOrders = getCountFrom(orderStats?.orderCount, previousLabel);
+    const currentOrders = getValueFrom(orderStats?.orderCount, currentLabel);
+    const prevOrders = getValueFrom(orderStats?.orderCount, previousLabel);
 
     function calcPercentChange(current: number, previous: number): { text: string; type: 'up' | 'down' | 'neutral' } {
       if (previous === 0 && current === 0) return { text: '↔︎ Không thay đổi', type: 'neutral' };

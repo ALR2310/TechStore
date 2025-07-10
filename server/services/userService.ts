@@ -224,7 +224,7 @@ class UserService {
     const createdQuery = `
       SELECT 
         strftime('${formatMap[by]}', createdAt) as label,
-        COUNT(*) as count
+        COUNT(*) as value
       FROM User
       ${dateQuery.query}
       GROUP BY label

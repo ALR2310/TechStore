@@ -210,7 +210,7 @@ class OrderService {
         return acc;
       }, {}),
       orderCount: orderCount.map((r: any) => ({ label: r.label, count: Number(r.count) })),
-      orderRevenue: orderRevenue.map((r: any) => ({ label: r.label, revenue: Number(r.revenue ?? 0) })),
+      orderRevenue: orderRevenue.map((r: any) => ({ label: r.label, value: Number(r.revenue ?? 0) })),
     };
   }
 }

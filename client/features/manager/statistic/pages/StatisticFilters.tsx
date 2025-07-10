@@ -67,22 +67,6 @@ export default function StatisticFilters({
           </div>
         </div>
 
-        {/* Year Selector */}
-        {(timeRange === 'month' || timeRange === 'day') && (
-          <div className="space-x-4">
-            <label className="label">
-              <span className="font-semibold">Năm:</span>
-            </label>
-            <select className="select w-32" value={selectedYear} onChange={(e) => onYearChange(Number(e.target.value))}>
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         {/* Month Selector */}
         {timeRange === 'day' && (
           <div className="space-x-4">
@@ -97,6 +81,22 @@ export default function StatisticFilters({
               {months.map((month) => (
                 <option key={month.value} value={month.value}>
                   {month.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Year Selector */}
+        {(timeRange === 'month' || timeRange === 'day') && (
+          <div className="space-x-4">
+            <label className="label">
+              <span className="font-semibold">Năm:</span>
+            </label>
+            <select className="select w-32" value={selectedYear} onChange={(e) => onYearChange(Number(e.target.value))}>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
                 </option>
               ))}
             </select>
