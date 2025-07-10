@@ -1,6 +1,14 @@
+import { getStatisticPayload } from '@shared/types/params.type';
 import { createProductPayload, getListProductParams, updateProductPayload } from '@shared/types/product.type';
 import { isNullOrEmpty } from '@shared/utils/general.utils';
 import { db } from '~/configs/dbConnect';
+import { buildDateFilter } from '~/utils/query.build';
+
+const formatMap = {
+  day: '%Y-%m-%d',
+  month: '%Y-%m',
+  year: '%Y',
+};
 
 class ProductService {
   async getListProduct(payload: getListProductParams) {
@@ -360,6 +368,62 @@ class ProductService {
     await db.query('DELETE FROM ProductDetails WHERE ProdId = ?', [id]);
 
     return { message: 'Product deleted successfully' };
+  }
+
+  async getStatistic(payload: getStatisticPayload) {
+    const { by = 'day', startDate, endDate } = payload;
+
+    const groupFormat = formatMap[by];
+    const dateQuery = buildDateFilter(startDate, endDate);
+
+    const productsQuery = `
+      SELECT 
+        Id,
+        ProdName as Name,
+        Status
+      FROM Product
+      ${dateQuery.query}
+    `;
+
+    const totalProductQuery = `
+      SELECT COUNT(*) as total FROM Product
+      ${dateQuery.query};
+    `;
+
+    const bestSellingQuery = `
+      SELECT 
+        strftime('${groupFormat}', o.createdAt) as datetime,
+        p.ProdName as name,
+        p.Price,
+        SUM(oi.Quantity) as totalSold
+      FROM OrderItems oi
+      JOIN Orders o ON o.Id = oi.OrdId
+      JOIN Product p ON p.Id = oi.ProdId
+      ${dateQuery.query.replace(/createdAt/g, 'o.createdAt')}
+      GROUP BY datetime, oi.ProdId
+      ORDER BY datetime ASC, totalSold DESC;
+    `;
+
+    const [products, total, bestSelling] = await Promise.all([
+      db.query(productsQuery, dateQuery.params),
+      db.query(totalProductQuery, dateQuery.params),
+      db.query(bestSellingQuery, dateQuery.params),
+    ]);
+
+    return {
+      totalProduct: total[0]?.total || 0,
+      productByStatus: products.reduce((acc: Record<string, { id: number; name: string }[]>, row: any) => {
+        if (!acc[row.Status]) acc[row.Status] = [];
+        acc[row.Status].push({ id: row.Id, name: row.Name });
+        return acc;
+      }, {}),
+      bestSellingProducts: bestSelling.map((r: any) => ({
+        datetime: r.datetime,
+        name: r.name,
+        price: Number(r.Price),
+        totalSold: Number(r.totalSold),
+      })),
+    };
   }
 }
 

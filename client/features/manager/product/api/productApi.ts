@@ -1,3 +1,4 @@
+import { getStatisticPayload } from '@shared/types/params.type';
 import { createProductPayload, getListProductParams, updateProductPayload } from '@shared/types/product.type';
 import { http } from '~/libs/axios.http';
 
@@ -67,5 +68,10 @@ export const updateProduct = async (payload: updateProductPayload) => {
 
 export const deleteProduct = async (id: string) => {
   const res = await http.delete(`/product/${id}`);
+  return res.data;
+};
+
+export const getProductStatistic = async (payload: getStatisticPayload) => {
+  const res = await http.get('/product/statistic', { params: payload });
   return res.data;
 };

@@ -6,9 +6,10 @@ import { getUserStatistic } from '../../user/api/UserApi';
 import { getViewedStatistic } from '../../viewed/viewedApi';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
+import { getProductStatistic } from '../../product/api/productApi';
 
 export default function Dashboard() {
-  const [userStatsQuery, orderStatsQuery, viewedStatsQuery] = useQueries({
+  const [userStatsQuery, orderStatsQuery, viewedStatsQuery, productStatsQuery] = useQueries({
     queries: [
       {
         queryKey: ['userStats'],
@@ -21,6 +22,10 @@ export default function Dashboard() {
       {
         queryKey: ['viewedStats'],
         queryFn: () => getViewedStatistic({ by: 'month' }),
+      },
+      {
+        queryKey: ['productStats'],
+        queryFn: () => getProductStatistic({ by: 'month' }),
       },
     ],
   });
@@ -37,8 +42,8 @@ export default function Dashboard() {
     const getRevenueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.revenue ?? 0;
 
     // User
-    const currentUsers = getCountFrom(userStats?.userCreated, currentLabel);
-    const prevUsers = getCountFrom(userStats?.userCreated, previousLabel);
+    const currentUsers = getCountFrom(userStats?.userCount, currentLabel);
+    const prevUsers = getCountFrom(userStats?.userCount, previousLabel);
 
     // Revenue
     const currentRevenue = getRevenueFrom(orderStats?.orderRevenue, currentLabel);
@@ -87,7 +92,7 @@ export default function Dashboard() {
         ...calcPercentChange(currentViews, prevViews),
       },
       {
-        title: 'Orders',
+        title: 'Đơn hàng',
         value: currentOrders,
         ...calcPercentChange(currentOrders, prevOrders),
       },
@@ -101,7 +106,7 @@ export default function Dashboard() {
       <DashboardCharts
         userData={userStatsQuery.data?.userCount ?? []}
         revenueData={orderStatsQuery.data?.orderRevenue ?? []}
-        viewedData={viewedStatsQuery.data?.viewCount ?? []}
+        sellingData={productStatsQuery.data?.bestSellingProducts ?? []}
       />
     </div>
   );

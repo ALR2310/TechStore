@@ -3,10 +3,81 @@ import ReactECharts from 'echarts-for-react';
 interface DashboardChartProps {
   userData: any[];
   revenueData: any[];
-  viewedData: any[];
+  sellingData: any[];
 }
 
-export default function DashboardCharts({ userData, revenueData, viewedData }: DashboardChartProps) {
+function buildSellingOpts(data: any[]) {
+  const productMap = new Map<string, { name: string; totalSold: number; price: number }>();
+
+  for (const row of data) {
+    const existing = productMap.get(row.name);
+    if (existing) {
+      existing.totalSold += row.totalSold;
+    } else {
+      productMap.set(row.name, {
+        name: row.name,
+        totalSold: row.totalSold,
+        price: row.price,
+      });
+    }
+  }
+
+  const pieData = Array.from(productMap.values()).map((item) => ({
+    name: item.name,
+    value: item.totalSold,
+    price: item.price,
+  }));
+
+  return {
+    title: {
+      text: 'Tỷ lệ sản phẩm bán chạy theo tháng',
+      left: 'center',
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: any) => {
+        const price = params.data.price?.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+          maximumFractionDigits: 0,
+        });
+
+        return `
+          <strong>${params.name}</strong><br/>
+          Giá: <span class="text-success">${price}</span><br/>
+          Đã bán được: <span class="text-success">${params.value}</span><br/>
+          Chiếm: <span class="text-success">${params.percent}%</span>
+        `;
+      },
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      formatter: function (name: string) {
+        const maxLength = 40;
+        return name.length > maxLength ? name.slice(0, maxLength) + '…' : name;
+      },
+    },
+    series: [
+      {
+        name: 'Sản phẩm',
+        type: 'pie',
+        radius: '60%',
+        data: pieData,
+        label: { show: false },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+      },
+    ],
+  };
+}
+
+export default function DashboardCharts({ userData, revenueData, sellingData }: DashboardChartProps) {
   const userOpt = {
     title: { text: 'Người dùng đăng ký theo tháng' },
     tooltip: {},
@@ -23,18 +94,7 @@ export default function DashboardCharts({ userData, revenueData, viewedData }: D
     series: [{ type: 'bar', data: revenueData.map((d) => d.revenue) }],
   };
 
-  const visitsOpt = {
-    title: { text: 'Lượt truy cập theo tuần' },
-    tooltip: { trigger: 'item' },
-    legend: { bottom: '0%' },
-    series: [
-      {
-        type: 'pie',
-        radius: '50%',
-        data: viewedData.map((d) => ({ value: d.count, name: d.label })),
-      },
-    ],
-  };
+  const sellingOpt = buildSellingOpts(sellingData);
 
   return (
     <>
@@ -47,7 +107,7 @@ export default function DashboardCharts({ userData, revenueData, viewedData }: D
         </div>
       </div>
       <div className="card bg-base-100 shadow p-4">
-        <ReactECharts option={visitsOpt} style={{ height: 400 }} />
+        <ReactECharts option={sellingOpt} style={{ height: 400 }} />
       </div>
     </>
   );

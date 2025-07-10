@@ -12,6 +12,7 @@ router.get('/user/:id', apiController.getUser);
 router.put('/user/:id', apiController.updateUser);
 router.delete('/user/:id', apiController.deleteUser);
 
+router.get('/product/statistic', apiController.getProductStatistic);
 router.get('/product', apiController.getListProduct);
 router.get('/product/:id', apiController.getProduct);
 router.get('/product/brand/:id', apiController.getProductsByBrand);
