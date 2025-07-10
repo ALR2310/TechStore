@@ -11,7 +11,7 @@
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
     "build": "npm run build:client && npm run build:server",
     "crawler": "tsx scripts/crawler.ts",
-    "seed": "tsx scripts/fakeData/index.ts"
+    "seeder": "tsx scripts/seeder.ts"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +34,7 @@
     "lodash": "^4.17.21",
     "motion": "^12.18.1",
     "multer": "^2.0.1",
+    "nanoid": "^5.1.5",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",

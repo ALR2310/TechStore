@@ -1,7 +1,9 @@
 import chalk from 'chalk';
-import { db } from '../../server/configs/dbConnect';
+import { db } from '../server/configs/dbConnect';
 import { hash } from 'bcryptjs';
 import { faker } from '@faker-js/faker';
+import { customAlphabet } from 'nanoid';
+import dayjs from 'dayjs';
 
 const reviewSamples = {
   1: [
@@ -81,8 +83,7 @@ const reviewSamples = {
   ],
 };
 
-const GENDERS = ['Nam', 'Nữ'];
-const ADDRESS_TYPES = ['Nhà riêng', 'Văn phòng'];
+const nanoidNumbers = customAlphabet('0123456789', 6);
 
 function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -92,13 +93,36 @@ function shuffle<T>(arr: T[]): T[] {
   return arr.sort(() => 0.5 - Math.random());
 }
 
-function getRandomPastDate(): string {
-  const now = new Date();
-  const pastDate = new Date(now.getTime() - Math.floor(Math.random() * 730 * 24 * 60 * 60 * 1000));
-  return pastDate.toISOString().slice(0, 19).replace('T', ' ');
+function getRandomPastDate({
+  todayPercent = 0.2,
+  lastMonthPercent = 0.2,
+}: {
+  todayPercent?: number;
+  lastMonthPercent?: number;
+} = {}): string {
+  const rand = Math.random();
+
+  if (rand < todayPercent) {
+    return dayjs().format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  if (rand < todayPercent + lastMonthPercent) {
+    const start = dayjs().subtract(1, 'month').startOf('month');
+    const end = dayjs().subtract(1, 'month').endOf('month');
+    const diff = end.diff(start, 'second');
+    const randomSeconds = Math.floor(Math.random() * diff);
+    return start.add(randomSeconds, 'second').format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  // randomPercent là phần còn lại
+  const twoYearsAgo = dayjs().subtract(2, 'year');
+  const startOfThisMonth = dayjs().startOf('month');
+  const diff = startOfThisMonth.diff(twoYearsAgo, 'second');
+  const randomSeconds = Math.floor(Math.random() * diff);
+  return twoYearsAgo.add(randomSeconds, 'second').format('YYYY-MM-DD HH:mm:ss');
 }
 
-export async function fakeReviews() {
+async function fakeReviews() {
   const users = await db.query(
     `SELECT U.Id, UI.FullName FROM User U LEFT JOIN UserInfo UI ON U.Id = UI.UserId WHERE U.Status = 'Active'`,
   );
@@ -135,7 +159,7 @@ export async function fakeReviews() {
   console.log(chalk.green('✅ Dữ liệu đánh giá đã được tạo.'));
 }
 
-export async function fakeViewed() {
+async function fakeViewed() {
   const users = await db.query(
     `SELECT U.Id, UI.FullName FROM User U LEFT JOIN UserInfo UI ON U.Id = UI.UserId WHERE U.Status = 'Active'`,
   );
@@ -153,7 +177,7 @@ export async function fakeViewed() {
         user.Id,
       ]);
       if (existing.length > 0) {
-        console.log(chalk.yellow(`Lượt xem của người dùng ${user.FullName} đã tồn tại(skip)}`));
+        console.log(chalk.yellow(`Lượt xem của người dùng ${user.FullName} đã tồn tại(skip)`));
         continue;
       }
 
@@ -168,7 +192,10 @@ export async function fakeViewed() {
   console.log(chalk.green('✅ Dữ liệu lượt xem đã được tạo.'));
 }
 
-export async function fakeUsers(count = 5) {
+async function fakeUsers(count = 5) {
+  const GENDERS = ['Nam', 'Nữ'];
+  const ADDRESS_TYPES = ['Nhà riêng', 'Văn phòng'];
+
   for (let i = 0; i < count; i++) {
     const fullName = faker.person.fullName();
     const email = faker.internet.email().toLowerCase();
@@ -212,3 +239,71 @@ export async function fakeUsers(count = 5) {
 
   console.log(chalk.green(`👤 Đã tạo ${count} user.`));
 }
+
+async function fakeOrder(count = 5) {
+  const ORDER_STATUSES = ['Processing', 'Delivering', 'Completed', 'Cancelled'];
+
+  const users = await db.query(
+    `SELECT U.Id, UI.FullName
+     FROM User U
+     LEFT JOIN UserInfo UI ON U.Id = UI.UserId
+     WHERE U.Status = 'Active' AND U.Role = 'User'
+     ORDER BY RANDOM()
+     LIMIT ${count}`,
+  );
+
+  const products = await db.query(`SELECT Id, Price, Discount FROM Product WHERE Status = 'Active'`);
+
+  for (const user of users) {
+    console.log(chalk.blue(`🛒 Đang thêm đơn hàng cho: ${user.FullName}`));
+
+    const addresses = await db.query(`SELECT Id FROM Address WHERE UserId = ? ORDER BY IsDefault DESC LIMIT 1`, [
+      user.Id,
+    ]);
+    if (addresses.length === 0) continue; // skip if user has no address
+
+    const adrId = addresses[0].Id;
+    const createdAt = getRandomPastDate();
+    const status = Math.random() < 0.6 ? 'Completed' : randomFrom(ORDER_STATUSES);
+    const code = nanoidNumbers();
+
+    // Random product in order
+    let itemCount = 1;
+    if (Math.random() >= 0.7) {
+      itemCount = Math.floor(Math.random() * 4) + 2;
+    }
+
+    const orderItems: any = shuffle(products).slice(0, itemCount);
+    let total = 0;
+
+    for (const item of orderItems) {
+      item.Quantity = Math.floor(Math.random() * 3) + 1;
+      const finalPrice = (item.Price - (item.Discount || 0)) * item.Quantity;
+      total += finalPrice;
+    }
+
+    const result = await db.query(
+      `INSERT INTO Orders (Code, UserId, AdrId, TotalPrice, Status, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING Id`,
+      [code, user.Id, adrId, total.toFixed(2), status, createdAt, createdAt],
+    );
+    const orderId = result.insertId;
+
+    for (const item of orderItems) {
+      await db.query(
+        `INSERT INTO OrderItems (OrdId, ProdId, Quantity, createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, ?)`,
+        [orderId, item.Id, item.Quantity, createdAt, createdAt],
+      );
+    }
+  }
+
+  console.log(chalk.green('🛒 Đã tạo dữ liệu đơn hàng thành công.'));
+}
+
+(async () => {
+  await fakeUsers(5);
+  await fakeOrder();
+  await fakeViewed();
+  await fakeReviews();
+})();
