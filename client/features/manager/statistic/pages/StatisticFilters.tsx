@@ -1,4 +1,6 @@
+import DatePicker from '~/components/DatePicker';
 import { TimeRange } from './StatisticManager';
+import dayjs from 'dayjs';
 
 interface StatisticFiltersProps {
   timeRange: TimeRange;
@@ -113,6 +115,16 @@ export default function StatisticFilters({
             {timeRange === 'month' && `${selectedYear} (12 tháng)`}
             {timeRange === 'year' && '5 năm gần nhất'}
           </div>
+        </div>
+
+        <div>
+          <DatePicker
+            mode="range"
+            value={{
+              from: new Date(),
+              to: dayjs().add(1, 'month').toDate(),
+            }}
+          />
         </div>
       </div>
     </div>
