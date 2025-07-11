@@ -1,4 +1,5 @@
 import { vi } from 'date-fns/locale';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,13 +12,23 @@ interface StatisticFiltersProps {
   onChange?: (range: { from: Date | null; to: Date | null }) => void;
 }
 
-export default function StatisticFilters({ range: timeRange, onRangeChange, onChange }: StatisticFiltersProps) {
-  const [range, setRange] = useState<[Date | null, Date | null]>([null, null]);
+export default function StatisticFilters({ range, onRangeChange, onChange }: StatisticFiltersProps) {
+  const [rangeValue, setRangeValue] = useState<[Date | null, Date | null]>([null, null]);
 
   useEffect(() => {
-    const from = range[0];
-    const to = timeRange === 'day' ? range[1] : null;
+    const from = rangeValue[0];
+    const to = rangeValue[1];
     onChange?.({ from, to });
+  }, [rangeValue]);
+
+  useEffect(() => {
+    if (range === 'day') {
+      setRangeValue([dayjs().startOf('month').toDate(), dayjs().endOf('month').toDate()]);
+    } else if (range === 'month') {
+      setRangeValue([dayjs().startOf('year').toDate(), dayjs().endOf('year').toDate()]);
+    } else {
+      setRangeValue([dayjs().toDate(), dayjs().toDate()]);
+    }
   }, [range]);
 
   return (
@@ -28,10 +39,10 @@ export default function StatisticFilters({ range: timeRange, onRangeChange, onCh
           {(['day', 'month', 'year'] as TimeRange[]).map((type) => (
             <button
               key={type}
-              className={`btn join-item ${timeRange === type ? 'btn-primary' : 'btn-outline'}`}
+              className={`btn join-item ${range === type ? 'btn-primary' : 'btn-outline'}`}
               onClick={() => {
                 onRangeChange?.(type);
-                setRange([null, null]);
+                setRangeValue([null, null]);
               }}
             >
               <i
@@ -48,19 +59,19 @@ export default function StatisticFilters({ range: timeRange, onRangeChange, onCh
       <div className="flex gap-6 items-center">
         <label className="label font-semibold">Lọc theo:</label>
         <label className="floating-label">
-          <span>{timeRange === 'day' ? 'Chọn ngày' : timeRange === 'month' ? 'Chọn tháng' : 'Chọn năm'}</span>
+          <span>{range === 'day' ? 'Chọn ngày' : range === 'month' ? 'Chọn tháng' : 'Chọn năm'}</span>
           <DatePicker
             locale={vi}
             className="input w-48"
-            placeholderText={timeRange === 'day' ? 'Chọn ngày' : timeRange === 'month' ? 'Chọn tháng' : 'Chọn năm'}
+            placeholderText={range === 'day' ? 'Chọn ngày' : range === 'month' ? 'Chọn tháng' : 'Chọn năm'}
             selectsRange={true}
-            startDate={range[0]}
-            endDate={range[1]}
-            onChange={(update) => setRange(update)}
+            startDate={rangeValue[0]}
+            endDate={rangeValue[1]}
+            onChange={(update) => setRangeValue(update)}
             isClearable
-            dateFormat={timeRange === 'day' ? 'dd/MM/yyyy' : timeRange === 'month' ? 'MM/yyyy' : 'yyyy'}
-            showMonthYearPicker={timeRange === 'month'}
-            showYearPicker={timeRange === 'year'}
+            dateFormat={range === 'day' ? 'dd/MM/yyyy' : range === 'month' ? 'MM/yyyy' : 'yyyy'}
+            showMonthYearPicker={range === 'month'}
+            showYearPicker={range === 'year'}
           />
         </label>
       </div>

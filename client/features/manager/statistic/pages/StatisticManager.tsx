@@ -16,53 +16,50 @@ import { getProductStatistic } from '../../product/api/productApi';
 
 export type TimeRange = 'day' | 'month' | 'year';
 
-const builDateFilter = (range: TimeRange, date: string) => {
-  const today = dayjs(date);
-  let startDate = '',
-    endDate = '';
+const builDateFilter = (value: [Date | null, Date | null], range: TimeRange) => {
+  const [from, to] = value;
+  let startDate: string | undefined, endDate: string | undefined;
 
-  switch (range) {
-    case 'day':
-      startDate = today.startOf('month').format('YYYY-MM-DD HH:mm:ss');
-      endDate = today.endOf('month').format('YYYY-MM-DD HH:mm:ss');
-      break;
-    case 'month':
-      startDate = today.startOf('year').format('YYYY-MM-DD HH:mm:ss');
-      endDate = today.endOf('year').format('YYYY-MM-DD HH:mm:ss');
-      break;
+  if (range === 'day') {
+    startDate = from ? dayjs(from).startOf('day').format('YYYY-MM-DD HH:mm:ss') : undefined;
+    endDate = to ? dayjs(to).endOf('day').format('YYYY-MM-DD HH:mm:ss') : undefined;
+  } else if (range === 'month') {
+    startDate = from ? dayjs(from).startOf('month').format('YYYY-MM-DD HH:mm:ss') : undefined;
+    endDate = to ? dayjs(to).endOf('month').format('YYYY-MM-DD HH:mm:ss') : undefined;
+  } else {
+    startDate = from ? dayjs(from).startOf('year').format('YYYY-MM-DD HH:mm:ss') : undefined;
+    endDate = to ? dayjs(to).endOf('year').format('YYYY-MM-DD HH:mm:ss') : undefined;
   }
 
   return { startDate, endDate };
 };
 
 export default function StatisticManager() {
-  const [timeRange, setTimeRange] = useState<TimeRange>('month');
   const [selectedYear] = useState(dayjs().year());
   const [selectedMonth] = useState(dayjs().month() + 1);
+
+  const [timeRange, setTimeRange] = useState<TimeRange>('month');
+  const [timeRangeValue, setTimeRangeValue] = useState<[Date | null, Date | null]>([null, null]);
 
   const mockData = generateMockData(timeRange, selectedYear, selectedMonth);
 
   const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery] = useQueries({
     queries: [
       {
-        queryKey: ['orderStats', timeRange, selectedYear, selectedMonth],
-        queryFn: () =>
-          getOrderStatistic({ by: timeRange, ...builDateFilter(timeRange, `${selectedYear}-${selectedMonth}-01`) }),
+        queryKey: ['orderStats', timeRange, timeRangeValue],
+        queryFn: () => getOrderStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
       },
       {
-        queryKey: ['userStats', timeRange, selectedYear, selectedMonth],
-        queryFn: () =>
-          getUserStatistic({ by: timeRange, ...builDateFilter(timeRange, `${selectedYear}-${selectedMonth}-01`) }),
+        queryKey: ['userStats', timeRange, timeRangeValue],
+        queryFn: () => getUserStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
       },
       {
-        queryKey: ['viewedStats', timeRange, selectedYear, selectedMonth],
-        queryFn: () =>
-          getViewedStatistic({ by: timeRange, ...builDateFilter(timeRange, `${selectedYear}-${selectedMonth}-01`) }),
+        queryKey: ['viewedStats', timeRange, timeRangeValue],
+        queryFn: () => getViewedStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
       },
       {
-        queryKey: ['productStats', timeRange, selectedYear, selectedMonth],
-        queryFn: () =>
-          getProductStatistic({ by: timeRange, ...builDateFilter(timeRange, `${selectedYear}-${selectedMonth}-01`) }),
+        queryKey: ['productStats', timeRange, timeRangeValue],
+        queryFn: () => getProductStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
       },
     ],
   });
@@ -85,9 +82,7 @@ export default function StatisticManager() {
       <StatisticFilters
         range={timeRange}
         onRangeChange={setTimeRange}
-        onChange={({ from, to }) => {
-          console.log('Khoảng thời gian đã chọn:', dayjs(from).format('YYYY-MM-DD'), dayjs(to).format('YYYY-MM-DD'));
-        }}
+        onChange={({ from, to }) => setTimeRangeValue([from, to])}
       />
 
       <StatisticSummary data={summaryData} />
