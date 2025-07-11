@@ -51,34 +51,6 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
 
-  // Orders Chart (Bar Chart)
-  const ordersOption = {
-    title: {
-      text: 'Số đơn hàng',
-      left: 'center',
-      textStyle: { fontSize: 16, fontWeight: 'bold' },
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => `${params[0].axisValue}<br/>Đơn hàng: ${params[0].value}`,
-    },
-    xAxis: {
-      type: 'category',
-      data: data.orders.map((item) => item.label),
-      axisLabel: { rotate: timeRange === 'day' ? 45 : 0 },
-    },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        type: 'bar',
-        data: data.orders.map((item) => item.value),
-        itemStyle: { color: '#10B981' },
-        barWidth: '60%',
-      },
-    ],
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  };
-
   // Categories Pie Chart
   const categoriesOption = {
     title: {
@@ -119,45 +91,6 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
     ],
   };
 
-  // Top Products Chart (Horizontal Bar)
-  const topProductsOption = {
-    title: {
-      text: 'Top 5 sản phẩm bán chạy',
-      left: 'center',
-      textStyle: { fontSize: 16, fontWeight: 'bold' },
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const revenue = params[0].value.toLocaleString('vi-VN');
-        return `${params[0].axisValue}<br/>Doanh thu: ${revenue} ₫`;
-      },
-    },
-    xAxis: {
-      type: 'value',
-      axisLabel: {
-        formatter: (value: number) => {
-          if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}B`;
-          if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-          return value.toString();
-        },
-      },
-    },
-    yAxis: {
-      type: 'category',
-      data: data.topProducts.map((item) => item.name),
-      axisLabel: { interval: 0 },
-    },
-    series: [
-      {
-        type: 'bar',
-        data: data.topProducts.map((item) => item.revenue),
-        itemStyle: { color: '#F59E0B' },
-      },
-    ],
-    grid: { left: '25%', right: '4%', bottom: '3%', containLabel: true },
-  };
-
   // Users Chart (Area Chart)
   const usersOption = {
     title: {
@@ -185,44 +118,6 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
       },
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  };
-
-  // Order Status Pie Chart
-  const orderStatusOption = {
-    title: {
-      text: 'Trạng thái đơn hàng',
-      left: 'center',
-      textStyle: { fontSize: 16, fontWeight: 'bold' },
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: '{a} <br/>{b}: {c}% ({d}%)',
-    },
-    legend: {
-      orient: 'horizontal',
-      bottom: '5%',
-      left: 'center',
-    },
-    series: [
-      {
-        name: 'Trạng thái',
-        type: 'pie',
-        radius: '65%',
-        center: ['50%', '45%'],
-        data: data.orderStatus.map((item) => ({
-          name: item.name,
-          value: item.value,
-          itemStyle: { color: item.color },
-        })),
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
-          },
-        },
-      },
-    ],
   };
 
   // Monthly Comparison Chart (chỉ hiển thị khi timeRange = 'month')
@@ -321,32 +216,23 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
   return (
     <div className="space-y-6">
       {/* Revenue and Orders Row */}
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={revenueOption} style={{ height: 350 }} />
-        </div>
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={ordersOption} style={{ height: 350 }} />
         </div>
       </div>
 
       {/* Users and Order Status Row */}
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={usersOption} style={{ height: 350 }} />
-        </div>
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={orderStatusOption} style={{ height: 350 }} />
         </div>
       </div>
 
       {/* Categories and Top Products Row */}
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={categoriesOption} style={{ height: 350 }} />
-        </div>
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={topProductsOption} style={{ height: 350 }} />
         </div>
       </div>
 

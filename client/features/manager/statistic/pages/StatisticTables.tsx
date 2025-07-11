@@ -46,56 +46,7 @@ export default function StatisticTables({ data }: StatisticTablesProps) {
                     <div className="badge badge-primary">{product.sold.toLocaleString('vi-VN')}</div>
                   </td>
                   <td>
-                    <div className="font-medium text-success">
-                      {formatCurrency(product.revenue)}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Categories Performance Table */}
-      <div className="card bg-base-100 shadow p-4">
-        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <i className="fa-regular fa-chart-pie text-info"></i>
-          Hiệu suất danh mục
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            <thead>
-              <tr>
-                <th>Danh mục</th>
-                <th>Tỷ lệ</th>
-                <th>Hiệu suất</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.categories.map((category, index) => (
-                <tr key={index}>
-                  <td>
-                    <div className="font-medium">{category.name}</div>
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <div className="badge badge-outline">{category.percentage}%</div>
-                      <progress 
-                        className="progress progress-primary w-16" 
-                        value={category.percentage} 
-                        max="100"
-                      ></progress>
-                    </div>
-                  </td>
-                  <td>
-                    <div className={`badge ${
-                      category.percentage >= 40 ? 'badge-success' :
-                      category.percentage >= 20 ? 'badge-warning' : 'badge-error'
-                    }`}>
-                      {category.percentage >= 40 ? 'Xuất sắc' :
-                       category.percentage >= 20 ? 'Tốt' : 'Cần cải thiện'}
-                    </div>
+                    <div className="font-medium text-success">{formatCurrency(product.revenue)}</div>
                   </td>
                 </tr>
               ))}
@@ -125,10 +76,7 @@ export default function StatisticTables({ data }: StatisticTablesProps) {
                 <tr key={index}>
                   <td>
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: status.color }}
-                      ></div>
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: status.color }}></div>
                       <span className="font-medium">{status.name}</span>
                     </div>
                   </td>
@@ -136,67 +84,38 @@ export default function StatisticTables({ data }: StatisticTablesProps) {
                     <div className="badge badge-outline">{status.value}%</div>
                   </td>
                   <td>
-                    <progress 
-                      className="progress w-20" 
+                    <progress
+                      className="progress w-20"
                       style={{ color: status.color }}
-                      value={status.value} 
+                      value={status.value}
                       max="100"
                     ></progress>
                   </td>
                   <td>
-                    <div className={`badge ${
-                      status.name === 'Hoàn thành' ? 'badge-success' :
-                      status.name === 'Đang xử lý' ? 'badge-warning' :
-                      status.name === 'Đã hủy' ? 'badge-error' : 'badge-info'
-                    }`}>
-                      {status.name === 'Hoàn thành' ? '↗ Tăng' :
-                       status.name === 'Đang xử lý' ? '→ Ổn định' :
-                       status.name === 'Đã hủy' ? '↘ Giảm' : '→ Ổn định'}
+                    <div
+                      className={`badge ${
+                        status.name === 'Hoàn thành'
+                          ? 'badge-success'
+                          : status.name === 'Đang xử lý'
+                          ? 'badge-warning'
+                          : status.name === 'Đã hủy'
+                          ? 'badge-error'
+                          : 'badge-info'
+                      }`}
+                    >
+                      {status.name === 'Hoàn thành'
+                        ? '↗ Tăng'
+                        : status.name === 'Đang xử lý'
+                        ? '→ Ổn định'
+                        : status.name === 'Đã hủy'
+                        ? '↘ Giảm'
+                        : '→ Ổn định'}
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Quick Stats Card */}
-      <div className="card bg-base-100 shadow p-4">
-        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <i className="fa-regular fa-bolt text-warning"></i>
-          Thống kê nhanh
-        </h3>
-        <div className="space-y-4">
-          <div className="stat">
-            <div className="stat-title">Sản phẩm bán chạy nhất</div>
-            <div className="stat-value text-lg text-primary">
-              {data.topProducts[0]?.name || 'N/A'}
-            </div>
-            <div className="stat-desc">
-              {data.topProducts[0]?.sold.toLocaleString('vi-VN')} sản phẩm đã bán
-            </div>
-          </div>
-          
-          <div className="stat">
-            <div className="stat-title">Danh mục hàng đầu</div>
-            <div className="stat-value text-lg text-success">
-              {data.categories[0]?.name || 'N/A'}
-            </div>
-            <div className="stat-desc">
-              {data.categories[0]?.percentage}% tổng doanh số
-            </div>
-          </div>
-
-          <div className="stat">
-            <div className="stat-title">Tỷ lệ hoàn thành đơn hàng</div>
-            <div className="stat-value text-lg text-info">
-              {data.orderStatus.find(s => s.name === 'Hoàn thành')?.value || 0}%
-            </div>
-            <div className="stat-desc">
-              Tăng 5% so với kỳ trước
-            </div>
-          </div>
         </div>
       </div>
     </div>
