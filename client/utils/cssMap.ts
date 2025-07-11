@@ -27,3 +27,18 @@ export const gridRowsMap = {
   '11': 'grid-rows-11',
   '12': 'grid-rows-12',
 };
+
+export const statusMap = {
+  text: {
+    Processing: 'Đang xử lý',
+    Delivering: 'Đang giao hàng',
+    Completed: 'Giao thành công',
+    Cancelled: 'Đã hủy',
+  },
+  color: {
+    Processing: 'text-warning',
+    Delivering: 'text-info',
+    Completed: 'text-success',
+    Cancelled: 'text-error',
+  },
+};

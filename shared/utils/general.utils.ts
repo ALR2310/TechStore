@@ -36,3 +36,13 @@ export function formatToSlug(str: string): string {
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+export function formatStatValue(value: number, type: 'currency' | 'number') {
+  if (type === 'currency') {
+    if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)} Tỷ ₫`;
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)} Triệu ₫`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)} Nghìn ₫`;
+    return `${value.toLocaleString('vi-VN')} ₫`;
+  }
+  return value.toLocaleString('vi-VN');
+}

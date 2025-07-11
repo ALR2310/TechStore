@@ -8,7 +8,7 @@ import { buildStatisticSummary } from '../../statistic/data/buildStatData';
 import StatisticSummary from '../../statistic/pages/StatisticSummary';
 
 export default function Dashboard() {
-  const [ordersQuery, usersQuery, viewedQuery, productsQuery] = useQueries({
+  const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery] = useQueries({
     queries: [
       {
         queryKey: ['orderStats'],
@@ -31,9 +31,9 @@ export default function Dashboard() {
 
   const summaryData = buildStatisticSummary(
     {
-      order: ordersQuery.data,
-      user: usersQuery.data,
-      viewed: viewedQuery.data,
+      order: ordersStatsQuery.data,
+      user: usersStatsQuery.data,
+      viewed: viewedStatsQuery.data,
     },
     'month',
   );
@@ -43,9 +43,9 @@ export default function Dashboard() {
       <StatisticSummary data={summaryData} />
 
       <DashboardCharts
-        userData={usersQuery.data?.userCount ?? []}
-        revenueData={ordersQuery.data?.orderRevenue ?? []}
-        sellingData={productsQuery.data?.bestSellingProducts ?? []}
+        userData={usersStatsQuery.data?.userCount ?? []}
+        revenueData={ordersStatsQuery.data?.orderRevenue ?? []}
+        sellingData={productsStatsQuery.data?.bestSellingProducts ?? []}
       />
     </div>
   );

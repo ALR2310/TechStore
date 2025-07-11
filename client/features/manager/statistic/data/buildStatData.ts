@@ -1,6 +1,9 @@
+import { formatStatValue } from '@shared/utils/general.utils';
 import dayjs from 'dayjs';
 
 type TimeRange = 'day' | 'month' | 'year';
+
+const getValueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.value ?? 0;
 
 export function buildStatisticSummary(data: { order: any; user: any; viewed: any }, timeRange: TimeRange) {
   const { order, user, viewed } = data;
@@ -14,7 +17,7 @@ export function buildStatisticSummary(data: { order: any; user: any; viewed: any
       : timeRange === 'month'
       ? now.subtract(1, 'month').format('YYYY-MM')
       : now.subtract(1, 'year').format('YYYY');
-  const getValueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.value ?? 0;
+
   const periodCurrent = timeRange === 'day' ? 'hôm nay' : timeRange === 'month' ? 'tháng này' : 'năm này';
 
   // Orders
@@ -61,44 +64,57 @@ export function buildStatisticSummary(data: { order: any; user: any; viewed: any
     };
   }
 
-  const formatValue = (value: number, type: 'currency' | 'number') => {
-    if (type === 'currency') {
-      if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}Tỷ ₫`;
-      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}Triệu ₫`;
-      if (value >= 1000) return `${(value / 1000).toFixed(1)}Nghìn ₫`;
-      return `${value.toLocaleString('vi-VN')} ₫`;
-    }
-    return value.toLocaleString('vi-VN');
-  };
-
   return [
     {
       title: 'Tổng doanh thu ' + periodCurrent,
-      value: formatValue(currentRevenue, 'currency'),
+      value: formatStatValue(currentRevenue, 'currency'),
       growth: calculateGrowth(currentRevenue, prevRevenue),
       icon: 'fa-chart-line-up',
       color: 'text-primary',
     },
     {
       title: 'Tổng đơn hàng ' + periodCurrent,
-      value: formatValue(order?.totalOrder ?? 0, 'number'),
+      value: formatStatValue(order?.totalOrder ?? 0, 'number'),
       growth: calculateGrowth(currentOrders, prevOrders),
       icon: 'fa-shopping-cart',
       color: 'text-success',
     },
     {
       title: 'Người dùng mới ' + periodCurrent,
-      value: formatValue(currentUsers, 'number'),
+      value: formatStatValue(currentUsers, 'number'),
       growth: calculateGrowth(currentUsers, prevUsers),
       icon: 'fa-users',
       color: 'text-info',
     },
     {
       title: 'Lượt truy cập ' + periodCurrent,
-      value: formatValue(currentViews, 'number'),
+      value: formatStatValue(currentViews, 'number'),
       growth: calculateGrowth(currentViews, prevViews),
       icon: 'fa-glasses',
       color: 'text-warning',
     },
   ];
+}
+
+export function buildStatsTableSelling(data: any[], timeRange: TimeRange) {
+  const now = dayjs();
+  const currentLabel =
+    timeRange === 'day' ? now.format('YYYY-MM-DD') : timeRange === 'month' ? now.format('YYYY-MM') : now.format('YYYY');
+
+  return data?.filter((i) => i.datetime === currentLabel) ?? [];
+}
+
+export function buildStatsTableOrderStatus(data: any) {
+  const entries = Object.entries(data ?? {}) as [string, number][];
+  const total = entries.reduce((sum, [, value]) => sum + value, 0);
+
+  const result = entries
+    .map(([name, value]) => ({
+      name,
+      value,
+      percent: total > 0 ? Math.round((value / total) * 100) : 0,
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  return result;
 }
