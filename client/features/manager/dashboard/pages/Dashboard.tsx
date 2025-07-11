@@ -1,23 +1,22 @@
 import DashboardCharts from './DashboardCharts';
-import DashboardStats from './DashboardStats';
 import { useQueries } from '@tanstack/react-query';
 import { getOrderStatistic } from '../../order/orderApi';
 import { getUserStatistic } from '../../user/api/UserApi';
 import { getViewedStatistic } from '../../viewed/viewedApi';
-import { useMemo } from 'react';
-import dayjs from 'dayjs';
 import { getProductStatistic } from '../../product/api/productApi';
+import { buildStatisticSummary } from '../../statistic/data/buildStatData';
+import StatisticSummary from '../../statistic/pages/StatisticSummary';
 
 export default function Dashboard() {
-  const [userStatsQuery, orderStatsQuery, viewedStatsQuery, productStatsQuery] = useQueries({
+  const [ordersQuery, usersQuery, viewedQuery, productsQuery] = useQueries({
     queries: [
-      {
-        queryKey: ['userStats'],
-        queryFn: () => getUserStatistic({ by: 'month' }),
-      },
       {
         queryKey: ['orderStats'],
         queryFn: () => getOrderStatistic({ by: 'month' }),
+      },
+      {
+        queryKey: ['userStats'],
+        queryFn: () => getUserStatistic({ by: 'month' }),
       },
       {
         queryKey: ['viewedStats'],
@@ -30,82 +29,23 @@ export default function Dashboard() {
     ],
   });
 
-  const stats = useMemo(() => {
-    const userStats = userStatsQuery.data;
-    const orderStats = orderStatsQuery.data;
-    const viewedStats = viewedStatsQuery.data;
-
-    const now = dayjs();
-    const currentLabel = now.format('YYYY-MM');
-    const previousLabel = now.subtract(1, 'month').format('YYYY-MM');
-    const getValueFrom = (list: any[], label: string) => list?.find((i) => i.label === label)?.value ?? 0;
-
-    // User
-    const currentUsers = getValueFrom(userStats?.userCount, currentLabel);
-    const prevUsers = getValueFrom(userStats?.userCount, previousLabel);
-
-    // Revenue
-    const currentRevenue = getValueFrom(orderStats?.orderRevenue, currentLabel);
-    const prevRevenue = getValueFrom(orderStats?.orderRevenue, previousLabel);
-
-    // Views
-    const currentViews = getValueFrom(viewedStats?.viewCount, currentLabel);
-    const prevViews = getValueFrom(viewedStats?.viewCount, previousLabel);
-
-    // Orders
-    const currentOrders = getValueFrom(orderStats?.orderCount, currentLabel);
-    const prevOrders = getValueFrom(orderStats?.orderCount, previousLabel);
-
-    function calcPercentChange(current: number, previous: number): { text: string; type: 'up' | 'down' | 'neutral' } {
-      if (previous === 0 && current === 0) return { text: '↔︎ Không thay đổi', type: 'neutral' };
-      if (previous === 0) return { text: '↗︎ +100% so với tháng trước', type: 'up' };
-
-      const diff = current - previous;
-      const percent = (diff / previous) * 100;
-
-      if (percent === 0) return { text: '↔︎ Không đổi', type: 'neutral' };
-
-      const sign = percent > 0 ? '↗︎' : '↘︎';
-      const type = percent > 0 ? 'up' : 'down';
-
-      return {
-        text: `${sign} ${Math.abs(Math.round(percent))}% so với tháng trước`,
-        type,
-      };
-    }
-
-    return [
-      {
-        title: 'Người dùng',
-        value: currentUsers,
-        ...calcPercentChange(currentUsers, prevUsers),
-      },
-      {
-        title: 'Doanh thu',
-        value: `${currentRevenue.toLocaleString()} ₫`,
-        ...calcPercentChange(currentRevenue, prevRevenue),
-      },
-      {
-        title: 'Lượt xem',
-        value: currentViews,
-        ...calcPercentChange(currentViews, prevViews),
-      },
-      {
-        title: 'Đơn hàng',
-        value: currentOrders,
-        ...calcPercentChange(currentOrders, prevOrders),
-      },
-    ];
-  }, [userStatsQuery.data, orderStatsQuery.data, viewedStatsQuery.data]);
+  const summaryData = buildStatisticSummary(
+    {
+      order: ordersQuery.data,
+      user: usersQuery.data,
+      viewed: viewedQuery.data,
+    },
+    'month',
+  );
 
   return (
     <div className="space-y-6">
-      <DashboardStats stats={stats} />
+      <StatisticSummary data={summaryData} />
 
       <DashboardCharts
-        userData={userStatsQuery.data?.userCount ?? []}
-        revenueData={orderStatsQuery.data?.orderRevenue ?? []}
-        sellingData={productStatsQuery.data?.bestSellingProducts ?? []}
+        userData={usersQuery.data?.userCount ?? []}
+        revenueData={ordersQuery.data?.orderRevenue ?? []}
+        sellingData={productsQuery.data?.bestSellingProducts ?? []}
       />
     </div>
   );

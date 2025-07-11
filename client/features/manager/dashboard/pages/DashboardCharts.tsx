@@ -83,7 +83,7 @@ export default function DashboardCharts({ userData, revenueData, sellingData }: 
     tooltip: {},
     xAxis: { type: 'category', data: userData.map((d) => d.label) },
     yAxis: { type: 'value' },
-    series: [{ type: 'line', data: userData.map((d) => d.count) }],
+    series: [{ type: 'line', data: userData.map((d) => d.value) }],
   };
 
   const revenueOpt = {
@@ -91,7 +91,7 @@ export default function DashboardCharts({ userData, revenueData, sellingData }: 
     tooltip: {},
     xAxis: { type: 'category', data: revenueData.map((d) => d.label) },
     yAxis: { type: 'value' },
-    series: [{ type: 'bar', data: revenueData.map((d) => d.revenue) }],
+    series: [{ type: 'bar', data: revenueData.map((d) => d.value) }],
   };
 
   const sellingOpt = buildSellingOpts(sellingData);

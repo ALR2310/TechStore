@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import StatisticSummary from './StatisticSummary';
 import { generateMockData } from '../data/mockData';
 import StatisticFilters from './StatisticFilters';
@@ -67,10 +67,6 @@ export default function StatisticManager() {
     },
     timeRange,
   );
-
-  useEffect(() => {
-    console.log(summaryData);
-  }, [summaryData]);
 
   return (
     <div className="space-y-6">
