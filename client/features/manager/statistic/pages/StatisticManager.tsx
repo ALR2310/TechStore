@@ -37,8 +37,8 @@ const builDateFilter = (range: TimeRange, date: string) => {
 
 export default function StatisticManager() {
   const [timeRange, setTimeRange] = useState<TimeRange>('month');
-  const [selectedYear, setSelectedYear] = useState(dayjs().year());
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
+  const [selectedYear] = useState(dayjs().year());
+  const [selectedMonth] = useState(dayjs().month() + 1);
 
   const mockData = generateMockData(timeRange, selectedYear, selectedMonth);
 
@@ -83,12 +83,11 @@ export default function StatisticManager() {
   return (
     <div className="space-y-6">
       <StatisticFilters
-        timeRange={timeRange}
-        selectedYear={selectedYear}
-        selectedMonth={selectedMonth}
-        onTimeRangeChange={setTimeRange}
-        onYearChange={setSelectedYear}
-        onMonthChange={setSelectedMonth}
+        range={timeRange}
+        onRangeChange={setTimeRange}
+        onChange={({ from, to }) => {
+          console.log('Khoảng thời gian đã chọn:', dayjs(from).format('YYYY-MM-DD'), dayjs(to).format('YYYY-MM-DD'));
+        }}
       />
 
       <StatisticSummary data={summaryData} />
