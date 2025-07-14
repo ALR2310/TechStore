@@ -236,7 +236,6 @@ class UserService {
         Status as label,
         COUNT(*) as value
       FROM User
-      ${dateQuery.query}
       GROUP BY Status;
     `;
 

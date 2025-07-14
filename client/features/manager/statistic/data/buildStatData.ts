@@ -420,3 +420,54 @@ export function buildProductViewChart(data: [{ time: string; name: string; count
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
 }
+
+export function buildUserStatusPieChart(data: userStatsResponse['userByStatus']) {
+  if (!data) return {};
+
+  console.log(data);
+
+  const entries = Object.entries(data);
+  const total = entries.reduce((sum, [, value]) => sum + value, 0);
+
+  const seriesData = entries.map(([status, value]) => ({
+    name: status,
+    value,
+    percent: total > 0 ? ((value / total) * 100).toFixed(2) : '0.00',
+  }));
+
+  return {
+    title: {
+      text: 'Tỉ lệ trạng thái người dùng',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c} người ({d}%)',
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      top: 'middle',
+    },
+    series: [
+      {
+        name: 'Trạng thái',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['60%', '50%'],
+        data: seriesData,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+        label: {
+          formatter: '{b}: {d}%',
+        },
+      },
+    ],
+  };
+}
