@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StatisticSummary from './StatisticSummary';
 import { generateMockData } from '../data/mockData';
 import StatisticFilters from './StatisticFilters';
@@ -10,28 +10,17 @@ import { getUserStatistic } from '../../user/api/UserApi';
 import { getViewedStatistic } from '../../viewed/viewedApi';
 import { buildStatisticSummary, buildStatsTableOrderStatus, buildStatsTableSelling } from '../data/buildStatData';
 import DataTable from '~/components/DataTable';
-import { formatStatValue } from '@shared/utils/general.utils';
+import { builDateFilter, formatStatValue, generatePastRange } from '@shared/utils/general.utils';
 import { statusMap } from '~/utils/cssMap';
 import { getProductStatistic } from '../../product/api/productApi';
 
 export type TimeRange = 'day' | 'month' | 'year';
 
-const builDateFilter = (value: [Date | null, Date | null], range: TimeRange) => {
-  const [from, to] = value;
-  let startDate: string | undefined, endDate: string | undefined;
-
-  if (range === 'day') {
-    startDate = from ? dayjs(from).startOf('day').format('YYYY-MM-DD HH:mm:ss') : undefined;
-    endDate = to ? dayjs(to).endOf('day').format('YYYY-MM-DD HH:mm:ss') : undefined;
-  } else if (range === 'month') {
-    startDate = from ? dayjs(from).startOf('month').format('YYYY-MM-DD HH:mm:ss') : undefined;
-    endDate = to ? dayjs(to).endOf('month').format('YYYY-MM-DD HH:mm:ss') : undefined;
-  } else {
-    startDate = from ? dayjs(from).startOf('year').format('YYYY-MM-DD HH:mm:ss') : undefined;
-    endDate = to ? dayjs(to).endOf('year').format('YYYY-MM-DD HH:mm:ss') : undefined;
-  }
-
-  return { startDate, endDate };
+const ensureTimeRangeValue = (value: [Date | null, Date | null]): [Date, Date] => {
+  const now = new Date();
+  const from = value[0] ?? now;
+  const to = value[1] ?? from;
+  return [from, to];
 };
 
 export default function StatisticManager() {
@@ -40,6 +29,11 @@ export default function StatisticManager() {
 
   const [timeRange, setTimeRange] = useState<TimeRange>('month');
   const [timeRangeValue, setTimeRangeValue] = useState<[Date | null, Date | null]>([null, null]);
+  const [timeRangePastValue, setTimeRangePastValue] = useState<[Date | null, Date | null]>([null, null]);
+
+  useEffect(() => {
+    setTimeRangePastValue(generatePastRange(timeRange, timeRangeValue));
+  }, [timeRange, timeRangeValue]);
 
   const mockData = generateMockData(timeRange, selectedYear, selectedMonth);
 
@@ -48,30 +42,58 @@ export default function StatisticManager() {
       {
         queryKey: ['orderStats', timeRange, timeRangeValue],
         queryFn: () => getOrderStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
       },
       {
         queryKey: ['userStats', timeRange, timeRangeValue],
         queryFn: () => getUserStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
       },
       {
         queryKey: ['viewedStats', timeRange, timeRangeValue],
         queryFn: () => getViewedStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
       },
       {
         queryKey: ['productStats', timeRange, timeRangeValue],
         queryFn: () => getProductStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
       },
     ],
   });
 
-  const summaryData = buildStatisticSummary(
-    {
+  const [ordersStatsPastQuery, usersStatsPastQuery, viewedStatsPastQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ['orderStatsPast', timeRange, timeRangePastValue],
+        queryFn: () => getOrderStatistic({ by: timeRange, ...builDateFilter(timeRangePastValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
+      },
+      {
+        queryKey: ['userStatsPast', timeRange, timeRangePastValue],
+        queryFn: () => getUserStatistic({ by: timeRange, ...builDateFilter(timeRangePastValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
+      },
+      {
+        queryKey: ['viewedStatsPast', timeRange, timeRangePastValue],
+        queryFn: () => getViewedStatistic({ by: timeRange, ...builDateFilter(timeRangePastValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
+      },
+    ],
+  });
+
+  const summaryData = buildStatisticSummary({
+    current: {
       order: ordersStatsQuery.data,
       user: usersStatsQuery.data,
       viewed: viewedStatsQuery.data,
     },
-    timeRange,
-  );
+    past: {
+      order: ordersStatsPastQuery.data,
+      user: usersStatsPastQuery.data,
+      viewed: viewedStatsPastQuery.data,
+    },
+  });
 
   const topProductSelling = buildStatsTableSelling(productsStatsQuery.data?.bestSellingProducts, timeRange);
 
@@ -82,7 +104,7 @@ export default function StatisticManager() {
       <StatisticFilters
         range={timeRange}
         onRangeChange={setTimeRange}
-        onChange={({ from, to }) => setTimeRangeValue([from, to])}
+        onChange={({ from, to }) => setTimeRangeValue(ensureTimeRangeValue([from, to]))}
       />
 
       <StatisticSummary data={summaryData} />

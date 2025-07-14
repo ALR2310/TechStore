@@ -209,7 +209,7 @@ class OrderService {
         acc[row.Status] = Number(row.count);
         return acc;
       }, {}),
-      orderCount: orderCount.map((r: any) => ({ label: r.label, count: Number(r.count) })),
+      orderCount: orderCount.map((r: any) => ({ label: r.label, value: Number(r.count) })),
       orderRevenue: orderRevenue.map((r: any) => ({ label: r.label, value: Number(r.revenue ?? 0) })),
     };
   }
