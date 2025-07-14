@@ -508,6 +508,18 @@ class ApiController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+  async getReviewStatistic(req: any, res: any) {
+    const params = req.query;
+
+    try {
+      const statistic = await reviewService.getStatistic(params);
+      return res.status(200).json(statistic);
+    } catch (error: any) {
+      console.error('Error fetching statistic:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
   //#endregion
 
   //#region Viewed

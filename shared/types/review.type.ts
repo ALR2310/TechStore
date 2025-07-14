@@ -7,3 +7,9 @@ export interface getListReviewPayload extends baseQueryParams {
   product?: number;
   user?: number;
 }
+
+export interface reviewStatsResponse {
+  totalReview: number;
+  reviewCount: [{ label: string; value: number }];
+  starCount: [{ label: string; value: number }];
+}

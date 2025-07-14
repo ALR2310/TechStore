@@ -1,6 +1,14 @@
+import { getStatisticPayload } from '@shared/types/params.type';
 import { getListReviewPayload } from '@shared/types/review.type';
 import { isNullOrEmpty } from '@shared/utils/general.utils';
 import { db } from '~/configs/dbConnect';
+import { buildDateFilter } from '~/utils/query.build';
+
+const formatMap = {
+  day: '%Y-%m-%d',
+  month: '%Y-%m',
+  year: '%Y',
+};
 
 class ReviewService {
   async getListReview(payload: getListReviewPayload) {
@@ -130,6 +138,47 @@ class ReviewService {
     const query = `DELETE FROM ProductReviews WHERE ProdId = ?`;
     await db.query(query, [productId]);
     return { message: 'Reviews deleted successfully.' };
+  }
+
+  async getStatistic(payload: getStatisticPayload) {
+    const { by = 'day', startDate, endDate } = payload;
+
+    const groupFormat = formatMap[by];
+    const dateQuery = buildDateFilter(startDate, endDate);
+
+    const totalReviewQuery = `SELECT COUNT(*) as total FROM ProductReviews;`;
+
+    const reviewCountQuery = `
+      SELECT 
+        strftime('${groupFormat}', createdAt) as label,
+        COUNT(*) as value
+      FROM ProductReviews
+      ${dateQuery.query}
+      GROUP BY label
+      ORDER BY label ASC;
+    `;
+
+    const starCountQuery = `
+      SELECT 
+        Rating AS label,
+        COUNT(*) as value
+      FROM ProductReviews
+      ${dateQuery.query}
+      GROUP BY label
+      ORDER BY label ASC;
+    `;
+
+    const [totalReview, reviewCount, starCount] = await Promise.all([
+      db.query(totalReviewQuery),
+      db.query(reviewCountQuery, dateQuery.params),
+      db.query(starCountQuery, dateQuery.params),
+    ]);
+
+    return {
+      totalReview: totalReview[0]?.total || 0,
+      reviewCount,
+      starCount,
+    };
   }
 }
 

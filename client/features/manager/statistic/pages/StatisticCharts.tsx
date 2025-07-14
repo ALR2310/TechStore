@@ -7,8 +7,10 @@ import {
   buildRevenueChart,
   buildStatsTableOrderStatus,
   buildStatsTableSelling,
+  buildReviewChartHorizontal,
   buildUsersChart,
   buildUserStatusPieChart,
+  buildStarRatingPieChart,
 } from '../data/buildStatData';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -21,19 +23,21 @@ import { userStatsResponse } from '@shared/types/user.type';
 import { formatStatValue } from '@shared/utils/general.utils';
 import DataTable from '~/components/DataTable';
 import { statusMap } from '~/utils/cssMap';
+import { reviewStatsResponse } from '@shared/types/review.type';
 
 interface StatisticChartsProps {
-  timeRange;
+  timeRange: 'day' | 'month' | 'year';
   data: {
     order: orderStatsResponse;
     user: userStatsResponse;
     viewed: viewedStatsResponse;
     product: productStatsResponse;
+    review: reviewStatsResponse;
   };
 }
 
 export default function StatisticCharts({ data, timeRange }: StatisticChartsProps) {
-  const { order, user, viewed, product } = data;
+  const { order, user, viewed, product, review } = data;
 
   const currentYearQuery = useMemo(() => {
     const now = dayjs();
@@ -88,8 +92,17 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
   // Hourly Activity Chart
   const hourlyActivityOption = buildProductViewChart(viewed?.viewByProduct);
 
+  // Top product selling
   const topProductSelling = buildStatsTableSelling(product?.bestSellingProducts, timeRange);
+
+  // Order status
   const orderStatus = buildStatsTableOrderStatus(order?.orderByStatus);
+
+  // Top review
+  const reviewOption = buildReviewChartHorizontal(review?.reviewCount);
+
+  // Star rating
+  const starRatingOption = buildStarRatingPieChart(review?.starCount);
 
   return (
     <div className="space-y-6">
@@ -118,13 +131,22 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
         </div>
       </div>
 
-      {/* Categories */}
       <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={categoriesOption} style={{ height: 350 }} />
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-6">
+        <div className="card bg-base-100 shadow p-4">
+          <ReactECharts option={starRatingOption} style={{ height: 350 }} />
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <ReactECharts option={reviewOption} style={{ height: 350 }} />
+        </div>
+      </div>
+
+      {/* Table Top product and order status */}
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-base-100 rounded-xl p-4 col-span-2">
           <h3 className="text-lg font-bold mb-4 flex items-center gap-2">

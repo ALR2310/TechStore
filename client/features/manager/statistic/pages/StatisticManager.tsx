@@ -9,6 +9,7 @@ import { getViewedStatistic } from '../../viewed/viewedApi';
 import { buildStatisticSummary } from '../data/buildStatData';
 import { builDateFilter, generatePastRange } from '@shared/utils/general.utils';
 import { getProductStatistic } from '../../product/api/productApi';
+import { getReviewStatistic } from '../../review/reviewApi';
 
 const ensureTimeRangeValue = (value: [Date | null, Date | null]): [Date, Date] => {
   const now = new Date();
@@ -26,7 +27,7 @@ export default function StatisticManager() {
     setTimeRangePastValue(generatePastRange(timeRange, timeRangeValue));
   }, [timeRange, timeRangeValue]);
 
-  const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery] = useQueries({
+  const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery, reviewStatsQuery] = useQueries({
     queries: [
       {
         queryKey: ['orderStats', timeRange, timeRangeValue],
@@ -46,6 +47,11 @@ export default function StatisticManager() {
       {
         queryKey: ['productStats', timeRange, timeRangeValue],
         queryFn: () => getProductStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
+        enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
+      },
+      {
+        queryKey: ['reviewStats', timeRange, timeRangeValue],
+        queryFn: () => getReviewStatistic({ by: timeRange, ...builDateFilter(timeRangeValue, timeRange) }),
         enabled: timeRangeValue[0] !== null && timeRangeValue[1] !== null,
       },
     ],
@@ -101,6 +107,7 @@ export default function StatisticManager() {
           user: usersStatsQuery.data,
           viewed: viewedStatsQuery.data,
           product: productsStatsQuery.data,
+          review: reviewStatsQuery.data,
         }}
       />
     </div>

@@ -37,6 +37,7 @@ router.get('/order/statistic', apiController.getOrderStatistic);
 router.get('/order', apiController.getListOrder);
 router.put('/order/:id', apiController.approveOrder);
 
+router.get('/review/statistic', apiController.getReviewStatistic);
 router.get('/review', apiController.getListReview);
 router.post('/review/status', apiController.updateStatusReview);
 router.delete('/review/:id', apiController.deleteReview);

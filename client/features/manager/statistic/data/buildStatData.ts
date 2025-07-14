@@ -471,3 +471,84 @@ export function buildUserStatusPieChart(data: userStatsResponse['userByStatus'])
     ],
   };
 }
+
+export function buildReviewChartHorizontal(data: { label: string; value: number }[] = []) {
+  return {
+    title: {
+      text: 'Lượt đánh giá theo thời gian',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (params: any) => {
+        const item = params[0];
+        return `${item.name}<br/>Lượt đánh giá: ${item.value}`;
+      },
+    },
+    xAxis: {
+      type: 'value',
+      name: 'Lượt đánh giá',
+    },
+    yAxis: {
+      type: 'category',
+      data: data.map((d) => d.label),
+    },
+    series: [
+      {
+        name: 'Lượt đánh giá',
+        type: 'bar',
+        data: data.map((d) => d.value),
+        itemStyle: { color: '#6366F1' },
+      },
+    ],
+    grid: { left: '4%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
+
+export function buildStarRatingPieChart(data: { label: string; value: number }[] = []) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  const chartData = data.map((item) => ({
+    name: `${item.label} sao`,
+    value: item.value,
+    percent: total > 0 ? ((item.value / total) * 100).toFixed(2) : '0.00',
+  }));
+
+  return {
+    title: {
+      text: 'Tỉ lệ đánh giá theo sao',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c} lượt ({d}%)',
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      top: 'middle',
+    },
+    series: [
+      {
+        name: 'Đánh giá',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['60%', '50%'],
+        data: chartData,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+        label: {
+          formatter: '{b}: {d}%',
+        },
+      },
+    ],
+  };
+}
