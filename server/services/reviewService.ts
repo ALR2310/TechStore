@@ -168,16 +168,43 @@ class ReviewService {
       ORDER BY label ASC;
     `;
 
-    const [totalReview, reviewCount, starCount] = await Promise.all([
+    const topProductReviewQuery = `
+      SELECT
+        strftime('${groupFormat}', PR.createdAt) as datetime,
+        P.ProdName as productName,
+        COUNT(*) as count
+      FROM ProductReviews PR
+      JOIN Product P ON PR.ProdId = P.Id
+      ${dateQuery.query.replace(/createdAt/g, 'PR.createdAt')}
+      GROUP BY datetime, PR.ProdId
+      ORDER BY datetime ASC, count DESC;
+    `;
+
+    const topReviewerQuery = `
+      SELECT 
+        UI.FullName as label,
+        COUNT(*) as value
+      FROM ProductReviews PR
+      JOIN UserInfo UI ON PR.UserId = UI.UserId
+     ${dateQuery.query.replace(/createdAt/g, 'PR.createdAt')}
+      GROUP BY label
+      ORDER BY value DESC;
+    `;
+
+    const [totalReview, reviewCount, starCount, topProductReview, topReviewer] = await Promise.all([
       db.query(totalReviewQuery),
       db.query(reviewCountQuery, dateQuery.params),
       db.query(starCountQuery, dateQuery.params),
+      db.query(topProductReviewQuery, dateQuery.params),
+      db.query(topReviewerQuery, dateQuery.params),
     ]);
 
     return {
       totalReview: totalReview[0]?.total || 0,
       reviewCount,
       starCount,
+      topProductReview,
+      topReviewer,
     };
   }
 }

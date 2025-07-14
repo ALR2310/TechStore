@@ -137,6 +137,78 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
         </div>
       </div>
 
+      {/* Table Top Reviewer and Product */}
+      <div className="grid grid-cols-3 gap-6">
+        <div className="bg-base-100 rounded-xl p-4 col-span-2">
+          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <i className="fa-regular fa-trophy text-warning"></i>
+            Sản phẩm được đánh giá nhiều nhất
+          </h3>
+
+          <DataTable
+            className="max-h-[300px]"
+            type="zebra"
+            columns={[
+              {
+                key: '#',
+                title: '#',
+                render: (_, __, index) => index + 1,
+              },
+              {
+                key: 'productName',
+                title: 'Tên sản phẩm',
+                render: (value) => <p className="font-semibold">{value}</p>,
+              },
+              {
+                key: 'datetime',
+                title: 'Thời gian',
+                render: (value) => (
+                  <p className="font-semibold">
+                    {`Tháng ${dayjs(value).format('MM')} Năm ${dayjs(value).format('YYYY')}`}{' '}
+                  </p>
+                ),
+              },
+              {
+                key: 'count',
+                title: 'Lượt đánh giá',
+                render: (value) => <div className="badge badge-primary">{value}</div>,
+              },
+            ]}
+            data={review?.topProductReview ?? []}
+          />
+        </div>
+
+        <div className="bg-base-100 rounded-xl p-4">
+          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <i className="fa-regular fa-list-check text-success"></i>
+            Người dùng đánh giá nhiều nhất
+          </h3>
+
+          <DataTable
+            className="max-h-[290px]"
+            type="zebra"
+            columns={[
+              {
+                key: '#',
+                title: '#',
+                render: (_, __, index) => index + 1,
+              },
+              {
+                key: 'label',
+                title: 'Tên người dùng',
+                render: (value) => <p className="font-semibold">{value}</p>,
+              },
+              {
+                key: 'value',
+                title: 'Số lượng',
+                render: (value) => <div className="badge badge-primary">{value}</div>,
+              },
+            ]}
+            data={review?.topReviewer ?? []}
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={starRatingOption} style={{ height: 350 }} />
