@@ -173,28 +173,6 @@ CREATE TABLE IF NOT EXISTS Cart (
     updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
--- Bảng phương thức thanh toán
-CREATE TABLE IF NOT EXISTS Payments (
-    Id INTEGER PRIMARY KEY,
-    PayName TEXT,
-    createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-    Status TEXT CHECK (
-        Status IN ('Active', 'Inactive')
-    ) DEFAULT 'Active',
-    updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
--- Bảng đơn vị vận chuyển
-CREATE TABLE IF NOT EXISTS Shipment (
-    Id INTEGER PRIMARY KEY,
-    ShipName TEXT,
-    createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-    Status TEXT CHECK (
-        Status IN ('Active', 'Inactive')
-    ) DEFAULT 'Active',
-    updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Bảng đơn hàng
 CREATE TABLE IF NOT EXISTS Orders (
     Id INTEGER PRIMARY KEY,
@@ -221,19 +199,5 @@ CREATE TABLE IF NOT EXISTS OrderItems (
     ProdId INTEGER REFERENCES Product (Id),
     Quantity INT DEFAULT 1,
     createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
--- Bảng lịch sử mua hàng
-CREATE TABLE IF NOT EXISTS PurchaseHistory (
-    Id INTEGER PRIMARY KEY,
-    UserId INTEGER REFERENCES User (Id),
-    ProdId INTEGER REFERENCES Product (Id),
-    Quantity INTEGER DEFAULT 1,
-    TotalPrice REAL DEFAULT 0,
-    createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-    Status TEXT CHECK (
-        Status IN ('Active', 'Inactive')
-    ) DEFAULT 'Active',
     updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
 );
