@@ -382,7 +382,6 @@ class ProductService {
         ProdName as Name,
         Status
       FROM Product
-      ${dateQuery.query}
     `;
 
     const totalProductQuery = `
@@ -404,10 +403,20 @@ class ProductService {
       ORDER BY datetime ASC, totalSold DESC;
     `;
 
-    const [products, total, bestSelling] = await Promise.all([
-      db.query(productsQuery, dateQuery.params),
+    const countByCategoryQuery = `
+      SELECT 
+        C.CateName AS label,
+        COUNT(P.Id) AS value
+      FROM Categories C
+      LEFT JOIN Product P ON P.CateId = C.Id
+      GROUP BY C.CateName;
+    `;
+
+    const [products, total, bestSelling, countByCategory] = await Promise.all([
+      db.query(productsQuery),
       db.query(totalProductQuery, dateQuery.params),
       db.query(bestSellingQuery, dateQuery.params),
+      db.query(countByCategoryQuery),
     ]);
 
     return {
@@ -422,6 +431,10 @@ class ProductService {
         name: r.name,
         price: Number(r.Price),
         totalSold: Number(r.totalSold),
+      })),
+      countByCategory: countByCategory.map((r: any) => ({
+        label: r.label,
+        value: Number(r.value),
       })),
     };
   }

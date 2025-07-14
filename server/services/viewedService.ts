@@ -40,12 +40,14 @@ class ViewedService {
 
     const viewByProductQuery = `
       SELECT 
-        ProdId,
+        strftime('${groupFormat}', pv.createdAt) as time,
+        p.ProdName as name,
         COUNT(*) as count
-      FROM ProductViewed
-      ${dateQuery.query}
-      GROUP BY ProdId
-      ORDER BY count DESC;
+      FROM ProductViewed pv
+      JOIN Product p ON p.Id = pv.ProdId
+      ${dateQuery.query.replace(/createdAt/g, 'pv.createdAt')}
+      GROUP BY time, pv.ProdId
+      ORDER BY time ASC, count DESC;
     `;
 
     const [viewCount, totalView, viewByProduct] = await Promise.all([
@@ -61,7 +63,8 @@ class ViewedService {
         value: Number(r.count),
       })),
       viewByProduct: viewByProduct.map((r: any) => ({
-        productId: r.ProdId,
+        time: r.time,
+        name: r.name,
         count: Number(r.count),
       })),
     };

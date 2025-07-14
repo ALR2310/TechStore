@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import StatisticSummary from './StatisticSummary';
-import { generateMockData } from '../data/mockData';
 import StatisticFilters from './StatisticFilters';
 import StatisticCharts from './StatisticCharts';
-import dayjs from 'dayjs';
 import { useQueries } from '@tanstack/react-query';
 import { getOrderStatistic } from '../../order/orderApi';
 import { getUserStatistic } from '../../user/api/UserApi';
@@ -14,8 +12,6 @@ import { builDateFilter, formatStatValue, generatePastRange } from '@shared/util
 import { statusMap } from '~/utils/cssMap';
 import { getProductStatistic } from '../../product/api/productApi';
 
-export type TimeRange = 'day' | 'month' | 'year';
-
 const ensureTimeRangeValue = (value: [Date | null, Date | null]): [Date, Date] => {
   const now = new Date();
   const from = value[0] ?? now;
@@ -24,18 +20,13 @@ const ensureTimeRangeValue = (value: [Date | null, Date | null]): [Date, Date] =
 };
 
 export default function StatisticManager() {
-  const [selectedYear] = useState(dayjs().year());
-  const [selectedMonth] = useState(dayjs().month() + 1);
-
-  const [timeRange, setTimeRange] = useState<TimeRange>('month');
+  const [timeRange, setTimeRange] = useState<'day' | 'month' | 'year'>('month');
   const [timeRangeValue, setTimeRangeValue] = useState<[Date | null, Date | null]>([null, null]);
   const [timeRangePastValue, setTimeRangePastValue] = useState<[Date | null, Date | null]>([null, null]);
 
   useEffect(() => {
     setTimeRangePastValue(generatePastRange(timeRange, timeRangeValue));
   }, [timeRange, timeRangeValue]);
-
-  const mockData = generateMockData(timeRange, selectedYear, selectedMonth);
 
   const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery] = useQueries({
     queries: [
@@ -109,7 +100,14 @@ export default function StatisticManager() {
 
       <StatisticSummary data={summaryData} />
 
-      <StatisticCharts data={mockData} timeRange={timeRange} />
+      <StatisticCharts
+        data={{
+          order: ordersStatsQuery.data,
+          user: usersStatsQuery.data,
+          viewed: viewedStatsQuery.data,
+          product: productsStatsQuery.data,
+        }}
+      />
 
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-base-100 rounded-xl p-4 col-span-2">

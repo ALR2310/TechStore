@@ -111,3 +111,240 @@ export function buildStatsTableOrderStatus(data: any) {
 
   return result;
 }
+
+export function buildRevenueChart(data: [{ label: string; value: number }]) {
+  return {
+    title: {
+      text: 'Doanh thu',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const value = params[0].value.toLocaleString('vi-VN');
+        return `${params[0].axisValue}<br/>Doanh thu: ${value} ₫`;
+      },
+    },
+    xAxis: {
+      type: 'category',
+      data: data?.map((item) => item.label),
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value: number) => {
+          return formatStatValue(value, 'currency');
+        },
+      },
+    },
+    series: [
+      {
+        type: 'line',
+        data: data?.map((item) => item.value),
+        smooth: true,
+        lineStyle: { width: 3 },
+        areaStyle: { opacity: 0.3 },
+        itemStyle: { color: '#3B82F6' },
+      },
+    ],
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
+
+export function buildCategoriesChart(data: [{ label: string; value: number }]) {
+  const total = data?.reduce((sum, item) => sum + item.value, 0);
+
+  return {
+    title: {
+      text: 'Phân bố danh mục sản phẩm',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} sản phẩm ({d}%)',
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      top: 'middle',
+    },
+    series: [
+      {
+        name: 'Danh mục',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['60%', '50%'],
+        data: data?.map((item) => ({
+          name: item.label,
+          value: item.value,
+          percent: total > 0 ? ((item.value / total) * 100).toFixed(2) : '0.00',
+        })),
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+        label: {
+          formatter: '{b}: {d}%',
+        },
+      },
+    ],
+  };
+}
+
+export function buildUsersChart(data: [{ label: string; value: number }]) {
+  return {
+    title: {
+      text: 'Người dùng mới',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => `${params[0].axisValue}<br/>Người dùng: ${params[0].value}`,
+    },
+    xAxis: {
+      type: 'category',
+      data: data?.map((item) => item.label),
+    },
+    yAxis: { type: 'value' },
+    series: [
+      {
+        type: 'line',
+        data: data?.map((item) => item.value),
+        smooth: true,
+        areaStyle: { opacity: 0.5 },
+        itemStyle: { color: '#8B5CF6' },
+      },
+    ],
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
+
+export function buildMonthlyComparison(data: {
+  thisYear: [{ label: string; value: number }];
+  lastYear: [{ label: string; value: number }];
+}) {
+  const monthlyComparison = Array.from({ length: 12 }, (_, i) => {
+    const month = String(i + 1).padStart(2, '0');
+    const thisYearData = data?.thisYear?.find((item) => item.label.endsWith(`-${month}`));
+    const lastYearData = data?.lastYear?.find((item) => item.label.endsWith(`-${month}`));
+    return {
+      month: `Tháng ${month}`,
+      thisYear: thisYearData?.value ?? 0,
+      lastYear: lastYearData?.value ?? 0,
+    };
+  });
+
+  return {
+    title: {
+      text: 'So sánh doanh thu với năm trước',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const thisYear = params[0].value.toLocaleString('vi-VN');
+        const lastYear = params[1].value.toLocaleString('vi-VN');
+        return `${params[0].axisValue}<br/>
+                Năm nay: ${thisYear} ₫<br/>
+                Năm trước: ${lastYear} ₫`;
+      },
+    },
+    legend: { data: ['Năm nay', 'Năm trước'], top: '10%' },
+    xAxis: {
+      type: 'category',
+      data: monthlyComparison.map((item) => item.month),
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value: number) => {
+          if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+          if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+          return value.toString();
+        },
+      },
+    },
+    series: [
+      {
+        name: 'Năm nay',
+        type: 'bar',
+        data: monthlyComparison.map((item) => item.thisYear),
+        itemStyle: { color: '#3B82F6' },
+      },
+      {
+        name: 'Năm trước',
+        type: 'bar',
+        data: monthlyComparison.map((item) => item.lastYear),
+        itemStyle: { color: '#94A3B8' },
+      },
+    ],
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
+
+export function buildProductViewChart(data: [{ time: string; name: string; count: number }]) {
+  const productSet = new Set<string>();
+  const timeSet = new Set<string>();
+  const map = new Map<string, Map<string, number>>();
+
+  if (!data) return {};
+
+  for (const row of data) {
+    productSet.add(row.name);
+    timeSet.add(row.time);
+
+    if (!map.has(row.name)) {
+      map.set(row.name, new Map());
+    }
+    map.get(row.name)!.set(row.time, row.count);
+  }
+
+  const times = Array.from(timeSet).sort();
+  const topProducts = [...productSet]
+    .map((name) => {
+      const total = Array.from(map.get(name)?.values() ?? []).reduce((a, b) => a + b, 0);
+      return { name, total };
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5) // get top 5
+    .map((p) => p.name);
+
+  const series = topProducts.map((product) => ({
+    name: product,
+    type: 'line',
+    smooth: true,
+    data: times.map((t) => map.get(product)?.get(t) ?? 0),
+  }));
+
+  return {
+    title: {
+      text: 'Sản phẩm được xem nhiều trong tháng',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+    },
+    legend: {
+      data: series.map((s) => s.name),
+      top: '10%',
+    },
+    xAxis: {
+      type: 'category',
+      data: times,
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Lượt xem',
+    },
+    series,
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
