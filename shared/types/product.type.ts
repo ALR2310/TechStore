@@ -28,3 +28,13 @@ export interface createProductPayload {
 export interface updateProductPayload extends createProductPayload {
   id: string;
 }
+
+export interface productStatsResponse {
+  totalProduct: number;
+  productByStatus: {
+    Active: [{ id: number; name: string }];
+    Inactive: [{ id: number; name: string }];
+  };
+  bestSellingProducts: [{ datetime: string; name: string; price: number; totalSold: number }];
+  countByCategory: [{ label: string; value: number }];
+}

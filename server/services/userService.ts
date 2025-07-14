@@ -231,15 +231,27 @@ class UserService {
       ORDER BY label ASC;
     `;
 
-    const [userCount, totalUser, userActive] = await Promise.all([
+    const byStatusQuery = `
+      SELECT 
+        Status as label,
+        COUNT(*) as value
+      FROM User
+      ${dateQuery.query}
+      GROUP BY Status;
+    `;
+
+    const [userCount, totalUser, byStatus] = await Promise.all([
       db.query(createdQuery, dateQuery.params),
       db.query(`SELECT COUNT(*) as total FROM User`),
-      db.query(`SELECT COUNT(*) as active FROM User WHERE Status = 'Active'`),
+      db.query(byStatusQuery),
     ]);
 
     return {
       totalUser: totalUser[0].total,
-      userActive: userActive[0].active,
+      userByStatus: byStatus.reduce((acc: Record<string, number>, row: any) => {
+        acc[row.label] = Number(row.value);
+        return acc;
+      }, {}),
       userCount: userCount,
     };
   }

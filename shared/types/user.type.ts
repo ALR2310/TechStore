@@ -18,3 +18,9 @@ export interface updateUserPayload {
   dateOfBirth?: string;
   gender?: string;
 }
+
+export interface userStatsResponse {
+  totalUser: number;
+  userByStatus: Record<string, number>;
+  userCount: [{ label: string; value: number }];
+}

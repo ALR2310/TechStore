@@ -1,11 +1,14 @@
+import { orderStatsResponse } from '@shared/types/order.type';
+import { userStatsResponse } from '@shared/types/user.type';
+import { viewedStatsResponse } from '@shared/types/viewed.type';
 import { formatStatValue } from '@shared/utils/general.utils';
 import dayjs from 'dayjs';
 
 type TimeRange = 'day' | 'month' | 'year';
 
 export function buildStatisticSummary(data: {
-  current: { order: any; user: any; viewed: any };
-  past: { order: any; user: any; viewed: any };
+  current: { order: orderStatsResponse; user: userStatsResponse; viewed: viewedStatsResponse };
+  past: { order: orderStatsResponse; user: userStatsResponse; viewed: viewedStatsResponse };
 }) {
   if (!data?.current?.order || !data?.past?.order) return [];
 
@@ -19,8 +22,8 @@ export function buildStatisticSummary(data: {
   const pastRevenue = sum(orderPast?.orderRevenue);
 
   // Order
-  const currentOrders = sum(order?.orderCount);
-  const pastOrders = sum(orderPast?.orderCount);
+  const currentOrders = sum(order?.orderCount.map((item) => ({ value: item.totalOrder })));
+  const pastOrders = sum(orderPast?.orderCount.map((item) => ({ value: item.totalOrder })));
 
   // User
   const currentUsers = sum(user?.userCount);
@@ -146,6 +149,75 @@ export function buildRevenueChart(data: [{ label: string; value: number }]) {
         lineStyle: { width: 3 },
         areaStyle: { opacity: 0.3 },
         itemStyle: { color: '#3B82F6' },
+      },
+    ],
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+}
+
+export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: number; totalPrice: number }]) {
+  const dateTime = data?.map((d) => d.datetime);
+  const totalOrder = data?.map((d) => d.totalOrder);
+  const totalPrices = data?.map((d) => d.totalPrice);
+
+  return {
+    title: {
+      text: 'Số đơn và doanh thu theo thời gian',
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const order = params.find((p: any) => p.seriesName === 'Số đơn');
+        const price = params.find((p: any) => p.seriesName === 'Tổng tiền');
+        return `${params[0].axisValue}<br/>
+                Số đơn: ${order.value}<br/>
+                Tổng tiền: ${Number(price.value).toLocaleString('vi-VN')} ₫`;
+      },
+    },
+    legend: {
+      data: ['Số đơn', 'Tổng tiền'],
+      top: '10%',
+    },
+    xAxis: {
+      type: 'category',
+      data: dateTime,
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Số đơn',
+        position: 'left',
+      },
+      {
+        type: 'value',
+        name: 'Tổng tiền',
+        position: 'right',
+        axisLabel: {
+          formatter: (value: number) => {
+            if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
+            if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+            return value.toLocaleString('vi-VN');
+          },
+        },
+      },
+    ],
+    series: [
+      {
+        name: 'Số đơn',
+        type: 'bar',
+        data: totalOrder,
+        itemStyle: { color: '#3B82F6' },
+        yAxisIndex: 0,
+      },
+      {
+        name: 'Tổng tiền',
+        type: 'line',
+        data: totalPrices,
+        yAxisIndex: 1,
+        smooth: true,
+        itemStyle: { color: '#F59E0B' },
       },
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },

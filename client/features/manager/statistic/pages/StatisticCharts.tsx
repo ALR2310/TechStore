@@ -2,6 +2,7 @@ import ReactECharts from 'echarts-for-react';
 import {
   buildCategoriesChart,
   buildMonthlyComparison,
+  buildOrderCreatedChart,
   buildProductViewChart,
   buildRevenueChart,
   buildUsersChart,
@@ -10,29 +11,17 @@ import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useQueries } from '@tanstack/react-query';
 import { getOrderStatistic } from '../../order/orderApi';
-
-interface user {
-  userCount: [{ label: string; value: number }];
-}
-
-interface viewed {
-  viewByProduct: [{ time: string; name: string; count: number }];
-}
-
-interface product {
-  countByCategory: [{ label: string; value: number }];
-}
-
-interface order {
-  orderRevenue: [{ label: string; value: number }];
-}
+import { orderStatsResponse } from '@shared/types/order.type';
+import { productStatsResponse } from '@shared/types/product.type';
+import { viewedStatsResponse } from '@shared/types/viewed.type';
+import { userStatsResponse } from '@shared/types/user.type';
 
 interface StatisticChartsProps {
   data: {
-    order: order;
-    user: user;
-    viewed: viewed;
-    product: product;
+    order: orderStatsResponse;
+    user: userStatsResponse;
+    viewed: viewedStatsResponse;
+    product: productStatsResponse;
   };
 }
 
@@ -71,6 +60,9 @@ export default function StatisticCharts({ data }: StatisticChartsProps) {
   // Revenue Chart (Line Chart)
   const revenueOption = buildRevenueChart(order?.orderRevenue);
 
+  // Order created (Bar chart)
+  const orderCreatedOption = buildOrderCreatedChart(order?.orderCount);
+
   // Categories Pie Chart
   const categoriesOption = buildCategoriesChart(product?.countByCategory);
 
@@ -93,6 +85,14 @@ export default function StatisticCharts({ data }: StatisticChartsProps) {
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={revenueOption} style={{ height: 350 }} />
         </div>
+        <div className="card bg-base-100 shadow p-4">
+          <ReactECharts option={orderCreatedOption} style={{ height: 350 }} />
+        </div>
+      </div>
+
+      {/* Monthly Comparison */}
+      <div className="card bg-base-100 shadow p-4">
+        <ReactECharts option={monthlyComparisonOption} style={{ height: 400 }} />
       </div>
 
       {/* Users and Order Status Row */}
@@ -107,10 +107,6 @@ export default function StatisticCharts({ data }: StatisticChartsProps) {
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={categoriesOption} style={{ height: 350 }} />
         </div>
-      </div>
-
-      <div className="card bg-base-100 shadow p-4">
-        <ReactECharts option={monthlyComparisonOption} style={{ height: 400 }} />
       </div>
 
       <div className="card bg-base-100 shadow p-4">

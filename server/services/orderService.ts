@@ -169,12 +169,13 @@ class OrderService {
 
     const orderCountQuery = `
       SELECT 
-        strftime('${formatMap[by]}', createdAt) as label,
-        COUNT(*) as count
+        strftime('${formatMap[by]}', createdAt) as datetime,
+        COUNT(*) as totalOrder,
+        SUM(TotalPrice) AS totalPrice
       FROM Orders
       ${dateQuery.query}
-      GROUP BY label
-      ORDER BY label ASC;
+      GROUP BY datetime
+      ORDER BY datetime ASC;
     `;
 
     const orderRevenueQuery = `
@@ -209,7 +210,11 @@ class OrderService {
         acc[row.Status] = Number(row.count);
         return acc;
       }, {}),
-      orderCount: orderCount.map((r: any) => ({ label: r.label, value: Number(r.count) })),
+      orderCount: orderCount.map((r: any) => ({
+        datetime: r.datetime,
+        totalOrder: Number(r.totalOrder),
+        totalPrice: Number(r.totalPrice),
+      })),
       orderRevenue: orderRevenue.map((r: any) => ({ label: r.label, value: Number(r.revenue ?? 0) })),
     };
   }
