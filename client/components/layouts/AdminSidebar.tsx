@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '~/features/auth/authApi';
 
@@ -9,6 +9,12 @@ export default function AdminSidebar({ children }) {
   const rootPath = pathSegments[0] || '';
   const lastPath = pathSegments[1] || '';
   const navigate = useNavigate();
+
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -156,7 +162,7 @@ export default function AdminSidebar({ children }) {
                   {item.subMenu ? (
                     <details
                       open={true}
-                      //open={item.subMenu.some((sub) => sub.isActive)}
+                      //open={item.subMenu.some((sub) => sub.isActive)} // Auto open if has submenu
                     >
                       <summary className="p-3 rounded-xl flex items-center gap-2">
                         {item.icon}
@@ -191,6 +197,22 @@ export default function AdminSidebar({ children }) {
             </ul>
 
             <ul className="menu bg-base-100 text-base-content w-52 p-4 space-y-2 border-t border-base-content/20">
+              <li>
+                <div className="join p-0">
+                  <button
+                    className={`btn btn-sm btn-soft join-item flex-1/2 ${theme === 'light' ? 'btn-primary' : ''}`}
+                    onClick={() => setTheme('light')}
+                  >
+                    Sáng
+                  </button>
+                  <button
+                    className={`btn btn-sm btn-soft join-item flex-1/2 ${theme === 'dark' ? 'btn-primary' : ''}`}
+                    onClick={() => setTheme('dark')}
+                  >
+                    Tối
+                  </button>
+                </div>
+              </li>
               {menuItems.slice(-2).map((item: (typeof menuItems)[0]) => (
                 <li key={item.path} className={`font-bold`}>
                   <a onClick={item.onClick} className={`p-3 rounded-xl${item.isActive ? ' menu-focus' : ''}`}>

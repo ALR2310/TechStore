@@ -18,6 +18,10 @@ dayjs.locale('vi');
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
+// Load current theme
+const theme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', theme);
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={new QueryClient()}>
