@@ -89,8 +89,8 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
   // Categories Pie Chart
   const categoriesOption = buildCategoriesChart(product?.countByCategory);
 
-  // Hourly Activity Chart
-  const hourlyActivityOption = buildProductViewChart(viewed?.viewByProduct);
+  // Product Most View
+  const productMostViewOption = buildProductViewChart(viewed?.viewByProduct);
 
   // Top product selling
   const topProductSelling = buildStatsTableSelling(product?.bestSellingProducts, timeRange);
@@ -131,9 +131,40 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
         </div>
       </div>
 
+      {/* Percent Category and Low Rating */}
       <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={categoriesOption} style={{ height: 350 }} />
+        </div>
+
+        <div className="bg-base-100 rounded-xl p-4">
+          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <i className="fa-regular fa-trophy text-warning"></i>
+            Sản phẩm bị đánh giá thấp
+          </h3>
+
+          <DataTable
+            className="max-h-[300px]"
+            type="zebra"
+            columns={[
+              {
+                title: '#',
+                key: 'index',
+                render: (_, __, index) => index + 1,
+              },
+              {
+                title: 'Tên sản phẩm',
+                key: 'productName',
+                render: (value) => <p className="font-semibold">{value}</p>,
+              },
+              {
+                title: 'SL đánh giá',
+                key: 'ratingCount',
+                render: (value) => <div className="badge badge-primary">{value}</div>,
+              },
+            ]}
+            data={review?.lowRatingProduct ?? []}
+          />
         </div>
       </div>
 
@@ -209,6 +240,7 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
         </div>
       </div>
 
+      {/* Table Top Rating and Top reviewer */}
       <div className="grid grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow p-4">
           <ReactECharts option={starRatingOption} style={{ height: 350 }} />
@@ -299,8 +331,9 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
         </div>
       </div>
 
+      {/* Top view */}
       <div className="card bg-base-100 shadow p-4">
-        <ReactECharts option={hourlyActivityOption} style={{ height: 400 }} />
+        <ReactECharts option={productMostViewOption} style={{ height: 400 }} />
       </div>
     </div>
   );

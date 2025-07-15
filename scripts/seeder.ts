@@ -94,8 +94,8 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function getRandomPastDate({
-  todayPercent = 0.2,
-  lastMonthPercent = 0.2,
+  todayPercent = 0.1,
+  lastMonthPercent = 0.1,
 }: {
   todayPercent?: number;
   lastMonthPercent?: number;

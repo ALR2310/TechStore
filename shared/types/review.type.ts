@@ -14,4 +14,5 @@ export interface reviewStatsResponse {
   starCount: [{ label: string; value: number }];
   topProductReview: [{ datetime: string; productName: string; count: number }];
   topReviewer: [{ label: string; value: number }];
+  lowRatingProduct: [{ productName: string; ratingCount: number }];
 }

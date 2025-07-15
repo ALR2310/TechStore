@@ -145,6 +145,7 @@ class ReviewService {
 
     const groupFormat = formatMap[by];
     const dateQuery = buildDateFilter(startDate, endDate);
+    const dateQueryWithAlias = buildDateFilter(startDate, endDate, 'PR');
 
     const totalReviewQuery = `SELECT COUNT(*) as total FROM ProductReviews;`;
 
@@ -191,12 +192,25 @@ class ReviewService {
       ORDER BY value DESC;
     `;
 
-    const [totalReview, reviewCount, starCount, topProductReview, topReviewer] = await Promise.all([
+    const lowRatingProductQuery = `
+      SELECT 
+        P.ProdName as productName,
+        COUNT(*) as ratingCount
+      FROM ProductReviews PR
+      JOIN Product P ON PR.ProdId = P.Id
+      WHERE PR.Rating BETWEEN 1 AND 2
+      ${dateQueryWithAlias.query ? `AND ${dateQueryWithAlias.query.replace(/^WHERE /, '')}` : ''}
+      GROUP BY PR.ProdId
+      ORDER BY ratingCount DESC;
+    `;
+
+    const [totalReview, reviewCount, starCount, topProductReview, topReviewer, lowRatingProduct] = await Promise.all([
       db.query(totalReviewQuery),
       db.query(reviewCountQuery, dateQuery.params),
       db.query(starCountQuery, dateQuery.params),
       db.query(topProductReviewQuery, dateQuery.params),
       db.query(topReviewerQuery, dateQuery.params),
+      db.query(lowRatingProductQuery, dateQueryWithAlias.params),
     ]);
 
     return {
@@ -205,6 +219,7 @@ class ReviewService {
       starCount,
       topProductReview,
       topReviewer,
+      lowRatingProduct,
     };
   }
 }

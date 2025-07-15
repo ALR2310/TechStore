@@ -1,14 +1,16 @@
-export function buildDateFilter(start?: string, end?: string): { query: string; params: any[] } {
+export function buildDateFilter(start?: string, end?: string, alias?: string): { query: string; params: any[] } {
   const conditions: string[] = [];
   const params: any[] = [];
 
+  const col = alias ? `${alias}.createdAt` : 'createdAt';
+
   if (start) {
-    conditions.push(`date(createdAt) >= date(?)`);
+    conditions.push(`date(${col}) >= date(?)`);
     params.push(start);
   }
 
   if (end) {
-    conditions.push(`date(createdAt) <= date(?)`);
+    conditions.push(`date(${col}) <= date(?)`);
     params.push(end);
   }
 

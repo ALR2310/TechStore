@@ -162,7 +162,7 @@ export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: nu
 
   return {
     title: {
-      text: 'Số đơn và doanh thu theo thời gian',
+      text: 'Số đơn và doanh thu',
       left: 'center',
       textStyle: { fontSize: 16, fontWeight: 'bold' },
     },
@@ -196,9 +196,7 @@ export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: nu
         position: 'right',
         axisLabel: {
           formatter: (value: number) => {
-            if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
-            if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
-            return value.toLocaleString('vi-VN');
+            return formatStatValue(value, 'currency');
           },
         },
       },
@@ -337,9 +335,7 @@ export function buildMonthlyComparison(data: {
       type: 'value',
       axisLabel: {
         formatter: (value: number) => {
-          if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
-          if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-          return value.toString();
+          return formatStatValue(value, 'currency');
         },
       },
     },
@@ -397,7 +393,7 @@ export function buildProductViewChart(data: [{ time: string; name: string; count
 
   return {
     title: {
-      text: 'Sản phẩm được xem nhiều trong tháng',
+      text: 'Sản phẩm được xem nhiều',
       left: 'center',
       textStyle: { fontSize: 16, fontWeight: 'bold' },
     },
@@ -423,8 +419,6 @@ export function buildProductViewChart(data: [{ time: string; name: string; count
 
 export function buildUserStatusPieChart(data: userStatsResponse['userByStatus']) {
   if (!data) return {};
-
-  console.log(data);
 
   const entries = Object.entries(data);
   const total = entries.reduce((sum, [, value]) => sum + value, 0);
