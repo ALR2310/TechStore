@@ -1,3 +1,4 @@
+import { applyChartTheme } from '@shared/utils/general.utils';
 import ReactECharts from 'echarts-for-react';
 
 interface DashboardChartProps {
@@ -28,7 +29,7 @@ function buildSellingOpts(data: any[]) {
     price: item.price,
   }));
 
-  return {
+  return applyChartTheme({
     title: {
       text: 'Tỷ lệ sản phẩm bán chạy theo tháng',
       left: 'center',
@@ -74,25 +75,23 @@ function buildSellingOpts(data: any[]) {
         },
       },
     ],
-  };
+  });
 }
 
 export default function DashboardCharts({ userData, revenueData, sellingData }: DashboardChartProps) {
-  const userOpt = {
+  const userOpt = applyChartTheme({
     title: { text: 'Người dùng đăng ký theo tháng' },
-    tooltip: {},
     xAxis: { type: 'category', data: userData.map((d) => d.label) },
     yAxis: { type: 'value' },
     series: [{ type: 'line', data: userData.map((d) => d.value) }],
-  };
+  });
 
-  const revenueOpt = {
+  const revenueOpt = applyChartTheme({
     title: { text: 'Doanh thu theo tháng ($)' },
-    tooltip: {},
     xAxis: { type: 'category', data: revenueData.map((d) => d.label) },
     yAxis: { type: 'value' },
     series: [{ type: 'bar', data: revenueData.map((d) => d.value) }],
-  };
+  });
 
   const sellingOpt = buildSellingOpts(sellingData);
 

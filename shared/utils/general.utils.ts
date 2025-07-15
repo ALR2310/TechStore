@@ -107,3 +107,82 @@ export function generatePastRange(
 
   return [pastFrom.toDate(), pastTo.toDate()];
 }
+
+export function applyChartTheme(chartOptions: any): any {
+  const getChartTextColor = () => {
+    if (typeof window !== 'undefined') {
+      const htmlElement = document.documentElement;
+      const currentTheme = htmlElement.getAttribute('data-theme');
+
+      if (currentTheme === 'dark' || currentTheme === 'dracula') {
+        return '#a6adba';
+      }
+      return '#374151';
+    }
+    return '#374151';
+  };
+
+  const textColor = getChartTextColor();
+
+  //  Apply color for title
+  if (chartOptions.title) {
+    if (!chartOptions.title.textStyle) chartOptions.title.textStyle = {};
+    chartOptions.title.textStyle.color = textColor;
+  }
+
+  //  Apply color for legend
+  if (chartOptions.legend) {
+    if (!chartOptions.legend.textStyle) chartOptions.legend.textStyle = {};
+    chartOptions.legend.textStyle.color = textColor;
+  }
+
+  //  Apply color for xAxis
+  if (chartOptions.xAxis) {
+    if (!chartOptions.xAxis.axisLabel) chartOptions.xAxis.axisLabel = {};
+    chartOptions.xAxis.axisLabel.color = textColor;
+
+    if (!chartOptions.xAxis.axisLine) chartOptions.xAxis.axisLine = {};
+    if (!chartOptions.xAxis.axisLine.lineStyle) chartOptions.xAxis.axisLine.lineStyle = {};
+    chartOptions.xAxis.axisLine.lineStyle.color = textColor;
+
+    if (chartOptions.xAxis.nameTextStyle || chartOptions.xAxis.name) {
+      if (!chartOptions.xAxis.nameTextStyle) chartOptions.xAxis.nameTextStyle = {};
+      chartOptions.xAxis.nameTextStyle.color = textColor;
+    }
+  }
+
+  // Apply color for yAxis
+  if (chartOptions.yAxis) {
+    const yAxes = Array.isArray(chartOptions.yAxis) ? chartOptions.yAxis : [chartOptions.yAxis];
+    yAxes.forEach((yAxis: any) => {
+      if (!yAxis.axisLabel) yAxis.axisLabel = {};
+      yAxis.axisLabel.color = textColor;
+
+      if (!yAxis.axisLine) yAxis.axisLine = {};
+      if (!yAxis.axisLine.lineStyle) yAxis.axisLine.lineStyle = {};
+      yAxis.axisLine.lineStyle.color = textColor;
+
+      if (yAxis.nameTextStyle || yAxis.name) {
+        if (!yAxis.nameTextStyle) yAxis.nameTextStyle = {};
+        yAxis.nameTextStyle.color = textColor;
+      }
+
+      if (!yAxis.splitLine) yAxis.splitLine = {};
+      if (!yAxis.splitLine.lineStyle) yAxis.splitLine.lineStyle = {};
+      yAxis.splitLine.lineStyle.color = textColor;
+      yAxis.splitLine.lineStyle.opacity = 0.2;
+    });
+  }
+
+  // Apply color for pie chart labels
+  if (chartOptions.series) {
+    chartOptions.series.forEach((series: any) => {
+      if (series.type === 'pie') {
+        if (!series.label) series.label = {};
+        series.label.color = textColor;
+      }
+    });
+  }
+
+  return chartOptions;
+}
