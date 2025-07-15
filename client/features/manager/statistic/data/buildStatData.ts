@@ -6,6 +6,86 @@ import dayjs from 'dayjs';
 
 type TimeRange = 'day' | 'month' | 'year';
 
+// Helper function to get theme-appropriate text color
+function getChartTextColor(): string {
+  if (typeof window !== 'undefined') {
+    const htmlElement = document.documentElement;
+    const currentTheme = htmlElement.getAttribute('data-theme');
+
+    if (currentTheme === 'dark' || currentTheme === 'dracula') {
+      return '#a6adba';
+    }
+    return '#374151';
+  }
+  return '#374151';
+}
+
+function applyThemeColors(chartOptions: any): any {
+  const textColor = getChartTextColor();
+
+  //  Apply color for title
+  if (chartOptions.title) {
+    if (!chartOptions.title.textStyle) chartOptions.title.textStyle = {};
+    chartOptions.title.textStyle.color = textColor;
+  }
+
+  //  Apply color for legend
+  if (chartOptions.legend) {
+    if (!chartOptions.legend.textStyle) chartOptions.legend.textStyle = {};
+    chartOptions.legend.textStyle.color = textColor;
+  }
+
+  //  Apply color for xAxis
+  if (chartOptions.xAxis) {
+    if (!chartOptions.xAxis.axisLabel) chartOptions.xAxis.axisLabel = {};
+    chartOptions.xAxis.axisLabel.color = textColor;
+
+    if (!chartOptions.xAxis.axisLine) chartOptions.xAxis.axisLine = {};
+    if (!chartOptions.xAxis.axisLine.lineStyle) chartOptions.xAxis.axisLine.lineStyle = {};
+    chartOptions.xAxis.axisLine.lineStyle.color = textColor;
+
+    if (chartOptions.xAxis.nameTextStyle || chartOptions.xAxis.name) {
+      if (!chartOptions.xAxis.nameTextStyle) chartOptions.xAxis.nameTextStyle = {};
+      chartOptions.xAxis.nameTextStyle.color = textColor;
+    }
+  }
+
+  // Apply color for yAxis
+  if (chartOptions.yAxis) {
+    const yAxes = Array.isArray(chartOptions.yAxis) ? chartOptions.yAxis : [chartOptions.yAxis];
+    yAxes.forEach((yAxis: any) => {
+      if (!yAxis.axisLabel) yAxis.axisLabel = {};
+      yAxis.axisLabel.color = textColor;
+
+      if (!yAxis.axisLine) yAxis.axisLine = {};
+      if (!yAxis.axisLine.lineStyle) yAxis.axisLine.lineStyle = {};
+      yAxis.axisLine.lineStyle.color = textColor;
+
+      if (yAxis.nameTextStyle || yAxis.name) {
+        if (!yAxis.nameTextStyle) yAxis.nameTextStyle = {};
+        yAxis.nameTextStyle.color = textColor;
+      }
+
+      if (!yAxis.splitLine) yAxis.splitLine = {};
+      if (!yAxis.splitLine.lineStyle) yAxis.splitLine.lineStyle = {};
+      yAxis.splitLine.lineStyle.color = textColor;
+      yAxis.splitLine.lineStyle.opacity = 0.2;
+    });
+  }
+
+  // Apply color for pie chart labels
+  if (chartOptions.series) {
+    chartOptions.series.forEach((series: any) => {
+      if (series.type === 'pie') {
+        if (!series.label) series.label = {};
+        series.label.color = textColor;
+      }
+    });
+  }
+
+  return chartOptions;
+}
+
 export function buildStatisticSummary(data: {
   current: { order: orderStatsResponse; user: userStatsResponse; viewed: viewedStatsResponse };
   past: { order: orderStatsResponse; user: userStatsResponse; viewed: viewedStatsResponse };
@@ -116,7 +196,7 @@ export function buildStatsTableOrderStatus(data: any) {
 }
 
 export function buildRevenueChart(data: [{ label: string; value: number }]) {
-  return {
+  const options = {
     title: {
       text: 'Doanh thu',
       left: 'center',
@@ -153,6 +233,8 @@ export function buildRevenueChart(data: [{ label: string; value: number }]) {
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: number; totalPrice: number }]) {
@@ -160,7 +242,7 @@ export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: nu
   const totalOrder = data?.map((d) => d.totalOrder);
   const totalPrices = data?.map((d) => d.totalPrice);
 
-  return {
+  const options = {
     title: {
       text: 'Số đơn và doanh thu',
       left: 'center',
@@ -220,12 +302,14 @@ export function buildOrderCreatedChart(data: [{ datetime: string; totalOrder: nu
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildCategoriesChart(data: [{ label: string; value: number }]) {
   const total = data?.reduce((sum, item) => sum + item.value, 0);
 
-  return {
+  const options = {
     title: {
       text: 'Phân bố danh mục sản phẩm',
       left: 'center',
@@ -264,10 +348,13 @@ export function buildCategoriesChart(data: [{ label: string; value: number }]) {
       },
     ],
   };
+
+  // Áp dụng màu theme và trả về
+  return applyThemeColors(options);
 }
 
 export function buildUsersChart(data: [{ label: string; value: number }]) {
-  return {
+  const options = {
     title: {
       text: 'Người dùng mới',
       left: 'center',
@@ -293,6 +380,8 @@ export function buildUsersChart(data: [{ label: string; value: number }]) {
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildMonthlyComparison(data: {
@@ -310,7 +399,7 @@ export function buildMonthlyComparison(data: {
     };
   });
 
-  return {
+  const options = {
     title: {
       text: 'So sánh doanh thu với năm trước',
       left: 'center',
@@ -326,7 +415,10 @@ export function buildMonthlyComparison(data: {
                 Năm trước: ${lastYear} ₫`;
       },
     },
-    legend: { data: ['Năm nay', 'Năm trước'], top: '10%' },
+    legend: {
+      data: ['Năm nay', 'Năm trước'],
+      top: '10%',
+    },
     xAxis: {
       type: 'category',
       data: monthlyComparison.map((item) => item.month),
@@ -355,6 +447,8 @@ export function buildMonthlyComparison(data: {
     ],
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildProductViewChart(data: [{ time: string; name: string; count: number }]) {
@@ -391,7 +485,7 @@ export function buildProductViewChart(data: [{ time: string; name: string; count
     data: times.map((t) => map.get(product)?.get(t) ?? 0),
   }));
 
-  return {
+  const options = {
     title: {
       text: 'Sản phẩm được xem nhiều',
       left: 'center',
@@ -415,6 +509,8 @@ export function buildProductViewChart(data: [{ time: string; name: string; count
     series,
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildUserStatusPieChart(data: userStatsResponse['userByStatus']) {
@@ -429,7 +525,7 @@ export function buildUserStatusPieChart(data: userStatsResponse['userByStatus'])
     percent: total > 0 ? ((value / total) * 100).toFixed(2) : '0.00',
   }));
 
-  return {
+  const options = {
     title: {
       text: 'Tỉ lệ trạng thái người dùng',
       left: 'center',
@@ -464,10 +560,12 @@ export function buildUserStatusPieChart(data: userStatsResponse['userByStatus'])
       },
     ],
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildReviewChartHorizontal(data: { label: string; value: number }[] = []) {
-  return {
+  const options = {
     title: {
       text: 'Lượt đánh giá theo thời gian',
       left: 'center',
@@ -499,6 +597,8 @@ export function buildReviewChartHorizontal(data: { label: string; value: number 
     ],
     grid: { left: '4%', right: '4%', bottom: '3%', containLabel: true },
   };
+
+  return applyThemeColors(options);
 }
 
 export function buildStarRatingPieChart(data: { label: string; value: number }[] = []) {
@@ -510,7 +610,7 @@ export function buildStarRatingPieChart(data: { label: string; value: number }[]
     percent: total > 0 ? ((item.value / total) * 100).toFixed(2) : '0.00',
   }));
 
-  return {
+  const options = {
     title: {
       text: 'Tỉ lệ đánh giá theo sao',
       left: 'center',
@@ -545,4 +645,6 @@ export function buildStarRatingPieChart(data: { label: string; value: number }[]
       },
     ],
   };
+
+  return applyThemeColors(options);
 }
