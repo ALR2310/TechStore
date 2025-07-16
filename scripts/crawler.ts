@@ -242,7 +242,8 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'case-thung-may-tinh',
+    'psu-nguon-may-tinh',
+    // 'case-thung-may-tinh',
     // 'cpu-bo-vi-xu-ly',
     // 'mainboard-bo-mach-chu',
     // 'radeon-rx',
