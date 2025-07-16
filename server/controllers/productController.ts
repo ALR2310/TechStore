@@ -139,6 +139,7 @@ class ProductController {
         const product: any = await db.query(sqlProduct, [category[0].Id, category[0].Id, 'Active']);
 
         product.forEach((prdItem) => {
+          prdItem.Specs = parseSpecs(prdItem.DeviceCfg);
           prdItem.DeviceCfg = myUtils.extractSimpleDeviceCfg(prdItem.DeviceCfg);
           prdItem.CurrentTotalProduct = product.length;
         });

@@ -242,7 +242,8 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'vga-rtx-50-series',
+    // 'vga-card-man-hinh',
+    // 'vga-rtx-50-series',
     // 'pc-gvn',
     // 'pc-gvn-i3',
     // 'pc-gvn-i5',
@@ -290,6 +291,12 @@ async function handleCrawler() {
 
       const products = response.products as Product[];
 
+      if (products.length === 0) {
+        hashMore = false;
+        console.log(chalk.bgGreenBright(`Đã lấy xong cho collection: ${collection}`));
+        break;
+      }
+
       for (const product of products) {
         if (product.variants[0].price) {
           await handleInsertProduct(product);
@@ -300,8 +307,8 @@ async function handleCrawler() {
     }
 
     console.log(chalk.bgGreenBright(`Đã lấy xong cho trang ${page}`));
-    // page++;
-    break;
+    page++;
+    // break;
   }
 }
 
