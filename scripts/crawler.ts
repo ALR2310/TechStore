@@ -242,7 +242,9 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    // 'vga-card-man-hinh',
+    'mainboard-bo-mach-chu',
+    // 'radeon-rx',
+    // 'nvidia-quadro',
     // 'vga-rtx-50-series',
     // 'pc-gvn',
     // 'pc-gvn-i3',
