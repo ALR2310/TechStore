@@ -242,6 +242,7 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
+    // 'ban-phim-may-tinh',
     // 'man-hinh-do-hoa',
     // 'man-hinh-cong',
     // 'tan-nhiet-may-tinh',
