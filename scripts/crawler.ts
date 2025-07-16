@@ -5,7 +5,7 @@ import { getAxiosWithProxy } from '../shared/utils/axios.utils';
 import chalk from 'chalk';
 import { db } from '../server/configs/dbConnect';
 import dayjs from 'dayjs';
-import { stringifySpecs } from '../shared/utils/general.utils';
+import { formatToSlug, stringifySpecs } from '../shared/utils/general.utils';
 import path from 'path';
 import * as fs from 'fs';
 
@@ -66,22 +66,18 @@ type Product = {
 function extractDescription(html: string): string {
   const $ = cheerio.load(html);
 
-  const h2 = $('h2').first();
-  if (!h2.length) return '';
+  const firstTable = $('table').first();
+  if (!firstTable.length) return '';
+
+  let current: any = firstTable[0].nextSibling;
 
   const collected: string[] = [];
-
-  let current: any = h2[0].nextSibling;
-  while (current && current.tagName === 'table') {
-    current = current.nextSibling;
-  }
-
   while (current) {
     collected.push($.html(current));
     current = current.nextSibling;
   }
 
-  return collected.join('\n');
+  return collected.join('\n').trim();
 }
 
 function extractSpecs(html: string): [string, string][] {
@@ -89,7 +85,7 @@ function extractSpecs(html: string): [string, string][] {
 
   const specs: [string, string][] = [];
 
-  const rows = $('#tblGeneralAttribute tr');
+  const rows = $('table tr');
   rows.each((_, row) => {
     const cells = $(row).find('td');
     if (cells.length !== 2) return;
@@ -156,11 +152,24 @@ async function downloadImage(url: string, fileName: string): Promise<string | nu
   }
 }
 
-function handleGetCategoryId(categoryName: string) {
-  if (categoryName.toLowerCase().includes('laptop gaming'.toLowerCase())) {
-    return 1;
-  } else if (categoryName.toLowerCase().includes('pc'.toLowerCase())) return 3;
-  else return 2;
+async function handleGetCategoryId(categoryName: string) {
+  switch (categoryName.toLowerCase()) {
+    case 'Laptop Phổ Thông':
+      return 1;
+    case 'Laptop Gaming':
+      return 2;
+    case 'Thiết bị PC':
+      return 3;
+  }
+
+  const category = await db.query('SELECT Id FROM Categories WHERE CateName = ?', [categoryName]);
+  if (category.length > 0) return category[0].Id as number;
+
+  const result = await db.query('INSERT INTO Categories (CateName, Slugs) VALUES (?, ?)', [
+    categoryName,
+    formatToSlug(categoryName),
+  ]);
+  return result.insertId as number;
 }
 
 async function handleGetBrandId(brandName: string) {
@@ -176,23 +185,24 @@ async function handleInsertProduct(productInfo: Product) {
     productInfo.handle,
   ]);
   if (product.length > 0) {
-    console.log(chalk.yellow(`Sản phẩm: ${productInfo.title} đã tồn tại(skip)`));
+    console.log(chalk.bgCyan(`Sản phẩm: ${productInfo.title} đã tồn tại(skip)`));
     return;
   }
 
-  const image = await downloadImage(productInfo.image.src, productInfo.handle);
   const desc = extractDescription(productInfo.body_html);
   const specs = extractSpecs(productInfo.body_html);
-  const categoryId = handleGetCategoryId(productInfo.title);
+
+  // If no description or specs, skip
+  if (specs.length === 0) {
+    console.log(chalk.yellow(`Sản phẩm: ${productInfo.handle} không có cấu hình (skip)`));
+    return;
+  }
+
+  const categoryId = await handleGetCategoryId(productInfo.product_type);
   const brandId = await handleGetBrandId(productInfo.vendor);
   const quantity = Math.floor(Math.random() * 100) + 1;
   const discount = Math.floor(Math.random() * 15) + 1;
-
-  // If no description or specs, skip
-  if (!desc || !specs) {
-    console.log(chalk.yellow(`Sản phẩm: ${productInfo.title} không có mô tả và cấu hình (skip)`));
-    return;
-  }
+  const image = await downloadImage(productInfo.image.src, productInfo.handle);
 
   // Insert Product
   const dateNow = dayjs().format('YYYY-MM-DD HH:mm:ss');
@@ -228,27 +238,29 @@ async function handleInsertProduct(productInfo: Product) {
   }
 }
 
+// @ts-ignore
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'pc-gvn',
-    'pc-gvn-i3',
-    'pc-gvn-i5',
-    'pc-gvn-i7',
-    'pc-gvn-i9',
-    'laptop-asus-hoc-tap-va-lam-viec',
-    'laptop-acer-hoc-tap-va-lam-viec',
-    'laptop-msi-hoc-tap-va-lam-viec',
-    'laptop-lenovo-hoc-tap-va-lam-viec',
-    'laptop-dell-hoc-tap-va-lam-viec',
-    'laptop-hp-pavilion',
-    'laptop-lg-gram',
-    'laptop-gaming-asus',
-    'laptop-gaming-acer',
-    'laptop-msi-gaming',
-    'laptop-gaming-lenovo',
-    'laptop-gaming-dell',
-    'laptop-gaming-hp',
+    'vga-rtx-50-series',
+    // 'pc-gvn',
+    // 'pc-gvn-i3',
+    // 'pc-gvn-i5',
+    // 'pc-gvn-i7',
+    // 'pc-gvn-i9',
+    // 'laptop-asus-hoc-tap-va-lam-viec',
+    // 'laptop-acer-hoc-tap-va-lam-viec',
+    // 'laptop-msi-hoc-tap-va-lam-viec',
+    // 'laptop-lenovo-hoc-tap-va-lam-viec',
+    // 'laptop-dell-hoc-tap-va-lam-viec',
+    // 'laptop-hp-pavilion',
+    // 'laptop-lg-gram',
+    // 'laptop-gaming-asus',
+    // 'laptop-gaming-acer',
+    // 'laptop-msi-gaming',
+    // 'laptop-gaming-lenovo',
+    // 'laptop-gaming-dell',
+    // 'laptop-gaming-hp',
   ];
   let hashMore = true;
   let proxyIndex = 0;
@@ -293,19 +305,37 @@ async function handleCrawler() {
   }
 }
 
-// async function deleteProducts() {
-//   const products = await db.query(`SELECT Id FROM Product WHERE Image LIKE 'https%'`);
-//   const ids = products.map((p: any) => p.Id);
+// @ts-ignore
+async function deleteProducts() {
+  const products = await db.query(`SELECT Id FROM Product WHERE Image LIKE 'https%'`);
+  const ids = products.map((p: any) => p.Id);
 
-//   const placeholders = ids.map(() => '?').join(',');
-//   await db.query(`DELETE FROM Product WHERE Id IN (${placeholders})`, ids);
-//   await db.query(`DELETE FROM ProductDetails WHERE ProdId IN (${placeholders})`, ids);
-// }
+  const placeholders = ids.map(() => '?').join(',');
+  await db.query(`DELETE FROM Product WHERE Id IN (${placeholders})`, ids);
+  await db.query(`DELETE FROM ProductDetails WHERE ProdId IN (${placeholders})`, ids);
+}
+
+// @ts-ignore
+async function removeUnusedImages() {
+  const UPLOAD_DIR = path.join(__dirname, '../server/assets/uploads');
+
+  const allFiles = fs.readdirSync(UPLOAD_DIR);
+
+  const rows = await db.query(`SELECT Image FROM Product WHERE Image IS NOT NULL`);
+  const usedImages = new Set(rows.map((row) => path.basename(row.Image)));
+
+  for (const file of allFiles) {
+    if (!usedImages.has(file)) {
+      const fullPath = path.join(UPLOAD_DIR, file);
+      fs.unlinkSync(fullPath);
+      console.log(`Đã xoá ảnh không dùng: ${file}`);
+    }
+  }
+}
 
 (async () => {
   try {
     await handleCrawler();
-    // await deleteProducts();
   } catch (e: any) {
     console.log(e.message);
   }

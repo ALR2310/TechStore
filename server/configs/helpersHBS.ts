@@ -87,6 +87,10 @@ const helpers = {
     if (url.startsWith('/')) return url;
     return '/' + url;
   },
+
+  lt(a: any, b: any) {
+    return a < b;
+  },
 };
 
 export default helpers;

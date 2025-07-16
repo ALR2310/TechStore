@@ -87,11 +87,13 @@
                 {{{product.Content}}}
             </div>
 
+            {{#if product.Content}}
             <div class="show-more-content">
                 <button id="btn-show-more" class="btn btn-show-more">Đọc tiếp bài viết
                     <i class="fa-solid fa-chevron-down"></i>
                 </button>
             </div>
+            {{/if}}
         </div>
     </div>
 
@@ -99,18 +101,20 @@
     <div class="col-4 p-0" style="width: 40.5%;">
         <div id="sidebar-product-details">
             {{!-- Cấu hình sản phẩm --}}
-            {{#if product.SimpleDeviceCfg}}
+            {{#if product.Specs}}
             <div class="p-4 bg-white rounded mb-3">
                 <strong class="d-block fs-4 text-center mb-3">Cấu hình sản phẩm</strong>
                 <div class="border p-1 rounded">
                     <table class="table table-striped table-borderless m-0">
                         <tbody>
-                            {{#each product.SimpleDeviceCfg}}
+                        {{#each product.Specs}}
+                            {{#if (lt @index 5)}}
                             <tr>
-                                <td>{{{@key}}}</td>
-                                <td>{{{this}}}</td>
+                                <td>{{this.[0]}}</td>
+                                <td>{{{this.[1]}}}</td>
                             </tr>
-                            {{/each}}
+                            {{/if}}
+                        {{/each}}
                         </tbody>
                     </table>
                 </div>

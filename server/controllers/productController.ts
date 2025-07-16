@@ -2,6 +2,7 @@ import path from 'path';
 import { db } from '../configs/dbConnect';
 import myUtils from '../utils/myUtils';
 import dayjs from 'dayjs';
+import { parseSpecs } from '@shared/utils/general.utils';
 
 class ProductController {
   async index(req: any, res: any) {
@@ -153,6 +154,7 @@ class ProductController {
         if (product?.length > 0) {
           product[0].SimpleDeviceCfg = myUtils.extractSimpleDeviceCfg(product[0].DeviceCfg);
           product[0].FinalPrice = parseFloat(product[0].FinalPrice).toFixed(0);
+          product[0].Specs = parseSpecs(product[0].DeviceCfg);
 
           // Lấy ra danh sách sản phẩm đã xem từ cookie
           let viewedProducts = req.cookies.viewed || [];
