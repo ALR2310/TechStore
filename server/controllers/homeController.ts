@@ -25,7 +25,7 @@ class HomeController {
                             c.CateName = ? AND 
                             p.Status = "Active" 
                         GROUP BY p.Id, pd.DeviceCfg
-                        LIMIT 12`,
+                        LIMIT 15`,
         params: [category],
       }));
 
@@ -63,7 +63,7 @@ class HomeController {
                         LEFT JOIN ProductReviews pv ON p.Id = pv.ProdId
                     WHERE p.Status = "Active"
                     GROUP BY p.Id, pd.DeviceCfg
-                    LIMIT 12
+                    LIMIT 15
                     `)) as any[];
 
       rdmProduct.forEach((prdItem) => {
