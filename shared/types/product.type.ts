@@ -35,6 +35,6 @@ export interface productStatsResponse {
     Active: [{ id: number; name: string }];
     Inactive: [{ id: number; name: string }];
   };
-  bestSellingProducts: [{ datetime: string; name: string; price: number; totalSold: number }];
+  bestSellingProducts: [{ datetime: string; name: string; slug: string; price: number; totalSold: number }];
   countByCategory: [{ label: string; value: number }];
 }

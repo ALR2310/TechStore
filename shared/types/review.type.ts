@@ -12,7 +12,7 @@ export interface reviewStatsResponse {
   totalReview: number;
   reviewCount: [{ label: string; value: number }];
   starCount: [{ label: string; value: number }];
-  topProductReview: [{ datetime: string; productName: string; count: number }];
+  topProductReview: [{ datetime: string; productName: string; slug: string; count: number }];
   topReviewer: [{ label: string; value: number }];
-  lowRatingProduct: [{ productName: string; ratingCount: number }];
+  lowRatingProduct: [{ productName: string; slug: string; ratingCount: number }];
 }

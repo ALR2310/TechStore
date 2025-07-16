@@ -155,7 +155,15 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
               {
                 title: 'Tên sản phẩm',
                 key: 'productName',
-                render: (value) => <p className="font-semibold">{value}</p>,
+                render: (value, row) => (
+                  <a
+                    href={`http://localhost:4850/san-pham/${row.slug}#product-review`}
+                    target="_blank"
+                    className="link no-underline link-primary font-semibold hover:underline "
+                  >
+                    {value}
+                  </a>
+                ),
               },
               {
                 title: 'SL đánh giá',
@@ -188,7 +196,15 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
               {
                 key: 'productName',
                 title: 'Tên sản phẩm',
-                render: (value) => <p className="font-semibold">{value}</p>,
+                render: (value, row) => (
+                  <a
+                    href={`http://localhost:4850/san-pham/${row.slug}#product-review`}
+                    target="_blank"
+                    className="link no-underline link-primary font-semibold hover:underline "
+                  >
+                    {value}
+                  </a>
+                ),
               },
               {
                 key: 'datetime',
@@ -270,7 +286,15 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
               {
                 title: 'Tên sản phẩm',
                 key: 'name',
-                render: (value) => <p className="font-semibold">{value}</p>,
+                render: (value, row) => (
+                  <a
+                    href={`http://localhost:4850/san-pham/${row.slug}`}
+                    target="_blank"
+                    className="link no-underline link-primary font-semibold hover:underline "
+                  >
+                    {value}
+                  </a>
+                ),
               },
               {
                 title: 'Đã bán',

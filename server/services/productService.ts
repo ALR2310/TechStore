@@ -393,6 +393,7 @@ class ProductService {
       SELECT 
         strftime('${groupFormat}', o.createdAt) as datetime,
         p.ProdName as name,
+        p.Slugs as slug,
         p.Price,
         SUM(oi.Quantity) as totalSold
       FROM OrderItems oi
@@ -426,12 +427,7 @@ class ProductService {
         acc[row.Status].push({ id: row.Id, name: row.Name });
         return acc;
       }, {}),
-      bestSellingProducts: bestSelling.map((r: any) => ({
-        datetime: r.datetime,
-        name: r.name,
-        price: Number(r.Price),
-        totalSold: Number(r.totalSold),
-      })),
+      bestSellingProducts: bestSelling,
       countByCategory: countByCategory.map((r: any) => ({
         label: r.label,
         value: Number(r.value),

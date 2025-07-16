@@ -173,6 +173,7 @@ class ReviewService {
       SELECT
         strftime('${groupFormat}', PR.createdAt) as datetime,
         P.ProdName as productName,
+        P.Slugs as slug,
         COUNT(*) as count
       FROM ProductReviews PR
       JOIN Product P ON PR.ProdId = P.Id
@@ -195,6 +196,7 @@ class ReviewService {
     const lowRatingProductQuery = `
       SELECT 
         P.ProdName as productName,
+        P.Slugs as slug,
         COUNT(*) as ratingCount
       FROM ProductReviews PR
       JOIN Product P ON PR.ProdId = P.Id
