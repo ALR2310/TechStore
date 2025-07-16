@@ -242,7 +242,9 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'mainboard-bo-mach-chu',
+    'case-thung-may-tinh',
+    // 'cpu-bo-vi-xu-ly',
+    // 'mainboard-bo-mach-chu',
     // 'radeon-rx',
     // 'nvidia-quadro',
     // 'vga-rtx-50-series',
