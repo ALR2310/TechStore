@@ -242,7 +242,9 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'tan-nhiet-may-tinh',
+    // 'man-hinh-do-hoa',
+    // 'man-hinh-cong',
+    // 'tan-nhiet-may-tinh',
     // 'psu-nguon-may-tinh',
     // 'case-thung-may-tinh',
     // 'cpu-bo-vi-xu-ly',
@@ -313,8 +315,8 @@ async function handleCrawler() {
     }
 
     console.log(chalk.bgGreenBright(`Đã lấy xong cho trang ${page}`));
-    page++;
-    // break;
+    // page++;
+    break;
   }
 }
 

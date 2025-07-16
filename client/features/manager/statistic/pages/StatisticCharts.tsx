@@ -9,7 +9,6 @@ import {
   buildStatsTableSelling,
   buildReviewChartHorizontal,
   buildUsersChart,
-  buildUserStatusPieChart,
   buildStarRatingPieChart,
 } from '../data/buildStatData';
 import { useMemo } from 'react';
@@ -83,9 +82,6 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
   // Users Chart (Area Chart)
   const usersOption = buildUsersChart(user?.userCount);
 
-  // User status (Pie chart)
-  const userStatusOption = buildUserStatusPieChart(user?.userByStatus);
-
   // Categories Pie Chart
   const categoriesOption = buildCategoriesChart(product?.countByCategory);
 
@@ -122,21 +118,12 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
       </div>
 
       {/* Users and Status Row */}
-      <div className="grid grid-cols-2 gap-6">
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={usersOption} style={{ height: 350 }} />
-        </div>
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={userStatusOption} style={{ height: 350 }} />
-        </div>
+      <div className="card bg-base-100 shadow p-4">
+        <ReactECharts option={categoriesOption} style={{ height: 350 }} />
       </div>
 
       {/* Percent Category and Low Rating */}
       <div className="grid grid-cols-2 gap-6">
-        <div className="card bg-base-100 shadow p-4">
-          <ReactECharts option={categoriesOption} style={{ height: 350 }} />
-        </div>
-
         <div className="bg-base-100 rounded-xl p-4">
           <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
             <i className="fa-regular fa-trophy text-warning"></i>
@@ -173,6 +160,10 @@ export default function StatisticCharts({ data, timeRange }: StatisticChartsProp
             ]}
             data={review?.lowRatingProduct ?? []}
           />
+        </div>
+
+        <div className="card bg-base-100 shadow p-4">
+          <ReactECharts option={usersOption} style={{ height: 350 }} />
         </div>
       </div>
 
