@@ -242,7 +242,9 @@ async function handleInsertProduct(productInfo: Product) {
 async function handleCrawler() {
   let page = 1;
   const collections = [
-    'loa',
+    'microphone',
+    'webcam',
+    // 'loa',
     // 'tai-nghe-may-tinh',
     // 'chuot-may-tinh',
     // 'ban-phim-may-tinh',
