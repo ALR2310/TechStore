@@ -14,7 +14,7 @@ export default function Dashboard() {
   const currentTimeRange = useMemo(() => [now, now] as [Date, Date], [now]);
   const pastTimeRange = useMemo(() => generatePastRange('month', currentTimeRange), [currentTimeRange]);
 
-  const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery, productsStatsQuery] = useQueries({
+  const [ordersStatsQuery, usersStatsQuery, viewedStatsQuery] = useQueries({
     queries: [
       {
         queryKey: ['orderStats', currentTimeRange],
@@ -29,11 +29,6 @@ export default function Dashboard() {
       {
         queryKey: ['viewedStats', currentTimeRange],
         queryFn: () => getViewedStatistic({ by: 'month', ...builDateFilter(currentTimeRange, 'month') }),
-        enabled: currentTimeRange[0] !== null && currentTimeRange[1] !== null,
-      },
-      {
-        queryKey: ['productStats', currentTimeRange],
-        queryFn: () => getProductStatistic({ by: 'month', ...builDateFilter(currentTimeRange, 'month') }),
         enabled: currentTimeRange[0] !== null && currentTimeRange[1] !== null,
       },
     ],
@@ -59,6 +54,23 @@ export default function Dashboard() {
     ],
   });
 
+  const [ordersStats, usersStats, productsStats] = useQueries({
+    queries: [
+      {
+        queryKey: ['orderStatsDash', currentTimeRange],
+        queryFn: () => getOrderStatistic({ by: 'month', ...builDateFilter(currentTimeRange, 'year') }),
+      },
+      {
+        queryKey: ['userStatsDash', currentTimeRange],
+        queryFn: () => getUserStatistic({ by: 'month', ...builDateFilter(currentTimeRange, 'year') }),
+      },
+      {
+        queryKey: ['productStatsDash', currentTimeRange],
+        queryFn: () => getProductStatistic({ by: 'month', ...builDateFilter(currentTimeRange, 'year') }),
+      },
+    ],
+  });
+
   const summaryData = buildStatisticSummary({
     current: {
       order: ordersStatsQuery.data,
@@ -77,9 +89,9 @@ export default function Dashboard() {
       <StatisticSummary data={summaryData} />
 
       <DashboardCharts
-        userData={usersStatsQuery.data?.userCount ?? []}
-        revenueData={ordersStatsQuery.data?.orderRevenue ?? []}
-        sellingData={productsStatsQuery.data?.bestSellingProducts ?? []}
+        userData={usersStats.data?.userCount ?? []}
+        revenueData={ordersStats.data?.orderRevenue ?? []}
+        sellingData={productsStats.data?.bestSellingProducts ?? []}
       />
     </div>
   );

@@ -23,11 +23,15 @@ function buildSellingOpts(data: any[]) {
     }
   }
 
-  const pieData = Array.from(productMap.values()).map((item) => ({
-    name: item.name,
-    value: item.totalSold,
-    price: item.price,
-  }));
+  // Lấy 10 sản phẩm bán chạy nhất
+  const pieData = Array.from(productMap.values())
+    .sort((a, b) => b.totalSold - a.totalSold)
+    .slice(0, 15)
+    .map((item) => ({
+      name: item.name,
+      value: item.totalSold,
+      price: item.price,
+    }));
 
   return applyChartTheme({
     title: {
