@@ -167,7 +167,7 @@ export default function ReviewManager() {
             render: (value, row) => (
               <a
                 href={`/product/${row.ProductSlugs}`}
-                className="text-primary hover:underline font-semibold text-lg"
+                className="text-primary hover:underline font-semibold"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -181,7 +181,7 @@ export default function ReviewManager() {
           {
             title: 'Bình luận',
             key: 'Comment',
-            render: (value) => <p className="text-sm text-base-content/60">{value}</p>,
+            render: (value) => <p className="">{value}</p>,
           },
           {
             title: 'Trạng thái',

@@ -209,7 +209,7 @@ export default function ProductManager() {
             title: '',
             key: '',
             render: (_, row) => (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Link to={`update/${row.Id}`} className="btn btn-primary btn-sm">
                   Sửa
                 </Link>
