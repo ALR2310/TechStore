@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
-    "@tailwindcss/vite": "^4.1.10",
+    "@tailwindcss/vite": "^4.1.14",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
